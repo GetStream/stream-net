@@ -154,7 +154,7 @@ namespace Stream
             var targetFeedId = String.Format("{0}:{1}", targetFeedSlug, targetUserId);
             var targetFeed = this._client.Feed(targetFeedSlug, targetUserId);            
 
-            var request = _client.BuildRequest(this, "folows/" + targetFeedId + "/", Method.POST);
+            var request = _client.BuildRequest(this, "/follows/", Method.POST);
             request.AddJsonBody(new
             {
                 target = targetFeedId,
@@ -162,13 +162,18 @@ namespace Stream
             });
 
             var response = await _client.MakeRequest(request);
+            //if (response.StatusCode != System.Net.HttpStatusCode.OK)
+            //    throw new StreamException();
         }
 
-        public async Task Unfollow(String targetFeedSlug, String targetUserId)
+        public async Task UnfollowFeed(String targetFeedSlug, String targetUserId)
         {
             var targetFeedId = String.Format("{0}:{1}", targetFeedSlug, targetUserId);
-            var request = _client.BuildRequest(this, "folows/" + targetFeedId + "/", Method.DELETE);
+            var request = _client.BuildRequest(this, "/follows/" + targetFeedId + "/", Method.DELETE);
             var response = await _client.MakeRequest(request);
+            if (response.StatusCode != System.Net.HttpStatusCode.OK)
+                return;
+                //throw new StreamException();
         }
 
         public async Task Followers(int offset = 0, int limit = 25)

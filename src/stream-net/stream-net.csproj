@@ -50,6 +50,7 @@
     <Compile Include="StreamClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StreamClientOptions.cs" />
+    <Compile Include="StreamException.cs" />
     <Compile Include="StreamFeed.cs" />
   </ItemGroup>
   <ItemGroup>

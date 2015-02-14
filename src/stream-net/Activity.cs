@@ -126,7 +126,7 @@ namespace Stream
                     case Field_To:
                     {   
                         JArray array = prop.Value as JArray;
-                        if (array != null)
+                        if ((array != null) && (array.SafeCount() > 0))
                         {
                             if (array.First.Type == JTokenType.Array)
                             {
@@ -144,13 +144,17 @@ namespace Stream
                             else
                             {
                                 activity.To = prop.Value.ToObject<String[]>().ToList();
-                            }                            
+                            }
+                        }
+                        else
+                        {
+                            activity.To = new List<String>();
                         }
                         break;
                     }
                     default:
                     {
-                        // stash everything else as custom
+                        // stash everything else as custom                        
                         activity._data[prop.Name] = prop.Value.ToString();
                         break;
                     };

@@ -12,18 +12,20 @@ namespace stream_net_tests
     {
         private Stream.StreamClient _client;
         private Stream.StreamFeed _user1;
+        private Stream.StreamFeed _flat3;
 
         [TestInitialize]
         public void Setup()
         {
             _client = new Stream.StreamClient(
-                "8dfs6t9s9rrc",
-                "qtxefpdy6c6wm9pkfxg5aukrnm8hx5puftdykvz7ucsa4p4s678wvjdc6dk52wdc",
+                "98a6bhskrrwj",
+                "t3nj7j8m6dtdbbakzbu9p7akjk5da8an5wxwyt6g73nt5hf9yujp8h4jw244r67p",
                 new Stream.StreamClientOptions()
                 {
                     Location = Stream.StreamApiLocation.USEast
                 });
             _user1 = _client.Feed("user", "11");
+            _flat3 = _client.Feed("flat", "333");
 
             //System.Threading.Thread.Sleep(3000);
         }
@@ -243,5 +245,32 @@ namespace stream_net_tests
             //$activities = $this->user1->getActivities(0, 2, $id_offset)['results'];
             //$this->assertSame($activities[0]['id'], $second_id);
         }
+
+        [TestMethod]
+        public async Task TestFlatFollowUnfollow()
+        {
+            this._user1.UnfollowFeed("flat", "333").Wait();
+            System.Threading.Thread.Sleep(3000);
+
+            var newActivity = new Stream.Activity("1", "test", "1");
+            var response = await this._flat3.AddActivity(newActivity);
+
+            this._user1.FollowFeed("flat", "333").Wait();
+            System.Threading.Thread.Sleep(5000);
+
+            var activities = await this._user1.GetActivities(0, 1);
+            Assert.IsNotNull(activities);
+            Assert.AreEqual(1, activities.Count());
+            Assert.AreEqual(response.Id, activities.First().Id);
+
+            this._user1.UnfollowFeed("flat", "333").Wait();
+            System.Threading.Thread.Sleep(3000);
+
+            activities = await this._user1.GetActivities(0, 1);
+            Assert.IsNotNull(activities);
+            Assert.AreEqual(1, activities.Count());
+            Assert.AreNotEqual(response.Id, activities.First().Id);
+        }
+
     }
 }
