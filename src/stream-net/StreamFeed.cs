@@ -59,7 +59,7 @@ namespace Stream
             if (response.StatusCode == System.Net.HttpStatusCode.Created)
                 return Activity.FromJson(response.Content);
 
-            return null;
+            throw StreamException.FromResponse(response);
         }
       
         internal String ToActivitiesJson(IEnumerable<Activity> activities)
@@ -103,7 +103,7 @@ namespace Stream
             if (response.StatusCode == System.Net.HttpStatusCode.Created)
                 return GetResults(response.Content);
 
-            return Enumerable.Empty<Activity>();
+            throw StreamException.FromResponse(response);
         }
 
         /// <summary>
@@ -118,6 +118,9 @@ namespace Stream
             if (foreignId)
                 request.AddQueryParameter("foreign_id", "1");
             var response = await _client.MakeRequest(request);
+
+            if (response.StatusCode != System.Net.HttpStatusCode.OK)
+                throw StreamException.FromResponse(response);
         }
 
         internal IEnumerable<Activity> GetResults(String json)
@@ -135,18 +138,22 @@ namespace Stream
             }
         }
 
-        public async Task<IEnumerable<Activity>> GetActivities(int offset = 0, int limit = 20) // need filters
+        public async Task<IEnumerable<Activity>> GetActivities(int offset = 0, int limit = 20, FeedFilter filter = null)
         {
             var request = _client.BuildRequest(this, "/", Method.GET);
             request.AddQueryParameter("offset", offset.ToString());
             request.AddQueryParameter("limit", limit.ToString());
 
+            // filter if needed
+            if (filter != null)
+                filter.Apply(request);
+
             var response = await _client.MakeRequest(request);
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 return GetResults(response.Content);
-
-            return Enumerable.Empty<Activity>();
+                        
+            throw StreamException.FromResponse(response);
         }
 
         public async Task FollowFeed(String targetFeedSlug, String targetUserId)
@@ -162,8 +169,9 @@ namespace Stream
             });
 
             var response = await _client.MakeRequest(request);
-            //if (response.StatusCode != System.Net.HttpStatusCode.OK)
-            //    throw new StreamException();
+
+            if (response.StatusCode != System.Net.HttpStatusCode.Created)
+                throw StreamException.FromResponse(response);
         }
 
         public async Task UnfollowFeed(String targetFeedSlug, String targetUserId)
@@ -171,27 +179,39 @@ namespace Stream
             var targetFeedId = String.Format("{0}:{1}", targetFeedSlug, targetUserId);
             var request = _client.BuildRequest(this, "/follows/" + targetFeedId + "/", Method.DELETE);
             var response = await _client.MakeRequest(request);
+
             if (response.StatusCode != System.Net.HttpStatusCode.OK)
-                return;
-                //throw new StreamException();
+                throw StreamException.FromResponse(response);
         }
 
-        public async Task Followers(int offset = 0, int limit = 25)
+        public async Task Followers(int offset = 0, int limit = 25, String[] filterBy = null)
         {
-            var request = _client.BuildRequest(this, "followers/", Method.GET);
+            var request = _client.BuildRequest(this, "/followers/", Method.GET);
             request.AddQueryParameter("offset", offset.ToString());
             request.AddQueryParameter("limit", limit.ToString());
 
+            if (filterBy.SafeCount() > 0)
+                request.AddQueryParameter("filter", String.Join(",",filterBy));
+
             var response = await _client.MakeRequest(request);
+
+            if (response.StatusCode != System.Net.HttpStatusCode.OK)
+                throw StreamException.FromResponse(response);
         }
 
-        public async Task Following(int offset = 0, int limit = 25)
+        public async Task Following(int offset = 0, int limit = 25, String[] filterBy = null)
         {
-            var request = _client.BuildRequest(this, "follows/", Method.GET);
+            var request = _client.BuildRequest(this, "/following/", Method.GET);
             request.AddQueryParameter("offset", offset.ToString());
             request.AddQueryParameter("limit", limit.ToString());
 
+            if (filterBy.SafeCount() > 0)
+                request.AddQueryParameter("filter", String.Join(",", filterBy));
+
             var response = await _client.MakeRequest(request);
+
+            if (response.StatusCode != System.Net.HttpStatusCode.OK)
+                throw StreamException.FromResponse(response);
         }
 
         /// <summary>
@@ -201,6 +221,8 @@ namespace Stream
         {
             var request = _client.BuildRequest(this, "/", Method.DELETE);
             var response = await _client.MakeRequest(request);
+            if (response.StatusCode != System.Net.HttpStatusCode.OK)
+                throw StreamException.FromResponse(response);
         }
     }
 }

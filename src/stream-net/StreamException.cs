@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RestSharp;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,5 +9,9 @@ namespace Stream
 {
     public class StreamException : Exception
     {
+        public static StreamException FromResponse(IRestResponse response)
+        {
+            throw new StreamException();
+        }
     }
 }
