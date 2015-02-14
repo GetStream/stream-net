@@ -2,7 +2,7 @@
 
 ### Installation via Nuget
 
-Comming soon!
+Coming soon!
 
 ### Usage
 
