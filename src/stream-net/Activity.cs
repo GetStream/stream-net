@@ -124,12 +124,28 @@ namespace Stream
                     case Field_ForeignId: activity.ForeignId = prop.Value.Value<String>(); break;
                     case Field_Time: activity.Time = prop.Value.Value<DateTime>(); break;
                     case Field_To:
-                    {
-                        List<String> tos = new List<string>();
-                        //foreach (var ) {
+                    {   
+                        JArray array = prop.Value as JArray;
+                        if (array != null)
+                        {
+                            if (array.First.Type == JTokenType.Array)
+                            {
+                                // need to take the first from each array
+                                List<string> tos = new List<string>();
 
-                        //}
-                        activity.To = tos;
+                                foreach (var child in array)
+                                {
+                                    var str = child.ToObject<String[]>();
+                                    tos.Add(str[0]);
+                                }
+
+                                activity.To = tos;
+                            }
+                            else
+                            {
+                                activity.To = prop.Value.ToObject<String[]>().ToList();
+                            }                            
+                        }
                         break;
                     }
                     default:

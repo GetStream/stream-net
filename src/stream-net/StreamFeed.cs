@@ -36,7 +36,9 @@ namespace Stream
         }
 
         internal String FeedTokenId { get; private set; }
+
         public String Token { get; private set; }
+
         public String UrlPath { get; private set; }        
 
         /// <summary>
@@ -53,8 +55,6 @@ namespace Stream
             request.AddParameter("application/json", activity.ToJson(this._client), ParameterType.RequestBody);          
             
             var response = await _client.MakeRequest(request);
-
-            // {"actor": "1", "duration": "39ms", "foreign_id": null, "id": "dd0a7116-b3c4-11e4-8080-800074dd0b6b", "object": "1", "origin": null, "target": null, "time": "2015-02-13T21:11:23.136", "to": [], "verb": "test"}
 
             if (response.StatusCode == System.Net.HttpStatusCode.Created)
                 return Activity.FromJson(response.Content);
@@ -133,23 +133,6 @@ namespace Stream
                         yield return Activity.FromJson((JObject)val);
                 }
             }
-
-            //JsonTextReader reader = new JsonTextReader(new StringReader(json));
-            //while (reader.Read())
-            //{
-            //    if ((((String)reader.Value) == "results") || (((String)reader.Value) == "activities"))
-            //    {
-            //        while(reader.Read())
-            //        {
-            //            if (reader.TokenType == JsonToken.StartArray)
-            //                continue;
-            //            else if (reader.TokenType == JsonToken.StartObject)
-            //                yield return Activity.FromJson(reader);
-            //            else
-            //                break;
-            //        }
-            //    }
-            //}
         }
 
         public async Task<IEnumerable<Activity>> GetActivities(int offset = 0, int limit = 20) // need filters

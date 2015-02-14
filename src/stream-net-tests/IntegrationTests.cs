@@ -124,6 +124,9 @@ namespace stream_net_tests
             };
             var addedActivity = await this._user1.AddActivity(newActivity);
             Assert.IsNotNull(addedActivity);
+            Assert.IsNotNull(addedActivity.To);
+            Assert.AreEqual(1, addedActivity.To.SafeCount());
+            Assert.AreEqual("flat:remotefeed1", addedActivity.To.First());
 
             var activities = await _client.Feed("flat", "remotefeed1").GetActivities(0, 1);            
             Assert.IsNotNull(activities);
