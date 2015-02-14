@@ -19,3 +19,5 @@ var activity = new Activity("1", "like", "3")
 	ForeignId = "post:42"
 };  
 userFeed1.AddActivity(activity);
+
+```
