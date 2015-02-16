@@ -48,6 +48,7 @@
     <Compile Include="Activity.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="FeedFilter.cs" />
+    <Compile Include="Follower.cs" />
     <Compile Include="StreamClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StreamClientOptions.cs" />

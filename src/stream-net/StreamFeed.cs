@@ -184,7 +184,12 @@ namespace Stream
                 throw StreamException.FromResponse(response);
         }
 
-        public async Task Followers(int offset = 0, int limit = 25, String[] filterBy = null)
+        internal class FollowersResponse
+        {
+            public IEnumerable<Follower> results { get; set; }
+        }
+
+        public async Task<IEnumerable<Follower>> Followers(int offset = 0, int limit = 25, String[] filterBy = null)
         {
             var request = _client.BuildRequest(this, "/followers/", Method.GET);
             request.AddQueryParameter("offset", offset.ToString());
@@ -197,9 +202,11 @@ namespace Stream
 
             if (response.StatusCode != System.Net.HttpStatusCode.OK)
                 throw StreamException.FromResponse(response);
+
+            return JsonConvert.DeserializeObject<FollowersResponse>(response.Content).results;
         }
 
-        public async Task Following(int offset = 0, int limit = 25, String[] filterBy = null)
+        public async Task<IEnumerable<Follower>> Following(int offset = 0, int limit = 25, String[] filterBy = null)
         {
             var request = _client.BuildRequest(this, "/following/", Method.GET);
             request.AddQueryParameter("offset", offset.ToString());
@@ -212,6 +219,8 @@ namespace Stream
 
             if (response.StatusCode != System.Net.HttpStatusCode.OK)
                 throw StreamException.FromResponse(response);
+
+            return JsonConvert.DeserializeObject<FollowersResponse>(response.Content).results;
         }
 
         /// <summary>

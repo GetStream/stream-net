@@ -242,8 +242,8 @@ namespace stream_net_tests
             Assert.AreEqual(second.Id, activities.First().Id);
 
             //$id_offset =  ['id_lt' => $third_id];
-            //$activities = $this->user1->getActivities(0, 2, $id_offset)['results'];
-            //$this->assertSame($activities[0]['id'], $second_id);
+            activities = await this._user1.GetActivities(0, 2, FeedFilter.Where().IdLessThan(third.Id));
+            Assert.AreEqual(second.Id, activities.First().Id);
         }
 
         [TestMethod]
@@ -272,5 +272,78 @@ namespace stream_net_tests
             Assert.AreNotEqual(response.Id, activities.First().Id);
         }
 
+
+        [TestMethod]
+        public async Task TestFlatFollowUnfollowPrivate()
+        {
+            var secret = this._client.Feed("secret", "33");
+
+            this._user1.UnfollowFeed("secret", "33").Wait();
+            System.Threading.Thread.Sleep(3000);
+
+            var newActivity = new Stream.Activity("1", "test", "1");
+            var response = await secret.AddActivity(newActivity);
+
+            this._user1.FollowFeed("secret", "33").Wait();
+            System.Threading.Thread.Sleep(5000);
+
+            var activities = await this._user1.GetActivities(0, 1);
+            Assert.IsNotNull(activities);
+            Assert.AreEqual(1, activities.Count());
+            Assert.AreEqual(response.Id, activities.First().Id);
+
+            await this._user1.UnfollowFeed("secret", "33");
+        }
+
+        [TestMethod]
+        public async Task TestFollowersEmpty()
+        {
+            var lonely = this._client.Feed("flat", "lonely");
+            var response = await lonely.Followers();
+            Assert.IsNotNull(response);
+            Assert.AreEqual(0, response.Count());
+        }
+
+        [TestMethod]
+        public async Task TestFollowersWithLimit()
+        {
+            this._client.Feed("flat", "csharp43").FollowFeed("flat", "csharp42").Wait();
+            this._client.Feed("flat", "csharp44").FollowFeed("flat", "csharp42").Wait();
+            var response = await this._client.Feed("flat", "csharp42").Followers(0, 2);
+            Assert.IsNotNull(response);
+            Assert.AreEqual(2, response.Count());
+            Assert.AreEqual(response.First().FeedId, "flat:csharp44");
+            Assert.AreEqual(response.First().TargetId, "flat:csharp42");
+        }
+
+        [TestMethod]
+        public async Task TestFollowingEmpty()
+        {
+            var lonely = this._client.Feed("flat", "lonely");
+            var response = await lonely.Following();
+            Assert.IsNotNull(response);
+            Assert.AreEqual(0, response.Count());
+        }
+
+        [TestMethod]
+        public async Task TestFollowingsWithLimit()
+        {
+            this._client.Feed("flat", "csharp43").FollowFeed("flat", "csharp42").Wait();
+            this._client.Feed("flat", "csharp43").FollowFeed("flat", "csharp44").Wait();
+            var response = await this._client.Feed("flat", "csharp43").Following(0, 2);
+            Assert.IsNotNull(response);
+            Assert.AreEqual(2, response.Count());
+            Assert.AreEqual(response.First().FeedId, "flat:csharp43");
+            Assert.AreEqual(response.First().TargetId, "flat:csharp44");
+        }
+
+        [TestMethod]
+        public async Task TestDoIFollowEmpty()
+        {
+            var lonely = this._client.Feed("flat", "lonely");
+            var response = await lonely.Following(0, 10, new String[] { "flat:asocial" });
+            Assert.IsNotNull(response);
+            Assert.AreEqual(0, response.Count());
+        }
     }
 }
