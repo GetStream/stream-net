@@ -23,7 +23,7 @@ namespace Stream
             public int HttpStatusCode { get; set; }
         }
 
-        public static StreamException FromResponse(IRestResponse response)
+        internal static StreamException FromResponse(IRestResponse response)
         {
             //{"code": 6, "detail": "The following feeds are not configured: 'secret'", "duration": "4ms", "exception": "FeedConfigException", "status_code": 400}
 

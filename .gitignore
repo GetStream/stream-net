@@ -14,3 +14,4 @@ Thumbs.db
 *node_modules/
 *App_Data/
 *PublishProfiles/
+nuget.exe

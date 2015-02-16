@@ -19,7 +19,7 @@ namespace Stream
 
         readonly IDictionary<string, string> _data = new Dictionary<string, string>();
 
-        public String Id { get; set; }
+        public String Id { get; private set; }
 
         public String Actor { get; set; }
 
