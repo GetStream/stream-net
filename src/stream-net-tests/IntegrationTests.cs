@@ -93,6 +93,26 @@ namespace stream_net_tests
         }
 
         [TestMethod]
+        public async Task TestAddActivityWithString()
+        {
+            var newActivity = new Stream.Activity("1", "test", "1");
+            newActivity.SetData("complex", "string");
+            var response = await this._user1.AddActivity(newActivity);
+            Assert.IsNotNull(response);
+
+            var activities = await this._user1.GetActivities(0, 1);
+            Assert.IsNotNull(activities);
+            Assert.AreEqual(1, activities.Count());
+
+            var first = activities.First();
+            Assert.AreEqual(response.Id, first.Id);
+
+            var complex = first.GetData<String>("complex");
+            Assert.IsNotNull(complex);
+            Assert.AreEqual("string", complex);
+        }
+
+        [TestMethod]
         public async Task TestAddActivityWithDictionary()
         {
             var dict = new Dictionary<String, String>();

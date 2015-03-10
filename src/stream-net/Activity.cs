@@ -70,14 +70,14 @@ namespace Stream
                 new JProperty(Field_Verb, this.Verb),
                 new JProperty(Field_Object, this.Object));
 
-            if (Time.HasValue)            
+            if (Time.HasValue)
                 obj.Add(new JProperty(Field_Time, this.Time.Value.ToString("s", System.Globalization.CultureInfo.InvariantCulture)));
 
             if (!String.IsNullOrWhiteSpace(ForeignId))
                 obj.Add(new JProperty(Field_ForeignId, this.ForeignId));
 
             if (!String.IsNullOrWhiteSpace(Target))
-                obj.Add(new JProperty(Field_Target, this.Target));            
+                obj.Add(new JProperty(Field_Target, this.Target));
 
             if (To.SafeCount() > 0)
             {
@@ -93,8 +93,7 @@ namespace Stream
             {
                 _data.Keys.ForEach((k) =>
                 {
-                    var t = JToken.Parse(_data[k]);
-                    obj.Add(new JProperty(k, t));
+                    obj.Add(new JProperty(k, _data[k]));
                 });
             }
 
@@ -121,43 +120,43 @@ namespace Stream
                     case Field_ForeignId: activity.ForeignId = prop.Value.Value<String>(); break;
                     case Field_Time: activity.Time = prop.Value.Value<DateTime>(); break;
                     case Field_To:
-                    {   
-                        JArray array = prop.Value as JArray;
-                        if ((array != null) && (array.SafeCount() > 0))
                         {
-                            if (array.First.Type == JTokenType.Array)
+                            JArray array = prop.Value as JArray;
+                            if ((array != null) && (array.SafeCount() > 0))
                             {
-                                // need to take the first from each array
-                                List<string> tos = new List<string>();
-
-                                foreach (var child in array)
+                                if (array.First.Type == JTokenType.Array)
                                 {
-                                    var str = child.ToObject<String[]>();
-                                    tos.Add(str[0]);
-                                }
+                                    // need to take the first from each array
+                                    List<string> tos = new List<string>();
 
-                                activity.To = tos;
+                                    foreach (var child in array)
+                                    {
+                                        var str = child.ToObject<String[]>();
+                                        tos.Add(str[0]);
+                                    }
+
+                                    activity.To = tos;
+                                }
+                                else
+                                {
+                                    activity.To = prop.Value.ToObject<String[]>().ToList();
+                                }
                             }
                             else
                             {
-                                activity.To = prop.Value.ToObject<String[]>().ToList();
+                                activity.To = new List<String>();
                             }
+                            break;
                         }
-                        else
-                        {
-                            activity.To = new List<String>();
-                        }
-                        break;
-                    }
                     default:
-                    {
-                        // stash everything else as custom                        
-                        activity._data[prop.Name] = prop.Value.ToString();
-                        break;
-                    };
+                        {
+                            // stash everything else as custom                        
+                            activity._data[prop.Name] = prop.Value.ToString();
+                            break;
+                        };
                 }
             });
             return activity;
-        }      
+        }
     }
 }

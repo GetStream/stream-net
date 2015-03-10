@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>stream-net</id>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <title>$title$</title>
     <authors>$author$</authors>
     <owners>$author$</owners>
@@ -11,7 +11,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
     <language>en-US</language>
-    <releaseNotes>Initial release</releaseNotes>
+    <releaseNotes>Fixed issue with custom string data in activites</releaseNotes>
     <copyright>Copyright 2015</copyright>
     <tags>getstreamio</tags>
   </metadata>
