@@ -8,7 +8,7 @@ namespace Stream
 {
     public class StreamClient
     {
-        internal const String BaseUrlFormat = "https://{0}api.getstream.io";
+        internal const String BaseUrlFormat = "https://{0}-api.getstream.io";
         internal const String BaseUrlPath = "/api/v1.0/";
 
         readonly RestClient _client;
@@ -46,8 +46,18 @@ namespace Stream
             String region = "";
             switch(_options.Location)
             {
+                //following the "specs", but ap-northeast seems to return 404 https://getstream.io/docs/#performance
                 case StreamApiLocation.USEast:
-                    region = "us-east-";
+                    region = "us-east";
+                    break;
+                case StreamApiLocation.USWest:
+                    region = "us-west";
+                    break;                
+                case StreamApiLocation.EUWest:
+                    region = "eu-west";
+                    break;
+                case StreamApiLocation.AsiaJapan:
+                    region = "ap-northeast";
                     break;
                 default:
                     break;

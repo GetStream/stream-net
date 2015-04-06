@@ -3,7 +3,10 @@ namespace Stream
 {
     public enum StreamApiLocation
     {
-        USEast
+        USEast,
+        USWest,
+        EUWest,
+        AsiaJapan
     }
 
     public class StreamClientOptions
