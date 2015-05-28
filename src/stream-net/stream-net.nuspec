@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>stream-net</id>
-    <version>1.0.4</version>
+    <version>1.0.5</version>
     <title>$title$</title>
     <authors>$author$</authors>
     <owners>$author$</owners>
@@ -11,7 +11,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
     <language>en-US</language>
-    <releaseNotes>Added support for all the getstream.io regions</releaseNotes>
+    <releaseNotes>Added support for aggregate streams/activities</releaseNotes>
     <copyright>Copyright 2015</copyright>
     <tags>getstreamio</tags>
   </metadata>

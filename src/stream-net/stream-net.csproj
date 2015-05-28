@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Activity.cs" />
+    <Compile Include="AggregateActivity.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="FeedFilter.cs" />
     <Compile Include="Follower.cs" />

@@ -16,6 +16,8 @@ namespace Stream
         private const string Field_To = "to";
         private const string Field_Target = "target";
         private const string Field_Time = "time";
+        private const string Field_Activities = "activities";
+        private const string Field_ActorCount = "actor_count";
 
         readonly IDictionary<string, string> _data = new Dictionary<string, string>();
 
@@ -108,6 +110,11 @@ namespace Stream
         internal static Activity FromJson(JObject obj)
         {
             Activity activity = new Activity();
+            AggregateActivity aggregateActivity = null;
+
+            if (obj.Properties().Any(p => p.Name == Field_Activities))
+                activity = aggregateActivity = new AggregateActivity();
+
             obj.Properties().ForEach((prop) =>
             {
                 switch (prop.Name)
@@ -148,9 +155,34 @@ namespace Stream
                             }
                             break;
                         }
+                    case Field_Activities:
+                        {
+                            var activities = new List<Activity>();
+
+                            JArray array = prop.Value as JArray;
+                            if ((array != null) && (array.SafeCount() > 0))
+                            {
+                                foreach (var child in array)
+                                {
+                                    var childJO = child as JObject;
+                                    if (childJO != null)
+                                        activities.Add(FromJson(childJO));
+                                }
+                            }
+
+                            if (aggregateActivity != null)
+                                aggregateActivity.Activities = activities;
+                            break;
+                        }
+                    case Field_ActorCount:
+                        {
+                            if (aggregateActivity != null)
+                                aggregateActivity.ActorCount = prop.Value.Value<int>();
+                            break;
+                        }
                     default:
                         {
-                            // stash everything else as custom                        
+                            // stash everything else as custom
                             activity._data[prop.Name] = prop.Value.ToString();
                             break;
                         };

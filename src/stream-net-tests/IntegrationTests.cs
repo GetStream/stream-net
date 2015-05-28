@@ -13,6 +13,7 @@ namespace stream_net_tests
         private Stream.StreamClient _client;
         private Stream.StreamFeed _user1;
         private Stream.StreamFeed _flat3;
+        private Stream.StreamFeed _agg4;
 
         [TestInitialize]
         public void Setup()
@@ -26,7 +27,10 @@ namespace stream_net_tests
                 });
             _user1 = _client.Feed("user", "11");
             _flat3 = _client.Feed("flat", "333");
+            _agg4 = _client.Feed("aggregate", "444");
 
+            _user1.Delete().Wait();
+            _agg4.Delete().Wait();
             //System.Threading.Thread.Sleep(3000);
         }
 
@@ -292,7 +296,6 @@ namespace stream_net_tests
             Assert.AreNotEqual(response.Id, activities.First().Id);
         }
 
-
         [TestMethod]
         public async Task TestFlatFollowUnfollowPrivate()
         {
@@ -364,6 +367,58 @@ namespace stream_net_tests
             var response = await lonely.Following(0, 10, new String[] { "flat:asocial" });
             Assert.IsNotNull(response);
             Assert.AreEqual(0, response.Count());
+        }
+
+        [TestMethod]
+        public async Task TestAggregate()
+        {
+            var newActivity1 = new Stream.Activity("1", "test", "1");
+            var newActivity2 = new Stream.Activity("1", "test", "2");
+            var response = await _user1.AddActivity(newActivity1);
+            response = await _user1.AddActivity(newActivity2);
+
+            System.Threading.Thread.Sleep(3000);
+
+            await _agg4.FollowFeed("user", "11");
+            System.Threading.Thread.Sleep(3000);
+
+            var activities = await this._agg4.GetActivities(0);
+            Assert.IsNotNull(activities);
+            Assert.AreEqual(1, activities.Count());
+
+            var aggActivity = activities.First() as AggregateActivity;
+            Assert.IsNotNull(aggActivity);
+            Assert.AreEqual(2, aggActivity.Activities.Count);
+            Assert.AreEqual(1, aggActivity.ActorCount);
+
+            await _agg4.UnfollowFeed("user", "11");
+        }
+
+        [TestMethod]
+        public async Task TestMixedAggregate()
+        {
+            var newActivity1 = new Stream.Activity("1", "test", "1");
+            var newActivity2 = new Stream.Activity("1", "test", "2");
+            var newActivity3 = new Stream.Activity("1", "other", "2");
+            var response = await _user1.AddActivity(newActivity1);
+            response = await _user1.AddActivity(newActivity2);
+            response = await _user1.AddActivity(newActivity3);
+
+            System.Threading.Thread.Sleep(3000);
+
+            await _agg4.FollowFeed("user", "11");
+            System.Threading.Thread.Sleep(3000);
+
+            var activities = await this._agg4.GetActivities(0);
+            Assert.IsNotNull(activities);
+            Assert.AreEqual(2, activities.Count());
+
+            var aggActivity = activities.First() as AggregateActivity;
+            Assert.IsNotNull(aggActivity);
+            Assert.AreEqual(1, aggActivity.Activities.Count);
+            Assert.AreEqual(1, aggActivity.ActorCount);
+
+            await _agg4.UnfollowFeed("user", "11");
         }
     }
 }
