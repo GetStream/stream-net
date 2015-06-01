@@ -292,8 +292,32 @@ namespace stream_net_tests
 
             activities = await this._user1.GetActivities(0, 1);
             Assert.IsNotNull(activities);
+            Assert.AreEqual(0, activities.Count());
+        }
+
+        [TestMethod]
+        public async Task TestFlatFollowUnfollowByFeed()
+        {
+            this._user1.UnfollowFeed(_flat3).Wait();
+            System.Threading.Thread.Sleep(3000);
+
+            var newActivity = new Stream.Activity("1", "test", "1");
+            var response = await this._flat3.AddActivity(newActivity);
+
+            this._user1.FollowFeed(_flat3).Wait();
+            System.Threading.Thread.Sleep(5000);
+
+            var activities = await this._user1.GetActivities(0, 1);
+            Assert.IsNotNull(activities);
             Assert.AreEqual(1, activities.Count());
-            Assert.AreNotEqual(response.Id, activities.First().Id);
+            Assert.AreEqual(response.Id, activities.First().Id);
+
+            this._user1.UnfollowFeed(_flat3).Wait();
+            System.Threading.Thread.Sleep(3000);
+
+            activities = await this._user1.GetActivities(0, 1);
+            Assert.IsNotNull(activities);
+            Assert.AreEqual(0, activities.Count());
         }
 
         [TestMethod]

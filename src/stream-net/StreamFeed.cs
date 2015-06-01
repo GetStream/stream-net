@@ -37,9 +37,17 @@ namespace Stream
 
         internal String FeedTokenId { get; private set; }
 
+        internal String FeedId
+        {
+            get
+            {
+                return String.Format("{0}:{1}", _feedSlug, _userId);
+            }
+        }
+
         public String Token { get; private set; }
 
-        public String UrlPath { get; private set; }        
+        public String UrlPath { get; private set; }
 
         /// <summary>
         /// Add an activity to the feed
@@ -50,10 +58,10 @@ namespace Stream
         {
             if (activity == null)
                 throw new ArgumentNullException("activity", "Must have an activity to add");
-       
+
             var request = _client.BuildRequest(this, "/", Method.POST);
-            request.AddParameter("application/json", activity.ToJson(this._client), ParameterType.RequestBody);          
-            
+            request.AddParameter("application/json", activity.ToJson(this._client), ParameterType.RequestBody);
+
             var response = await _client.MakeRequest(request);
 
             if (response.StatusCode == System.Net.HttpStatusCode.Created)
@@ -61,7 +69,7 @@ namespace Stream
 
             throw StreamException.FromResponse(response);
         }
-      
+
         internal String ToActivitiesJson(IEnumerable<Activity> activities)
         {
             StringBuilder sb = new StringBuilder();
@@ -74,7 +82,7 @@ namespace Stream
                 writer.WriteStartArray();
 
                 activities.ForEach((a) =>
-                {  
+                {
                     writer.WriteRawValue(a.ToJson(this._client));
                 });
 
@@ -126,7 +134,7 @@ namespace Stream
         internal IEnumerable<Activity> GetResults(String json)
         {
             JObject obj = JObject.Parse(json);
-            foreach(var prop in obj.Properties())
+            foreach (var prop in obj.Properties())
             {
                 if ((prop.Name == "results") || (prop.Name == "activities"))
                 {
@@ -152,20 +160,22 @@ namespace Stream
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 return GetResults(response.Content);
-                        
+
             throw StreamException.FromResponse(response);
         }
 
-        public async Task FollowFeed(String targetFeedSlug, String targetUserId)
+        public async Task FollowFeed(StreamFeed feedToFollow)
         {
-            var targetFeedId = String.Format("{0}:{1}", targetFeedSlug, targetUserId);
-            var targetFeed = this._client.Feed(targetFeedSlug, targetUserId);            
+            if (feedToFollow == null)
+                throw new ArgumentNullException("feedToFollow", "Must have a feed to follow");
+            if (feedToFollow.FeedTokenId == this.FeedTokenId)
+                throw new ArgumentException("Cannot follow myself");
 
             var request = _client.BuildRequest(this, "/follows/", Method.POST);
             request.AddJsonBody(new
             {
-                target = targetFeedId,
-                target_token = targetFeed.Token
+                target = feedToFollow.FeedId,
+                target_token = feedToFollow.Token
             });
 
             var response = await _client.MakeRequest(request);
@@ -174,14 +184,28 @@ namespace Stream
                 throw StreamException.FromResponse(response);
         }
 
-        public async Task UnfollowFeed(String targetFeedSlug, String targetUserId)
+        public Task FollowFeed(String targetFeedSlug, String targetUserId)
         {
-            var targetFeedId = String.Format("{0}:{1}", targetFeedSlug, targetUserId);
-            var request = _client.BuildRequest(this, "/follows/" + targetFeedId + "/", Method.DELETE);
+            return FollowFeed(this._client.Feed(targetFeedSlug, targetUserId));
+        }
+
+        public async Task UnfollowFeed(StreamFeed feedToUnfollow)
+        {
+            if (feedToUnfollow == null)
+                throw new ArgumentNullException("feedToUnfollow", "Must have a feed to unfollow");
+            if (feedToUnfollow.FeedTokenId == this.FeedTokenId)
+                throw new ArgumentException("Cannot unfollow myself");
+
+            var request = _client.BuildRequest(this, "/follows/" + feedToUnfollow.FeedId + "/", Method.DELETE);
             var response = await _client.MakeRequest(request);
 
             if (response.StatusCode != System.Net.HttpStatusCode.OK)
                 throw StreamException.FromResponse(response);
+        }
+
+        public Task UnfollowFeed(String targetFeedSlug, String targetUserId)
+        {
+            return UnfollowFeed(this._client.Feed(targetFeedSlug, targetUserId));
         }
 
         internal class FollowersResponse
@@ -196,7 +220,7 @@ namespace Stream
             request.AddQueryParameter("limit", limit.ToString());
 
             if (filterBy.SafeCount() > 0)
-                request.AddQueryParameter("filter", String.Join(",",filterBy));
+                request.AddQueryParameter("filter", String.Join(",", filterBy));
 
             var response = await _client.MakeRequest(request);
 
