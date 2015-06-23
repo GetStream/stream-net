@@ -14,6 +14,7 @@ namespace stream_net_tests
         private Stream.StreamFeed _user1;
         private Stream.StreamFeed _flat3;
         private Stream.StreamFeed _agg4;
+        private Stream.StreamFeed _not5;
 
         [TestInitialize]
         public void Setup()
@@ -28,9 +29,11 @@ namespace stream_net_tests
             _user1 = _client.Feed("user", "11");
             _flat3 = _client.Feed("flat", "333");
             _agg4 = _client.Feed("aggregate", "444");
+            _not5 = _client.Feed("notification", "555");
 
             _user1.Delete().Wait();
             _agg4.Delete().Wait();
+            _not5.Delete().Wait();
             //System.Threading.Thread.Sleep(3000);
         }
 
@@ -222,8 +225,7 @@ namespace stream_net_tests
         
             await this._user1.RemoveActivity(fid, true);
             activities = await this._user1.GetActivities(0, 1);
-            Assert.AreEqual(1, activities.Count());
-            Assert.AreNotEqual(response.Id, activities.First().Id);
+            Assert.AreEqual(0, activities.Count());
         }
 
         [TestMethod]
@@ -340,6 +342,90 @@ namespace stream_net_tests
             Assert.AreEqual(response.Id, activities.First().Id);
 
             await this._user1.UnfollowFeed("secret", "33");
+        }
+
+        [TestMethod]
+        public async Task TestMarkRead()
+        {
+            var newActivity = new Stream.Activity("1", "tweet", "1");
+            var first = await _not5.AddActivity(newActivity);
+
+            newActivity = new Stream.Activity("1", "run", "2");
+            var second = await _not5.AddActivity(newActivity);
+
+            newActivity = new Stream.Activity("1", "share", "3");
+            var third = await _not5.AddActivity(newActivity);
+
+            var activities = await _not5.GetActivities(0, 2, marker: ActivityMarker.Mark().AllRead());
+            Assert.IsNotNull(activities);
+            Assert.AreEqual(2, activities.Count());
+
+            var notActivity = activities.First() as NotificationActivity;
+            Assert.IsNotNull(notActivity);
+            Assert.IsFalse(notActivity.IsRead);
+
+            notActivity = activities.Skip(1).First() as NotificationActivity;
+            Assert.IsNotNull(notActivity);
+            Assert.IsFalse(notActivity.IsRead);
+
+            activities = await _not5.GetActivities(0, 2);
+            Assert.IsNotNull(activities);
+            Assert.AreEqual(2, activities.Count());
+
+            notActivity = activities.First() as NotificationActivity;
+            Assert.IsNotNull(notActivity);
+            Assert.IsTrue(notActivity.IsRead);
+
+            notActivity = activities.Skip(1).First() as NotificationActivity;
+            Assert.IsNotNull(notActivity);
+            Assert.IsTrue(notActivity.IsRead);
+        }
+
+        [TestMethod]
+        public async Task TestMarkReadByIds()
+        {
+            var newActivity = new Stream.Activity("1", "tweet", "1");
+            var first = await _not5.AddActivity(newActivity);
+
+            newActivity = new Stream.Activity("1", "run", "2");
+            var second = await _not5.AddActivity(newActivity);
+
+            newActivity = new Stream.Activity("1", "share", "3");
+            var third = await _not5.AddActivity(newActivity);
+
+            var activities = await _not5.GetActivities(0, 2);
+
+            var marker = ActivityMarker.Mark();
+            foreach (var activity in activities)
+            {
+                marker = marker.Read(activity.Id);
+            }            
+
+            var notActivity = activities.First() as NotificationActivity;
+            Assert.IsNotNull(notActivity);
+            Assert.IsFalse(notActivity.IsRead);
+
+            notActivity = activities.Skip(1).First() as NotificationActivity;
+            Assert.IsNotNull(notActivity);
+            Assert.IsFalse(notActivity.IsRead);
+
+            activities = await _not5.GetActivities(0, 3, marker: marker);
+
+            activities = await _not5.GetActivities(0, 3);
+            Assert.IsNotNull(activities);
+            Assert.AreEqual(3, activities.Count());
+
+            notActivity = activities.First() as NotificationActivity;
+            Assert.IsNotNull(notActivity);
+            Assert.IsTrue(notActivity.IsRead);
+
+            notActivity = activities.Skip(1).First() as NotificationActivity;
+            Assert.IsNotNull(notActivity);
+            Assert.IsTrue(notActivity.IsRead);
+
+            notActivity = activities.Skip(2).First() as NotificationActivity;
+            Assert.IsNotNull(notActivity);
+            Assert.IsFalse(notActivity.IsRead);
         }
 
         [TestMethod]

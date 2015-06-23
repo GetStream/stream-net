@@ -46,6 +46,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Activity.cs" />
+    <Compile Include="ActivityMarker.cs" />
+    <Compile Include="NotificationActivity.cs" />
     <Compile Include="AggregateActivity.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="FeedFilter.cs" />

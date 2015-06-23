@@ -18,6 +18,8 @@ namespace Stream
         private const string Field_Time = "time";
         private const string Field_Activities = "activities";
         private const string Field_ActorCount = "actor_count";
+        private const string Field_IsRead = "is_read";
+        private const string Field_IsSeen = "is_seen";
 
         readonly IDictionary<string, string> _data = new Dictionary<string, string>();
 
@@ -111,9 +113,20 @@ namespace Stream
         {
             Activity activity = new Activity();
             AggregateActivity aggregateActivity = null;
+            NotificationActivity notificationActivity = null;
 
             if (obj.Properties().Any(p => p.Name == Field_Activities))
-                activity = aggregateActivity = new AggregateActivity();
+            {
+                if ((obj.Properties().Any(p => p.Name == Field_IsRead)) ||
+                    (obj.Properties().Any(p => p.Name == Field_IsSeen)))
+                {
+                    activity = aggregateActivity = notificationActivity = new NotificationActivity();
+                }
+                else
+                {
+                    activity = aggregateActivity = new AggregateActivity();
+                }
+            }
 
             obj.Properties().ForEach((prop) =>
             {
@@ -178,6 +191,18 @@ namespace Stream
                         {
                             if (aggregateActivity != null)
                                 aggregateActivity.ActorCount = prop.Value.Value<int>();
+                            break;
+                        }
+                    case Field_IsRead:
+                        {
+                            if (notificationActivity != null)
+                                notificationActivity.IsRead = prop.Value.Value<bool>();
+                            break;
+                        }
+                    case Field_IsSeen:
+                        {
+                            if (notificationActivity != null)
+                                notificationActivity.IsSeen = prop.Value.Value<bool>();
                             break;
                         }
                     default:

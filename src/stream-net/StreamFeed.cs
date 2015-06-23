@@ -146,7 +146,7 @@ namespace Stream
             }
         }
 
-        public async Task<IEnumerable<Activity>> GetActivities(int offset = 0, int limit = 20, FeedFilter filter = null)
+        public async Task<IEnumerable<Activity>> GetActivities(int offset = 0, int limit = 20, FeedFilter filter = null, ActivityMarker marker = null)
         {
             var request = _client.BuildRequest(this, "/", Method.GET);
             request.AddQueryParameter("offset", offset.ToString());
@@ -155,6 +155,10 @@ namespace Stream
             // filter if needed
             if (filter != null)
                 filter.Apply(request);
+
+            // marker if needed
+            if (marker != null)
+                marker.Apply(request);
 
             var response = await _client.MakeRequest(request);
 
