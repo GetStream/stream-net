@@ -47,6 +47,7 @@
   <ItemGroup>
     <Compile Include="Activity.cs" />
     <Compile Include="ActivityMarker.cs" />
+    <Compile Include="GetOptions.cs" />
     <Compile Include="NotificationActivity.cs" />
     <Compile Include="AggregateActivity.cs" />
     <Compile Include="Extensions.cs" />
@@ -57,6 +58,7 @@
     <Compile Include="StreamClientOptions.cs" />
     <Compile Include="StreamException.cs" />
     <Compile Include="StreamFeed.cs" />
+    <Compile Include="StreamResponse.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

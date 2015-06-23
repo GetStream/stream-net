@@ -273,6 +273,35 @@ namespace stream_net_tests
         }
 
         [TestMethod]
+        public async Task TestGetFlatActivities()
+        {
+            var newActivity = new Stream.Activity("1", "test", "1");
+            var first = await this._user1.AddActivity(newActivity);
+
+            newActivity = new Stream.Activity("1", "test", "2");
+            var second = await this._user1.AddActivity(newActivity);
+
+            newActivity = new Stream.Activity("1", "test", "3");
+            var third = await this._user1.AddActivity(newActivity);
+
+            var response = await this._user1.GetFlatActivities(GetOptions.Default.WithLimit(2));
+            Assert.IsNotNull(response);
+            var activities = response.Results;
+            Assert.IsNotNull(activities);
+            Assert.AreEqual(2, activities.Count());
+            Assert.AreEqual(third.Id, activities.First().Id);
+            Assert.AreEqual(second.Id, activities.Skip(1).First().Id);
+
+            response = await this._user1.GetFlatActivities(GetOptions.Default.WithOffset(1).WithLimit(2));
+            activities = response.Results;
+            Assert.AreEqual(second.Id, activities.First().Id);
+
+            response = await this._user1.GetFlatActivities(GetOptions.Default.WithLimit(2).WithFilter(FeedFilter.Where().IdLessThan(third.Id)));
+            activities = response.Results;
+            Assert.AreEqual(second.Id, activities.First().Id);
+        }
+
+        [TestMethod]
         public async Task TestFlatFollowUnfollow()
         {
             this._user1.UnfollowFeed("flat", "333").Wait();
@@ -429,6 +458,53 @@ namespace stream_net_tests
         }
 
         [TestMethod]
+        public async Task TestMarkNotificationsRead()
+        {
+            var newActivity = new Stream.Activity("1", "tweet", "1");
+            var first = await _not5.AddActivity(newActivity);
+
+            newActivity = new Stream.Activity("1", "run", "2");
+            var second = await _not5.AddActivity(newActivity);
+
+            newActivity = new Stream.Activity("1", "share", "3");
+            var third = await _not5.AddActivity(newActivity);
+
+            var response = await _not5.GetNotificationActivities(GetOptions.Default.WithLimit(2).WithMarker(ActivityMarker.Mark().AllRead()));
+            Assert.IsNotNull(response);
+            Assert.AreEqual(3, response.Unseen);
+
+            var activities = response.Results;
+            Assert.IsNotNull(activities);
+            Assert.AreEqual(2, activities.Count());
+
+            var notActivity = activities.First();
+            Assert.IsNotNull(notActivity);
+            Assert.IsFalse(notActivity.IsRead);
+
+            notActivity = activities.Skip(1).First();
+            Assert.IsNotNull(notActivity);
+            Assert.IsFalse(notActivity.IsRead);
+
+            response = await _not5.GetNotificationActivities(GetOptions.Default.WithLimit(2));
+
+            Assert.IsNotNull(response);
+            Assert.AreEqual(0, response.Unread);
+            Assert.AreEqual(3, response.Unseen);
+
+            activities = response.Results;
+            Assert.IsNotNull(activities);
+            Assert.AreEqual(2, activities.Count());
+
+            notActivity = activities.First();
+            Assert.IsNotNull(notActivity);
+            Assert.IsTrue(notActivity.IsRead);
+
+            notActivity = activities.Skip(1).First();
+            Assert.IsNotNull(notActivity);
+            Assert.IsTrue(notActivity.IsRead);
+        }
+
+        [TestMethod]
         public async Task TestFollowersEmpty()
         {
             var lonely = this._client.Feed("flat", "lonely");
@@ -497,6 +573,32 @@ namespace stream_net_tests
             Assert.AreEqual(1, activities.Count());
 
             var aggActivity = activities.First() as AggregateActivity;
+            Assert.IsNotNull(aggActivity);
+            Assert.AreEqual(2, aggActivity.Activities.Count);
+            Assert.AreEqual(1, aggActivity.ActorCount);
+
+            await _agg4.UnfollowFeed("user", "11");
+        }
+
+        [TestMethod]
+        public async Task TestGetAggregate()
+        {
+            var newActivity1 = new Stream.Activity("1", "test", "1");
+            var newActivity2 = new Stream.Activity("1", "test", "2");
+            var response = await _user1.AddActivity(newActivity1);
+            response = await _user1.AddActivity(newActivity2);
+
+            System.Threading.Thread.Sleep(3000);
+
+            await _agg4.FollowFeed("user", "11");
+            System.Threading.Thread.Sleep(3000);
+
+            var result = await this._agg4.GetAggregateActivities();
+            var activities = result.Results;
+            Assert.IsNotNull(activities);
+            Assert.AreEqual(1, activities.Count());
+
+            var aggActivity = activities.First();
             Assert.IsNotNull(aggActivity);
             Assert.AreEqual(2, aggActivity.Activities.Count);
             Assert.AreEqual(1, aggActivity.ActorCount);

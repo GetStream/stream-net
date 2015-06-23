@@ -168,6 +168,71 @@ namespace Stream
             throw StreamException.FromResponse(response);
         }
 
+        internal async Task<StreamResponse<T>> GetWithOptions<T>(GetOptions options = null) where T : Activity
+        {
+            // build request
+            options = options ?? GetOptions.Default;
+            var request = _client.BuildRequest(this, "/", Method.GET);
+            options.Apply(request);
+
+            // make request
+            var response = await _client.MakeRequest(request);
+            if (response.StatusCode != System.Net.HttpStatusCode.OK)
+                throw StreamException.FromResponse(response);
+
+            // handle response
+            var result = new StreamResponse<T>();
+            JObject obj = JObject.Parse(response.Content);
+            foreach (var prop in obj.Properties())
+            {
+                switch (prop.Name)
+                {
+                    case "results":
+                    case "activities":
+                        {
+                            // get the results
+                            var array = prop.Value as JArray;
+                            result.Results = array.Select(a => Activity.FromJson((JObject)a) as T).ToList();
+                            break;
+                        }
+                    case "unseen":
+                        {
+                            result.Unseen = prop.Value.Value<long>();
+                            break;
+                        }
+                    case "unread":
+                        {
+                            result.Unread = prop.Value.Value<long>();
+                            break;
+                        }
+                    case "duration":
+                        {
+                            result.Duration = prop.Value.Value<String>();
+                            break;
+                        }
+                    default:
+                        break;
+                }
+            }
+
+            return result;
+        }
+
+        public Task<StreamResponse<Activity>> GetFlatActivities(GetOptions options = null)
+        {
+            return GetWithOptions<Activity>(options);
+        }
+
+        public Task<StreamResponse<AggregateActivity>> GetAggregateActivities(GetOptions options = null)
+        {
+            return GetWithOptions<AggregateActivity>(options);
+        }
+
+        public Task<StreamResponse<NotificationActivity>> GetNotificationActivities(GetOptions options = null)
+        {
+            return GetWithOptions<NotificationActivity>(options);
+        }
+
         public async Task FollowFeed(StreamFeed feedToFollow)
         {
             if (feedToFollow == null)
