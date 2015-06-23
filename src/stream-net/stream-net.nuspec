@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>stream-net</id>
-    <version>1.0.6</version>
+    <version>1.0.7</version>
     <title>$title$</title>
     <authors>$author$</authors>
     <owners>$author$</owners>
@@ -11,7 +11,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
     <language>en-US</language>
-    <releaseNotes>Added alternate methods for Follow/Unfollow</releaseNotes>
+    <releaseNotes>Added support for Notifications</releaseNotes>
     <copyright>Copyright 2015</copyright>
     <tags>getstreamio</tags>
   </metadata>
