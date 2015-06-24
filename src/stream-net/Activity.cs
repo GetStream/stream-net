@@ -20,6 +20,9 @@ namespace Stream
         private const string Field_ActorCount = "actor_count";
         private const string Field_IsRead = "is_read";
         private const string Field_IsSeen = "is_seen";
+        private const string Field_CreatedAt = "created_at";
+        private const string Field_UpdatedAt = "updated_at";
+        private const string Field_Group = "group";
 
         readonly IDictionary<string, string> _data = new Dictionary<string, string>();
 
@@ -203,6 +206,24 @@ namespace Stream
                         {
                             if (notificationActivity != null)
                                 notificationActivity.IsSeen = prop.Value.Value<bool>();
+                            break;
+                        }
+                    case Field_CreatedAt:
+                        {
+                            if (aggregateActivity != null)
+                                aggregateActivity.CreatedAt = prop.Value.Value<DateTime>();
+                            break;
+                        }
+                    case Field_UpdatedAt:
+                        {
+                            if (aggregateActivity != null)
+                                aggregateActivity.UpdatedAt = prop.Value.Value<DateTime>();
+                            break;
+                        }
+                    case Field_Group:
+                        {
+                            if (aggregateActivity != null)
+                                aggregateActivity.Group = prop.Value.Value<String>();
                             break;
                         }
                     default:
