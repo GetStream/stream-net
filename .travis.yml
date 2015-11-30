@@ -1,0 +1,8 @@
+﻿language: csharp
+solution: ./src/stream-net.sln
+install:
+  - nuget restore ./src/stream-net.sln
+  - nuget install NUnit.Runners -Version 2.6.4 -OutputDirectory testrunner
+script:
+  - xbuild /p:Configuration=Release ./src/stream-net.sln
+  - mono ./testrunner/NUnit.Runners.2.6.4/tools/nunit-console.exe ./src/stream-net-tests/bin/Release/stream-net-tests.dll
