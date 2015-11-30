@@ -47,6 +47,8 @@
   <ItemGroup>
     <Compile Include="Activity.cs" />
     <Compile Include="ActivityMarker.cs" />
+    <Compile Include="BatchOperations.cs" />
+    <Compile Include="Follow.cs" />
     <Compile Include="GetOptions.cs" />
     <Compile Include="NotificationActivity.cs" />
     <Compile Include="AggregateActivity.cs" />

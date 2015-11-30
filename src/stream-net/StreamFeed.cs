@@ -31,23 +31,31 @@ namespace Stream
             _client = client;
             _feedSlug = feedSlug;
             _userId = userId;
-            FeedTokenId = String.Format("{0}{1}", _feedSlug, _userId);
-            UrlPath = String.Format("feed/{0}/{1}", _feedSlug, _userId);
+            FeedTokenId = string.Format("{0}{1}", _feedSlug, _userId);
+            UrlPath = string.Format("feed/{0}/{1}", _feedSlug, _userId);
         }
 
-        internal String FeedTokenId { get; private set; }
+        internal string FeedTokenId { get; private set; }
 
-        internal String FeedId
+        internal string FeedId
         {
             get
             {
-                return String.Format("{0}:{1}", _feedSlug, _userId);
+                return string.Format("{0}:{1}", _feedSlug, _userId);
             }
         }
 
-        public String Token { get; private set; }
+        public string Token { get; private set; }
 
-        public String UrlPath { get; private set; }
+        public string ReadOnlyToken
+        {
+            get
+            {
+                return _client.JWToken(FeedId);
+            }
+        }
+
+        public string UrlPath { get; private set; }
 
         /// <summary>
         /// Add an activity to the feed
@@ -70,7 +78,7 @@ namespace Stream
             throw StreamException.FromResponse(response);
         }
 
-        internal String ToActivitiesJson(IEnumerable<Activity> activities)
+        internal string ToActivitiesJson(IEnumerable<Activity> activities)
         {
             StringBuilder sb = new StringBuilder();
             StringWriter sw = new StringWriter(sb);

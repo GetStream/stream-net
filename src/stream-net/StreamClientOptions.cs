@@ -21,10 +21,13 @@ namespace Stream
 
         public StreamApiLocation Location { get; set; }
 
+        public bool ExpireTokens { get; set; }
+
         public StreamClientOptions()
         {
-            Timeout = 3000;
+            ExpireTokens = false;
             Location = StreamApiLocation.USEast;
+            Timeout = 3000;
         }
     }
 }
