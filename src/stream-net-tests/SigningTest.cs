@@ -1,13 +1,13 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using Stream;
 
 namespace stream_net_tests
 {
-    [TestClass]
+    [TestFixture]
     public class SigningTest
     {
-        [TestMethod]
+        [Test]
         public void TokenIsValid()
         {
             var client = new StreamClient("key", "gthc2t9gh7pzq52f6cky8w4r4up9dr6rju9w3fjgmkv6cdvvav2ufe5fv7e2r9qy");

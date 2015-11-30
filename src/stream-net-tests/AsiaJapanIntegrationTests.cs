@@ -1,20 +1,20 @@
 ﻿using System;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Stream;
 
 namespace stream_net_tests
 {
-    [TestClass]
+    [TestFixture]
     public class AsiaJapanIntegrationTests
     {
         private Stream.StreamClient _client;
         private Stream.StreamFeed _user1;
         private Stream.StreamFeed _flat3;
 
-        [TestInitialize]
+        [SetUp]
         public void Setup()
         {
             _client = new Stream.StreamClient(
@@ -30,7 +30,7 @@ namespace stream_net_tests
             //System.Threading.Thread.Sleep(3000);
         }
 
-        [TestMethod]
+        [Test]
         public async Task TestAddActivity()
         {
             var newActivity = new Stream.Activity("1","test","1");
@@ -48,7 +48,7 @@ namespace stream_net_tests
             Assert.AreEqual(response.Verb, first.Verb);
         }
 
-        [TestMethod]
+        [Test]
         public async Task TestAddActivityWithTime()
         {
             var now = DateTime.UtcNow;
@@ -71,7 +71,7 @@ namespace stream_net_tests
             Assert.AreEqual(now.ToLongDateString(), first.Time.Value.ToLongDateString());
         }
 
-        [TestMethod]
+        [Test]
         public async Task TestAddActivityWithArray()
         {
             var newActivity = new Stream.Activity("1", "test", "1");
@@ -92,7 +92,7 @@ namespace stream_net_tests
             Assert.AreEqual("shawn", complex[2]);
         }
 
-        [TestMethod]
+        [Test]
         public async Task TestAddActivityWithString()
         {
             var newActivity = new Stream.Activity("1", "test", "1");
@@ -112,7 +112,7 @@ namespace stream_net_tests
             Assert.AreEqual("string", complex);
         }
 
-        [TestMethod]
+        [Test]
         public async Task TestAddActivityWithDictionary()
         {
             var dict = new Dictionary<String, String>();
@@ -137,7 +137,7 @@ namespace stream_net_tests
             Assert.AreEqual("shawn", complex["test1"]);
         }
 
-        [TestMethod]
+        [Test]
         public async Task TestAddActivityTo()
         {
             var newActivity = new Stream.Activity("multi1", "test", "1")
@@ -158,7 +158,7 @@ namespace stream_net_tests
             Assert.AreEqual("multi1", first.Actor);
         }    
 
-        [TestMethod]
+        [Test]
         public async Task TestAddActivities()
         {
             var newActivities = new Stream.Activity[] {
@@ -178,7 +178,7 @@ namespace stream_net_tests
             Assert.AreEqual(response.First().Id, activities.Skip(1).First().Id);
         }
 
-        [TestMethod]
+        [Test]
         public async Task TestRemoveActivity()
         {
             var newActivity = new Stream.Activity("1", "test", "1");
@@ -198,7 +198,7 @@ namespace stream_net_tests
             Assert.IsFalse(nextActivities.Any(na => na.Id == first.Id));
         }
 
-        [TestMethod]
+        [Test]
         public async Task TestRemoveActivityByForeignId()
         {
             var fid = "post:42";
@@ -222,7 +222,7 @@ namespace stream_net_tests
             Assert.AreNotEqual(response.Id, activities.First().Id);
         }
 
-        [TestMethod]
+        [Test]
         public async Task TestDelete() 
         { 
             var newActivity = new Stream.Activity("1","test","1");
@@ -240,7 +240,7 @@ namespace stream_net_tests
             Assert.AreEqual(0, nextActivities.Count());
         } 
 
-        [TestMethod]
+        [Test]
         public async Task TestGet()
         {
             var newActivity = new Stream.Activity("1","test","1");
@@ -266,7 +266,7 @@ namespace stream_net_tests
             Assert.AreEqual(second.Id, activities.First().Id);
         }
 
-        [TestMethod]
+        [Test]
         public async Task TestFlatFollowUnfollow()
         {
             this._user1.UnfollowFeed("flat", "333").Wait();
@@ -293,7 +293,7 @@ namespace stream_net_tests
         }
 
 
-        [TestMethod]
+        [Test]
         public async Task TestFlatFollowUnfollowPrivate()
         {
             var secret = this._client.Feed("secret", "33");
@@ -315,7 +315,7 @@ namespace stream_net_tests
             await this._user1.UnfollowFeed("secret", "33");
         }
 
-        [TestMethod]
+        [Test]
         public async Task TestFollowersEmpty()
         {
             var lonely = this._client.Feed("flat", "lonely");
@@ -324,7 +324,7 @@ namespace stream_net_tests
             Assert.AreEqual(0, response.Count());
         }
 
-        [TestMethod]
+        [Test]
         public async Task TestFollowersWithLimit()
         {
             this._client.Feed("flat", "csharp43").FollowFeed("flat", "csharp42").Wait();
@@ -336,7 +336,7 @@ namespace stream_net_tests
             Assert.AreEqual(response.First().TargetId, "flat:csharp42");
         }
 
-        [TestMethod]
+        [Test]
         public async Task TestFollowingEmpty()
         {
             var lonely = this._client.Feed("flat", "lonely");
@@ -345,7 +345,7 @@ namespace stream_net_tests
             Assert.AreEqual(0, response.Count());
         }
 
-        [TestMethod]
+        [Test]
         public async Task TestFollowingsWithLimit()
         {
             this._client.Feed("flat", "csharp43").FollowFeed("flat", "csharp42").Wait();
@@ -357,7 +357,7 @@ namespace stream_net_tests
             Assert.AreEqual(response.First().TargetId, "flat:csharp44");
         }
 
-        [TestMethod]
+        [Test]
         public async Task TestDoIFollowEmpty()
         {
             var lonely = this._client.Feed("flat", "lonely");
