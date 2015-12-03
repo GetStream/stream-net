@@ -6,16 +6,16 @@ namespace Stream
 {
     internal static class Extensions
     {
-        internal static IEnumerable<T> OrEmpty<T>(this IEnumerable<T> input)
-        {
-            if (input == null) return Enumerable.Empty<T>();
-            return input;
-        }
+        //internal static IEnumerable<T> OrEmpty<T>(this IEnumerable<T> input)
+        //{
+        //    if (input == null) return Enumerable.Empty<T>();
+        //    return input;
+        //}
 
-        internal static IEnumerable<T> Yield<T>(this T one)
-        {
-            yield return one;
-        }
+        //internal static IEnumerable<T> Yield<T>(this T one)
+        //{
+        //    yield return one;
+        //}
 
         internal static void ForEach<T>(this IEnumerable<T> items, Action<T> action)
         {

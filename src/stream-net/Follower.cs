@@ -6,10 +6,10 @@ namespace Stream
     public class Follower
     {
         [JsonProperty("feed_id")]
-        public String FeedId { get; set; }
+        public string FeedId { get; set; }
 
         [JsonProperty("target_id")]
-        public String TargetId { get; set; }
+        public string TargetId { get; set; }
 
         [JsonProperty("created_at")]
         public DateTime CreatedAt { get; set; }
@@ -20,7 +20,6 @@ namespace Stream
         [JsonConstructor]
         internal Follower()
         {
-
         }
     }
 }

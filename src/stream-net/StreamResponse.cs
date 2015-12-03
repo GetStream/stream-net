@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Stream
 {
     public class StreamResponse<T>
     {
-        public String Duration
+        public string Duration
         {
             get;
             internal set;

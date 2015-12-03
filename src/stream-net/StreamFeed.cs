@@ -17,10 +17,10 @@ namespace Stream
         static Regex _userRegex = new Regex(@"^[-\w]+$", RegexOptions.Compiled);
 
         readonly StreamClient _client;
-        readonly String _feedSlug;
-        readonly String _userId;
+        readonly string _feedSlug;
+        readonly string _userId;
 
-        internal StreamFeed(StreamClient client, String feedSlug, String userId, String token)
+        internal StreamFeed(StreamClient client, string feedSlug, string userId, string token)
         {
             if (!_feedRegex.IsMatch(feedSlug))
                 throw new ArgumentException("Feed slug can only contain alphanumeric characters or underscores");
@@ -67,7 +67,7 @@ namespace Stream
             if (activity == null)
                 throw new ArgumentNullException("activity", "Must have an activity to add");
 
-            var request = _client.BuildRequest(this, "/", Method.POST);
+            var request = _client.BuildFeedRequest(this, "/", Method.POST);
             request.AddParameter("application/json", activity.ToJson(this._client), ParameterType.RequestBody);
 
             var response = await _client.MakeRequest(request);
@@ -108,10 +108,10 @@ namespace Stream
         /// <returns></returns>
         public async Task<IEnumerable<Activity>> AddActivities(IEnumerable<Activity> activities)
         {
-            if ((activities == null) || (activities.Count() == 0))
+            if (activities.SafeCount() == 0)
                 throw new ArgumentNullException("activities", "Must have activities to add");
 
-            var request = _client.BuildRequest(this, "/", Method.POST);
+            var request = _client.BuildFeedRequest(this, "/", Method.POST);
             request.AddParameter("application/json", ToActivitiesJson(activities), ParameterType.RequestBody);
 
             var response = await _client.MakeRequest(request);
@@ -128,9 +128,9 @@ namespace Stream
         /// <param name="activityId"></param>
         /// <param name="foreignId"></param>
         /// <returns></returns>
-        public async Task RemoveActivity(String activityId, bool foreignId = false)
+        public async Task RemoveActivity(string activityId, bool foreignId = false)
         {
-            var request = _client.BuildRequest(this, "/" + activityId + "/", Method.DELETE);
+            var request = _client.BuildFeedRequest(this, "/" + activityId + "/", Method.DELETE);
             if (foreignId)
                 request.AddQueryParameter("foreign_id", "1");
             var response = await _client.MakeRequest(request);
@@ -139,7 +139,7 @@ namespace Stream
                 throw StreamException.FromResponse(response);
         }
 
-        internal IEnumerable<Activity> GetResults(String json)
+        internal IEnumerable<Activity> GetResults(string json)
         {
             JObject obj = JObject.Parse(json);
             foreach (var prop in obj.Properties())
@@ -156,7 +156,12 @@ namespace Stream
 
         public async Task<IEnumerable<Activity>> GetActivities(int offset = 0, int limit = 20, FeedFilter filter = null, ActivityMarker marker = null)
         {
-            var request = _client.BuildRequest(this, "/", Method.GET);
+            if (offset < 0)
+                throw new ArgumentOutOfRangeException("offset", "Offset must be greater than or equal to zero");
+            if (limit < 0)
+                throw new ArgumentOutOfRangeException("limit", "Limit must be greater than or equal to zero");
+
+            var request = _client.BuildFeedRequest(this, "/", Method.GET);
             request.AddQueryParameter("offset", offset.ToString());
             request.AddQueryParameter("limit", limit.ToString());
 
@@ -180,7 +185,7 @@ namespace Stream
         {
             // build request
             options = options ?? GetOptions.Default;
-            var request = _client.BuildRequest(this, "/", Method.GET);
+            var request = _client.BuildFeedRequest(this, "/", Method.GET);
             options.Apply(request);
 
             // make request
@@ -248,7 +253,7 @@ namespace Stream
             if (feedToFollow.FeedTokenId == this.FeedTokenId)
                 throw new ArgumentException("Cannot follow myself");
 
-            var request = _client.BuildRequest(this, "/follows/", Method.POST);
+            var request = _client.BuildFeedRequest(this, "/follows/", Method.POST);
             request.AddJsonBody(new
             {
                 target = feedToFollow.FeedId,
@@ -261,7 +266,7 @@ namespace Stream
                 throw StreamException.FromResponse(response);
         }
 
-        public Task FollowFeed(String targetFeedSlug, String targetUserId)
+        public Task FollowFeed(string targetFeedSlug, string targetUserId)
         {
             return FollowFeed(this._client.Feed(targetFeedSlug, targetUserId));
         }
@@ -273,7 +278,7 @@ namespace Stream
             if (feedToUnfollow.FeedTokenId == this.FeedTokenId)
                 throw new ArgumentException("Cannot unfollow myself");
 
-            var request = _client.BuildRequest(this, "/follows/" + feedToUnfollow.FeedId + "/", Method.DELETE);
+            var request = _client.BuildFeedRequest(this, "/follows/" + feedToUnfollow.FeedId + "/", Method.DELETE);
             var response = await _client.MakeRequest(request);
 
             if (response.StatusCode != System.Net.HttpStatusCode.OK)
@@ -290,9 +295,14 @@ namespace Stream
             public IEnumerable<Follower> results { get; set; }
         }
 
-        public async Task<IEnumerable<Follower>> Followers(int offset = 0, int limit = 25, String[] filterBy = null)
+        public async Task<IEnumerable<Follower>> Followers(int offset = 0, int limit = 25, string[] filterBy = null)
         {
-            var request = _client.BuildRequest(this, "/followers/", Method.GET);
+            if (offset < 0)
+                throw new ArgumentOutOfRangeException("offset", "Offset must be greater than or equal to zero");
+            if (limit < 0)
+                throw new ArgumentOutOfRangeException("limit", "Limit must be greater than or equal to zero");
+
+            var request = _client.BuildFeedRequest(this, "/followers/", Method.GET);
             request.AddQueryParameter("offset", offset.ToString());
             request.AddQueryParameter("limit", limit.ToString());
 
@@ -309,7 +319,12 @@ namespace Stream
 
         public async Task<IEnumerable<Follower>> Following(int offset = 0, int limit = 25, String[] filterBy = null)
         {
-            var request = _client.BuildRequest(this, "/following/", Method.GET);
+            if (offset < 0)
+                throw new ArgumentOutOfRangeException("offset", "Offset must be greater than or equal to zero");
+            if (limit < 0)
+                throw new ArgumentOutOfRangeException("limit", "Limit must be greater than or equal to zero");
+
+            var request = _client.BuildFeedRequest(this, "/following/", Method.GET);
             request.AddQueryParameter("offset", offset.ToString());
             request.AddQueryParameter("limit", limit.ToString());
 
@@ -329,7 +344,7 @@ namespace Stream
         /// </summary>
         public async Task Delete()
         {
-            var request = _client.BuildRequest(this, "/", Method.DELETE);
+            var request = _client.BuildFeedRequest(this, "/", Method.DELETE);
             var response = await _client.MakeRequest(request);
             if (response.StatusCode != System.Net.HttpStatusCode.OK)
                 throw StreamException.FromResponse(response);

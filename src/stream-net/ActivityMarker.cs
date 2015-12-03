@@ -10,8 +10,8 @@ namespace Stream
         bool _allRead = false;
         bool _allSeen = false;
 
-        IList<String> _read = new List<String>();
-        IList<String> _seen = new List<String>();
+        IList<string> _read = new List<string>();
+        IList<string> _seen = new List<string>();
 
         private ActivityMarker()
         {
@@ -29,14 +29,14 @@ namespace Stream
             return this;
         }
 
-        public ActivityMarker Read(params String[] activityIds)
+        public ActivityMarker Read(params string[] activityIds)
         {
             if ((!_allRead) && (activityIds != null))
                 _read = _read.Union(activityIds).Distinct().ToList();
             return this;
         }
 
-        public ActivityMarker Seen(params String[] activityIds)
+        public ActivityMarker Seen(params string[] activityIds)
         {
             if ((!_allSeen) && (activityIds != null))
                 _seen = _seen.Union(activityIds).Distinct().ToList();
@@ -52,7 +52,7 @@ namespace Stream
             }
             else if (_read.Count > 0)
             {
-                request.AddQueryParameter("mark_read", String.Join(",", _read.ToArray()));
+                request.AddQueryParameter("mark_read", string.Join(",", _read.ToArray()));
             }
 
             // seen
@@ -62,7 +62,7 @@ namespace Stream
             }
             else if (_seen.Count > 0)
             {
-                request.AddQueryParameter("mark_seen", String.Join(",", _seen.ToArray()));
+                request.AddQueryParameter("mark_seen", string.Join(",", _seen.ToArray()));
             }
         }
 

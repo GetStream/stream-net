@@ -14,7 +14,7 @@ namespace Stream
 
         public DateTime? UpdatedAt { get; internal set; }
 
-        public String Group { get; internal set; }
+        public string Group { get; internal set; }
 
         [JsonConstructor]
         internal AggregateActivity()

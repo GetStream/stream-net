@@ -12,6 +12,7 @@ namespace stream_net_tests
     {
         private Stream.StreamClient _client;
         private Stream.StreamFeed _user1;
+        private Stream.StreamFeed _user2;
         private Stream.StreamFeed _flat3;
         private Stream.StreamFeed _agg4;
         private Stream.StreamFeed _not5;
@@ -27,13 +28,16 @@ namespace stream_net_tests
                     Location = Stream.StreamApiLocation.USEast
                 });
             _user1 = _client.Feed("user", "11");
+            _user2 = _client.Feed("user", "22");
             _flat3 = _client.Feed("flat", "333");
             _agg4 = _client.Feed("aggregate", "444");
             _not5 = _client.Feed("notification", "555");
 
-            _user1.Delete().Wait();
-            _agg4.Delete().Wait();
-            _not5.Delete().Wait();
+            _user1.Delete().GetAwaiter().GetResult();
+            _user2.Delete().GetAwaiter().GetResult();
+            _flat3.Delete().GetAwaiter().GetResult();
+            _agg4.Delete().GetAwaiter().GetResult();
+            _not5.Delete().GetAwaiter().GetResult();
             //System.Threading.Thread.Sleep(3000);
         }
 
@@ -286,6 +290,7 @@ namespace stream_net_tests
 
             var response = await this._user1.GetFlatActivities(GetOptions.Default.WithLimit(2));
             Assert.IsNotNull(response);
+            Assert.IsNotNull(response.Duration);
             var activities = response.Results;
             Assert.IsNotNull(activities);
             Assert.AreEqual(2, activities.Count());
@@ -304,7 +309,7 @@ namespace stream_net_tests
         [Test]
         public async Task TestFlatFollowUnfollow()
         {
-            this._user1.UnfollowFeed("flat", "333").Wait();
+            await this._user1.UnfollowFeed("flat", "333");
             System.Threading.Thread.Sleep(3000);
 
             var newActivity = new Stream.Activity("1", "test", "1");
@@ -318,7 +323,7 @@ namespace stream_net_tests
             Assert.AreEqual(1, activities.Count());
             Assert.AreEqual(response.Id, activities.First().Id);
 
-            this._user1.UnfollowFeed("flat", "333").Wait();
+            await this._user1.UnfollowFeed("flat", "333");
             System.Threading.Thread.Sleep(3000);
 
             activities = await this._user1.GetActivities(0, 1);
@@ -516,13 +521,35 @@ namespace stream_net_tests
         [Test]
         public async Task TestFollowersWithLimit()
         {
-            this._client.Feed("flat", "csharp43").FollowFeed("flat", "csharp42").Wait();
-            this._client.Feed("flat", "csharp44").FollowFeed("flat", "csharp42").Wait();
-            var response = await this._client.Feed("flat", "csharp42").Followers(0, 2);
+            var feed = this._client.Feed("flat", "csharp42");
+            var feed1 = this._client.Feed("flat", "csharp43");
+            var feed2 = this._client.Feed("flat", "csharp44");
+
+            // unfollow
+            await feed1.UnfollowFeed(feed);
+            await feed2.UnfollowFeed(feed);
+
+            System.Threading.Thread.Sleep(3000);
+
+            var response = await feed.Followers(0, 2);
+            Assert.IsNotNull(response);
+            Assert.AreEqual(0, response.Count());
+
+            await feed1.FollowFeed(feed);
+            await feed2.FollowFeed(feed);
+
+            System.Threading.Thread.Sleep(3000);
+
+            response = await feed.Followers(0, 2);
             Assert.IsNotNull(response);
             Assert.AreEqual(2, response.Count());
-            Assert.AreEqual(response.First().FeedId, "flat:csharp44");
-            Assert.AreEqual(response.First().TargetId, "flat:csharp42");
+
+            var first = response.First();
+            Assert.AreEqual(first.FeedId, "flat:csharp44");
+            Assert.AreEqual(first.TargetId, "flat:csharp42");
+
+            Assert.IsTrue(first.CreatedAt > DateTime.Now.AddDays(-1));
+            Assert.IsTrue(first.UpdatedAt > DateTime.Now.AddDays(-1));
         }
 
         [Test]
@@ -537,9 +564,24 @@ namespace stream_net_tests
         [Test]
         public async Task TestFollowingsWithLimit()
         {
-            this._client.Feed("flat", "csharp43").FollowFeed("flat", "csharp42").Wait();
-            this._client.Feed("flat", "csharp43").FollowFeed("flat", "csharp44").Wait();
-            var response = await this._client.Feed("flat", "csharp43").Following(0, 2);
+            var feed = this._client.Feed("flat", "csharp42");
+            var feed1 = this._client.Feed("flat", "csharp43");
+            var feed2 = this._client.Feed("flat", "csharp44");
+
+            // unfollow
+            await feed1.UnfollowFeed(feed);
+            await feed1.UnfollowFeed(feed2);
+
+            System.Threading.Thread.Sleep(3000);
+
+            var response = await feed1.Following(0, 2);
+            Assert.IsNotNull(response);
+            Assert.AreEqual(0, response.Count());
+
+            await feed1.FollowFeed(feed);
+            await feed1.FollowFeed(feed2);
+
+            response = await feed1.Following(0, 2);
             Assert.IsNotNull(response);
             Assert.AreEqual(2, response.Count());
             Assert.AreEqual(response.First().FeedId, "flat:csharp43");
@@ -602,6 +644,11 @@ namespace stream_net_tests
             Assert.IsNotNull(aggActivity);
             Assert.AreEqual(2, aggActivity.Activities.Count);
             Assert.AreEqual(1, aggActivity.ActorCount);
+            Assert.IsNotNull(aggActivity.CreatedAt);
+            Assert.IsTrue(Math.Abs(aggActivity.CreatedAt.Value.Subtract(DateTime.UtcNow).TotalMinutes) < 10);
+            Assert.IsNotNull(aggActivity.UpdatedAt);
+            Assert.IsTrue(Math.Abs(aggActivity.UpdatedAt.Value.Subtract(DateTime.UtcNow).TotalMinutes) < 10);
+            Assert.IsNotNull(aggActivity.Group);
 
             await _agg4.UnfollowFeed("user", "11");
         }
@@ -631,6 +678,91 @@ namespace stream_net_tests
             Assert.AreEqual(1, aggActivity.ActorCount);
 
             await _agg4.UnfollowFeed("user", "11");
+        }
+
+
+        [Test]
+        public async Task TestBatchFollow()
+        {
+            await _client.Batch.FollowMany(new[]
+            {
+                new Follow(_user1, _flat3),
+                new Follow(_user2, _flat3)
+            });
+            System.Threading.Thread.Sleep(3000);
+
+            var newActivity = new Stream.Activity("1", "test", "1");
+            var response = await this._flat3.AddActivity(newActivity);
+            System.Threading.Thread.Sleep(5000);
+
+            var activities = await this._user1.GetActivities(0, 1);
+            Assert.IsNotNull(activities);
+            Assert.AreEqual(1, activities.Count());
+            Assert.AreEqual(response.Id, activities.First().Id);
+            Assert.AreEqual("test", activities.First().Verb);
+
+            activities = await this._user2.GetActivities(0, 1);
+            Assert.IsNotNull(activities);
+            Assert.AreEqual(1, activities.Count());
+            Assert.AreEqual(response.Id, activities.First().Id);
+            Assert.AreEqual("test", activities.First().Verb);
+        }
+
+        [Test]
+        public async Task TestBatchFollowWithCopyLimit()
+        {
+            await _client.Batch.FollowMany(new[]
+            {
+                new Follow("user:11", "flat:333"),
+                new Follow("user:22", "flat:333")
+            }, 10);
+            System.Threading.Thread.Sleep(3000);
+
+            var newActivity = new Stream.Activity("1", "test", "1");
+            var response = await this._flat3.AddActivity(newActivity);
+            System.Threading.Thread.Sleep(5000);
+
+            var activities = await this._user1.GetActivities(0, 1);
+            Assert.IsNotNull(activities);
+            Assert.AreEqual(1, activities.Count());
+            Assert.AreEqual(response.Id, activities.First().Id);
+            Assert.AreEqual("test", activities.First().Verb);
+
+            activities = await this._user2.GetActivities(0, 1);
+            Assert.IsNotNull(activities);
+            Assert.AreEqual(1, activities.Count());
+            Assert.AreEqual(response.Id, activities.First().Id);
+            Assert.AreEqual("test", activities.First().Verb);
+        }
+
+
+        [Test]
+        public async Task TestAddToMany()
+        {
+            var newActivity = new Stream.Activity("1", "test", "1");
+            await _client.Batch.AddToMany(newActivity, new []
+            {
+                _user1, _user2
+            });
+            System.Threading.Thread.Sleep(3000);
+
+            var activities = await this._user1.GetActivities(0, 1);
+            Assert.IsNotNull(activities);
+            Assert.AreEqual(1, activities.Count());
+
+            var first = activities.First();
+            Assert.AreEqual(newActivity.Actor, first.Actor);
+            Assert.AreEqual(newActivity.Object, first.Object);
+            Assert.AreEqual(newActivity.Verb, first.Verb);
+
+            activities = await this._user2.GetActivities(0, 1);
+            Assert.IsNotNull(activities);
+            Assert.AreEqual(1, activities.Count());
+
+            first = activities.First();
+            Assert.AreEqual(newActivity.Actor, first.Actor);
+            Assert.AreEqual(newActivity.Object, first.Object);
+            Assert.AreEqual(newActivity.Verb, first.Verb);
         }
     }
 }

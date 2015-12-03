@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using RestSharp;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Stream
@@ -24,30 +24,36 @@ namespace Stream
 
         public async Task AddToMany(Activity activity, IEnumerable<string> feedIds)
         {
-            var request = _client.BuildRequest("feed/add_to_many", RestSharp.Method.POST);
-            request.AddJsonBody(new
-            {
-                activity = activity,
-                feeds = feedIds
-            });
+            var request = _client.BuildAppRequest("feed/add_to_many/", RestSharp.Method.POST);
+            request.AddParameter("application/json",
+                "{" + string.Format("\"activity\": {0}, \"feeds\": {1}", activity.ToJson(this._client), JsonConvert.SerializeObject(feedIds)) + "}"
+                , ParameterType.RequestBody);
+            _client.SignRequest(request);
 
             var response = await _client.MakeRequest(request);
 
-            if (response.StatusCode != System.Net.HttpStatusCode.OK)
+            if (response.StatusCode != System.Net.HttpStatusCode.Created)
                 throw StreamException.FromResponse(response);
         }
 
         public async Task FollowMany(IEnumerable<Follow> follows, int activityCopyLimit = CopyLimitDefault)
         {
-            var request = _client.BuildRequest("follow_many", RestSharp.Method.POST);
-            request.AddJsonBody(follows);
-
+            var request = _client.BuildAppRequest("follow_many/", RestSharp.Method.POST);
             if (activityCopyLimit != CopyLimitDefault)
                 request.AddQueryParameter("activity_copy_limit", activityCopyLimit.ToString());
 
+            request.AddJsonBody(from f in follows
+                                select new
+                                {
+                                    source = f.Source,
+                                    target = f.Target
+                                });
+
+            _client.SignRequest(request);
+
             var response = await _client.MakeRequest(request);
 
-            if (response.StatusCode != System.Net.HttpStatusCode.OK)
+            if (response.StatusCode != System.Net.HttpStatusCode.Created)
                 throw StreamException.FromResponse(response);
         }
     }

@@ -26,24 +26,24 @@ namespace Stream
 
         readonly IDictionary<string, string> _data = new Dictionary<string, string>();
 
-        public String Id { get; private set; }
+        public string Id { get; private set; }
 
-        public String Actor { get; set; }
+        public string Actor { get; set; }
 
-        public String Verb { get; set; }
+        public string Verb { get; set; }
 
-        public String Object { get; set; }
+        public string Object { get; set; }
 
-        public String Target { get; set; }
+        public string Target { get; set; }
 
         public DateTime? Time { get; set; }
 
         [JsonProperty("foreign_id")]
-        public String ForeignId { get; set; }
+        public string ForeignId { get; set; }
 
-        public IList<String> To { get; set; }
+        public IList<string> To { get; set; }
 
-        public T GetData<T>(String name)
+        public T GetData<T>(string name)
         {
             if (_data.ContainsKey(name))
             {
@@ -52,7 +52,7 @@ namespace Stream
             return default(T);
         }
 
-        public void SetData<T>(String name, T data)
+        public void SetData<T>(string name, T data)
         {
             _data[name] = JsonConvert.SerializeObject(data);
         }
@@ -63,14 +63,14 @@ namespace Stream
 
         }
 
-        public Activity(String actor, String verb, String @object)
+        public Activity(string actor, string verb, string @object)
         {
             Actor = actor;
             Verb = verb;
             Object = @object;
         }
 
-        internal String ToJson(StreamClient client)
+        internal string ToJson(StreamClient client)
         {
             JObject obj = new JObject(
                 new JProperty(Field_Actor, this.Actor),
@@ -80,10 +80,10 @@ namespace Stream
             if (Time.HasValue)
                 obj.Add(new JProperty(Field_Time, this.Time.Value.ToString("s", System.Globalization.CultureInfo.InvariantCulture)));
 
-            if (!String.IsNullOrWhiteSpace(ForeignId))
+            if (!string.IsNullOrWhiteSpace(ForeignId))
                 obj.Add(new JProperty(Field_ForeignId, this.ForeignId));
 
-            if (!String.IsNullOrWhiteSpace(Target))
+            if (!string.IsNullOrWhiteSpace(Target))
                 obj.Add(new JProperty(Field_Target, this.Target));
 
             if (To.SafeCount() > 0)
@@ -107,7 +107,7 @@ namespace Stream
             return obj.ToString();
         }
 
-        internal static Activity FromJson(String json)
+        internal static Activity FromJson(string json)
         {
             return FromJson(JObject.Parse(json));
         }
@@ -135,12 +135,12 @@ namespace Stream
             {
                 switch (prop.Name)
                 {
-                    case Field_Id: activity.Id = prop.Value.Value<String>(); break;
-                    case Field_Actor: activity.Actor = prop.Value.Value<String>(); break;
-                    case Field_Verb: activity.Verb = prop.Value.Value<String>(); break;
-                    case Field_Object: activity.Object = prop.Value.Value<String>(); break;
-                    case Field_Target: activity.Target = prop.Value.Value<String>(); break;
-                    case Field_ForeignId: activity.ForeignId = prop.Value.Value<String>(); break;
+                    case Field_Id: activity.Id = prop.Value.Value<string>(); break;
+                    case Field_Actor: activity.Actor = prop.Value.Value<string>(); break;
+                    case Field_Verb: activity.Verb = prop.Value.Value<string>(); break;
+                    case Field_Object: activity.Object = prop.Value.Value<string>(); break;
+                    case Field_Target: activity.Target = prop.Value.Value<string>(); break;
+                    case Field_ForeignId: activity.ForeignId = prop.Value.Value<string>(); break;
                     case Field_Time: activity.Time = prop.Value.Value<DateTime>(); break;
                     case Field_To:
                         {
@@ -154,7 +154,7 @@ namespace Stream
 
                                     foreach (var child in array)
                                     {
-                                        var str = child.ToObject<String[]>();
+                                        var str = child.ToObject<string[]>();
                                         tos.Add(str[0]);
                                     }
 
@@ -162,12 +162,12 @@ namespace Stream
                                 }
                                 else
                                 {
-                                    activity.To = prop.Value.ToObject<String[]>().ToList();
+                                    activity.To = prop.Value.ToObject<string[]>().ToList();
                                 }
                             }
                             else
                             {
-                                activity.To = new List<String>();
+                                activity.To = new List<string>();
                             }
                             break;
                         }
@@ -223,7 +223,7 @@ namespace Stream
                     case Field_Group:
                         {
                             if (aggregateActivity != null)
-                                aggregateActivity.Group = prop.Value.Value<String>();
+                                aggregateActivity.Group = prop.Value.Value<string>();
                             break;
                         }
                     default:

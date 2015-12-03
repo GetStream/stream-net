@@ -15,9 +15,11 @@ namespace Stream
 
         internal class ExceptionState
         {
-            public int Code { get; set; }
-            public String Detail { get; set; }
-            public String Exception { get; set; }
+            public int? Code { get; set; }
+
+            public string Detail { get; set; }
+
+            public string Exception { get; set; }
 
             [Newtonsoft.Json.JsonProperty("status_code")]
             public int HttpStatusCode { get; set; }

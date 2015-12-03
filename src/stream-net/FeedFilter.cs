@@ -17,9 +17,10 @@ namespace Stream
         internal class OpEntry
         {
             internal OpType Type { get; set; }
-            internal String Value { get; set; }
 
-            internal OpEntry(OpType type, String value) 
+            internal string Value { get; set; }
+
+            internal OpEntry(OpType type, string value) 
             {
                 Type = type;
                 Value = value;
@@ -32,25 +33,25 @@ namespace Stream
         {
         }
 
-        public FeedFilter IdGreaterThan(String id)
+        public FeedFilter IdGreaterThan(string id)
         {
             _ops.Add(new OpEntry(OpType.id_gt, id));
             return this;
         }
 
-        public FeedFilter IdGreaterThanEqual(String id)
+        public FeedFilter IdGreaterThanEqual(string id)
         {
             _ops.Add(new OpEntry(OpType.id_gte, id));
             return this;
         }
 
-        public FeedFilter IdLessThan(String id)
+        public FeedFilter IdLessThan(string id)
         {
             _ops.Add(new OpEntry(OpType.id_lt, id));
             return this;
         }
 
-        public FeedFilter IdLessThanEqual(String id)
+        public FeedFilter IdLessThanEqual(string id)
         {
             _ops.Add(new OpEntry(OpType.id_lte, id));
             return this;

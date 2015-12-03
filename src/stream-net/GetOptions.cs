@@ -12,6 +12,8 @@ namespace Stream
 
         FeedFilter _filter = null;
         ActivityMarker _marker = null;
+
+        string _ranking = null;
         
         public GetOptions WithOffset(int offset)
         {
@@ -37,11 +39,21 @@ namespace Stream
             return this;
         }
 
+        public GetOptions WithRanking(string rankingSlug)
+        {
+            _ranking = rankingSlug;
+            return this;
+        }
+
         internal void Apply(RestRequest request)
         {
             // offset and and limit
             request.AddQueryParameter("offset", _offset.ToString());
             request.AddQueryParameter("limit", _limit.ToString());
+
+            // add ranking
+            if (!string.IsNullOrWhiteSpace(_ranking))
+                request.AddQueryParameter("ranking", _ranking.ToString());
 
             // filter if needed
             if (_filter != null)

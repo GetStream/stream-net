@@ -18,7 +18,7 @@ namespace Stream
         readonly string _apiSecret;
         readonly string _apiKey;
 
-        public StreamClient(String apiKey, String apiSecret, StreamClientOptions options = null)
+        public StreamClient(string apiKey, string apiSecret, StreamClientOptions options = null)
         {
             if (string.IsNullOrWhiteSpace(apiKey))
                 throw new ArgumentNullException("apiKey", "Must have an apiKey");
@@ -39,6 +39,12 @@ namespace Stream
         /// <returns></returns>
         public StreamFeed Feed(string feedSlug, string userId)
         {
+            // handle required arguments
+            if (string.IsNullOrWhiteSpace(feedSlug))
+                throw new ArgumentNullException("feedSlug", "Must have a feedSlug");
+            if (string.IsNullOrWhiteSpace(userId))
+                throw new ArgumentNullException("userId", "Must have an userId");
+
             string token = Sign(feedSlug + userId);
             return new StreamFeed(this, feedSlug, userId, token);
         }
@@ -59,7 +65,6 @@ namespace Stream
             string region = "";
             switch (_options.Location)
             {
-                //following the "specs", but ap-northeast seems to return 404 https://getstream.io/docs/#performance
                 case StreamApiLocation.USEast:
                     region = "us-east";
                     break;
@@ -78,7 +83,7 @@ namespace Stream
             return string.Format(BaseUrlFormat, region);
         }
 
-        internal RestSharp.RestRequest BuildRequest(StreamFeed feed, string path, Method method)
+        internal RestSharp.RestRequest BuildFeedRequest(StreamFeed feed, string path, Method method)
         {
             var request = new RestRequest(BaseUrlPath + feed.UrlPath + path, method);
             request.AddHeader("Authorization", feed.FeedTokenId + " " + feed.Token);
@@ -88,13 +93,32 @@ namespace Stream
             return request;
         }
 
-        internal RestSharp.RestRequest BuildRequest(string path, Method method)
+        internal RestSharp.RestRequest BuildAppRequest(string path, Method method)
         {
             var request = new RestRequest(BaseUrlPath + path, method);
             request.AddHeader("Content-Type", "application/json");
             request.AddHeader("X-Api-Key", _apiKey);
             request.Timeout = _options.Timeout;
+
             return request;
+        }
+
+        internal void SignRequest(RestSharp.RestRequest request)
+        {
+            // make signature
+            var queryString = "";
+            request.Parameters.ForEach((p) =>
+            {
+                if (p.Type == ParameterType.QueryString)
+                {
+                    queryString += (queryString.Length == 0) ? "?" : "&";
+                    queryString += string.Format("{0}={1}", p.Name, Uri.EscapeDataString(p.Value.ToString()));
+                }
+            });
+            var toSign = string.Format("(request-target): {0} {1}", request.Method.ToString().ToLower(), request.Resource + queryString);
+
+            var signature = string.Format("keyId=\"{0}\",algorithm=\"hmac-sha256\",headers=\"(request-target)\",signature=\"{1}\"", this._apiKey, Sign256(toSign));
+            request.AddHeader("Authorization", "Signature " + signature);
         }
 
         internal Task<IRestResponse> MakeRequest(RestRequest request)
@@ -116,6 +140,13 @@ namespace Stream
             var hashedSecret = (new SHA1Managed()).ComputeHash(encoding.GetBytes(_apiSecret));
             var hmac = new HMACSHA1(hashedSecret);
             return Base64UrlEncode(hmac.ComputeHash(encoding.GetBytes(feedId)));
+        }
+
+        internal string Sign256(string feedId)
+        {
+            Encoding encoding = new ASCIIEncoding();
+            var hmac = new HMACSHA256(encoding.GetBytes(_apiSecret));
+            return Convert.ToBase64String(hmac.ComputeHash(encoding.GetBytes(feedId)));
         }
 
         internal string JWToken(string feedId)
