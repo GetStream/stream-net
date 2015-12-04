@@ -138,6 +138,8 @@ namespace stream_net_tests
             var response = await this._user1.AddActivity(newActivity);
             Assert.IsNotNull(response);
 
+            System.Threading.Thread.Sleep(3000);
+
             var activities = await this._user1.GetActivities(0, 1);
             Assert.IsNotNull(activities);
             Assert.AreEqual(1, activities.Count());
