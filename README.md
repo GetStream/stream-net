@@ -2,7 +2,7 @@ stream-net
 ===========
 
 [![Build status](https://ci.appveyor.com/api/projects/status/9eh9kvhai6aj7p1q?svg=true)](https://ci.appveyor.com/project/shawnspeak/stream-net)
-[![Coverage Status](https://coveralls.io/repos/shawnspeak/stream-net/badge.svg?branch=master&service=github)](https://coveralls.io/github/shawnspeak/stream-net?branch=master)
+[![Coverage Status](https://coveralls.io/repos/shawnspeak/stream-net/badge.svg)](https://coveralls.io/github/shawnspeak/stream-net)
 
 ### Installation via Nuget
 
