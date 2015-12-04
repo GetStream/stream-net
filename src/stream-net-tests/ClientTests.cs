@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace stream_net_tests
 {
+    [Parallelizable(ParallelScope.Self)]
     [TestFixture]
     public class ClientTests
     {

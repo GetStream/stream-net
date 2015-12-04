@@ -4,6 +4,7 @@ using Stream;
 
 namespace stream_net_tests
 {
+    [Parallelizable(ParallelScope.Self)]
     [TestFixture]
     public class SigningTest
     {

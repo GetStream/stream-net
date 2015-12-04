@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace stream_net_tests
 {
+    [Parallelizable(ParallelScope.Self)]
     [TestFixture]
     public class FeedTests
     {
@@ -24,7 +25,6 @@ namespace stream_net_tests
                     Location = Stream.StreamApiLocation.USEast
                 });
             _feed = _client.Feed("flat", "42");
-            _feed.Delete().GetAwaiter().GetResult();
         }
 
         [Test]

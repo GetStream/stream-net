@@ -1,4 +1,7 @@
-# stream-net
+stream-net
+===========
+
+[![Build status](https://ci.appveyor.com/api/projects/status/9eh9kvhai6aj7p1q?svg=true)](https://ci.appveyor.com/project/shawnspeak/stream-net)
 
 ### Installation via Nuget
 
@@ -10,16 +13,16 @@ PM> Install-Package stream-net
 
 ```c#
 // Create a client, find your API keys here https://getstream.io/dashboard/
-var client = new StreamClient('YOUR_API_KEY', 'API_KEY_SECRET');
+var client = new StreamClient("YOUR_API_KEY","API_KEY_SECRET");
 
 // Reference a feed
-var userFeed1 = client.Feed('user', '1');
+var userFeed1 = client.Feed("user", "1");
 
 // Get 20 activities starting from activity with id last_id (fast id offset pagination)
-var results = userFeed1.GetActivities(0, 20, FeedFilter.Where().IdLessThan(last_id));
+var results = await userFeed1.GetActivities(0, 20, FeedFilter.Where().IdLessThan(last_id));
 
 // Get 10 activities starting from the 5th (slow offset pagination)
-var results = userFeed1.GetActivities(5, 10);
+var results = await userFeed1.GetActivities(5, 10);
 
 // Create a new activity
 var activity = new Activity("1", "like", "3") 

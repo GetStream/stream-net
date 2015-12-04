@@ -7,6 +7,7 @@ using Stream;
 
 namespace stream_net_tests
 {
+    [Parallelizable(ParallelScope.None)]
     [TestFixture]
     public class IntegrationTests
     {
@@ -89,6 +90,8 @@ namespace stream_net_tests
             newActivity.SetData("complex", new String[] { "tommaso", "thierry", "shawn" });
             var response = await this._user1.AddActivity(newActivity);
             Assert.IsNotNull(response);
+
+            System.Threading.Thread.Sleep(3000);
 
             var activities = await this._user1.GetActivities(0, 1);
             Assert.IsNotNull(activities);
@@ -314,6 +317,8 @@ namespace stream_net_tests
 
             var newActivity = new Stream.Activity("1", "test", "1");
             var response = await this._flat3.AddActivity(newActivity);
+
+            System.Threading.Thread.Sleep(3000);
 
             this._user1.FollowFeed("flat", "333").Wait();
             System.Threading.Thread.Sleep(5000);
