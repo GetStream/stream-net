@@ -186,6 +186,8 @@ namespace stream_net_tests
             Assert.IsNotNull(response);
             Assert.AreEqual(2, response.Count());
 
+            System.Threading.Thread.Sleep(2000);
+
             var activities = await this._user1.GetActivities(0, 2);
             Assert.IsNotNull(activities);
             Assert.AreEqual(2, activities.Count());
@@ -201,6 +203,8 @@ namespace stream_net_tests
             var response = await this._user1.AddActivity(newActivity);
             Assert.IsNotNull(response);
 
+            System.Threading.Thread.Sleep(3000);
+
             var activities = await this._user1.GetActivities(0, 1);
             Assert.IsNotNull(activities);
             Assert.AreEqual(1, activities.Count());
@@ -209,6 +213,9 @@ namespace stream_net_tests
             Assert.AreEqual(response.Id, first.Id);
 
             await this._user1.RemoveActivity(first.Id);
+
+            System.Threading.Thread.Sleep(3000);
+
             var nextActivities = await this._user1.GetActivities(0, 1);
             Assert.IsNotNull(nextActivities);
             Assert.IsFalse(nextActivities.Any(na => na.Id == first.Id));
@@ -225,13 +232,17 @@ namespace stream_net_tests
 
             var response = await this._user1.AddActivity(newActivity);
             Assert.IsNotNull(response);
-        
+
+            System.Threading.Thread.Sleep(2000);
+
             var activities = await this._user1.GetActivities(0, 1);
             Assert.IsNotNull(activities);
             Assert.AreEqual(1, activities.Count());
             Assert.AreEqual(response.Id, activities.First().Id);
-            Assert.AreEqual(fid, activities.First().ForeignId);        
-        
+            Assert.AreEqual(fid, activities.First().ForeignId);
+
+            System.Threading.Thread.Sleep(3000);
+
             await this._user1.RemoveActivity(fid, true);
             activities = await this._user1.GetActivities(0, 1);
             Assert.AreEqual(0, activities.Count());
@@ -322,7 +333,7 @@ namespace stream_net_tests
 
             System.Threading.Thread.Sleep(3000);
 
-            this._user1.FollowFeed("flat", "333").Wait();
+            await this._user1.FollowFeed("flat", "333");
             System.Threading.Thread.Sleep(5000);
 
             var activities = await this._user1.GetActivities(0, 1);
@@ -341,13 +352,13 @@ namespace stream_net_tests
         [Test]
         public async Task TestFlatFollowUnfollowByFeed()
         {
-            this._user1.UnfollowFeed(_flat3).Wait();
+            await this._user1.UnfollowFeed(_flat3);
             System.Threading.Thread.Sleep(3000);
 
             var newActivity = new Stream.Activity("1", "test", "1");
             var response = await this._flat3.AddActivity(newActivity);
 
-            this._user1.FollowFeed(_flat3).Wait();
+            await this._user1.FollowFeed(_flat3);
             System.Threading.Thread.Sleep(5000);
 
             var activities = await this._user1.GetActivities(0, 1);
@@ -355,7 +366,7 @@ namespace stream_net_tests
             Assert.AreEqual(1, activities.Count());
             Assert.AreEqual(response.Id, activities.First().Id);
 
-            this._user1.UnfollowFeed(_flat3).Wait();
+            await this._user1.UnfollowFeed(_flat3);
             System.Threading.Thread.Sleep(3000);
 
             activities = await this._user1.GetActivities(0, 1);
@@ -368,13 +379,13 @@ namespace stream_net_tests
         {
             var secret = this._client.Feed("secret", "33");
 
-            this._user1.UnfollowFeed("secret", "33").Wait();
+            await this._user1.UnfollowFeed("secret", "33");
             System.Threading.Thread.Sleep(3000);
 
             var newActivity = new Stream.Activity("1", "test", "1");
             var response = await secret.AddActivity(newActivity);
 
-            this._user1.FollowFeed("secret", "33").Wait();
+            await this._user1.FollowFeed("secret", "33");
             System.Threading.Thread.Sleep(5000);
 
             var activities = await this._user1.GetActivities(0, 1);

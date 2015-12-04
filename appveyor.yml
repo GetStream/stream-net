@@ -1,4 +1,4 @@
-version: 1.0.{build}
+version: 1.2.{build}
 environment:
   COVERALLS_REPO_TOKEN: 
     secure: Gi55/aHqrZs6SjL0DCGl9jVTQLapvcroI21SLtMZ/7npQIwzoRrx1zA+sP+0O7jj
