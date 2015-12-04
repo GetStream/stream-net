@@ -479,6 +479,8 @@ namespace stream_net_tests
             newActivity = new Stream.Activity("1", "share", "3");
             var third = await _not5.AddActivity(newActivity);
 
+            System.Threading.Thread.Sleep(3000);
+
             var response = await _not5.GetNotificationActivities(GetOptions.Default.WithLimit(2).WithMarker(ActivityMarker.Mark().AllRead()));
             Assert.IsNotNull(response);
             Assert.AreEqual(3, response.Unseen);
@@ -494,6 +496,8 @@ namespace stream_net_tests
             notActivity = activities.Skip(1).First();
             Assert.IsNotNull(notActivity);
             Assert.IsFalse(notActivity.IsRead);
+
+            System.Threading.Thread.Sleep(2000);
 
             response = await _not5.GetNotificationActivities(GetOptions.Default.WithLimit(2));
 
