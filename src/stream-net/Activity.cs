@@ -24,7 +24,7 @@ namespace Stream
         private const string Field_UpdatedAt = "updated_at";
         private const string Field_Group = "group";
 
-        readonly IDictionary<string, string> _data = new Dictionary<string, string>();
+        readonly IDictionary<string, JToken> _data = new Dictionary<string, JToken>();
 
         public string Id { get; private set; }
 
@@ -47,14 +47,30 @@ namespace Stream
         {
             if (_data.ContainsKey(name))
             {
-                return JsonConvert.DeserializeObject<T>(_data[name]);
+                var token = _data[name];
+
+                // if we are asking for a custom type.. but the JToken is a string
+                if ((!typeof(T).IsBuiltInType()) &&
+                    (token.Type == JTokenType.String))
+                {
+                    try // to deserialize the string into the object
+                    {
+                        return JsonConvert.DeserializeObject<T>(token.ToString());
+                    }
+                    catch (Exception)
+                    {
+                        // we'll eat this exception since the next one most likely toss
+                    }
+                }
+
+                return _data[name].ToObject<T>();
             }
             return default(T);
         }
 
         public void SetData<T>(string name, T data)
         {
-            _data[name] = JsonConvert.SerializeObject(data);
+            _data[name] = JValue.FromObject(data);
         }
 
         [JsonConstructor]
@@ -229,7 +245,7 @@ namespace Stream
                     default:
                         {
                             // stash everything else as custom
-                            activity._data[prop.Name] = prop.Value.ToString();
+                            activity._data[prop.Name] = prop.Value;
                             break;
                         };
                 }

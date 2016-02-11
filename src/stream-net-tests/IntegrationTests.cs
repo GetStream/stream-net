@@ -4,6 +4,7 @@ using NUnit.Framework;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Stream;
+using System.Threading;
 
 namespace stream_net_tests
 {
@@ -45,9 +46,11 @@ namespace stream_net_tests
         [Test]
         public async Task TestAddActivity()
         {
-            var newActivity = new Stream.Activity("1","test","1");
+            var newActivity = new Stream.Activity("1", "test", "1");
             var response = await this._user1.AddActivity(newActivity);
             Assert.IsNotNull(response);
+
+            System.Threading.Thread.Sleep(5000);
 
             var activities = await this._user1.GetActivities(0, 1);
             Assert.IsNotNull(activities);
@@ -64,7 +67,7 @@ namespace stream_net_tests
         public async Task TestAddActivityWithTime()
         {
             var now = DateTime.UtcNow;
-            var newActivity = new Stream.Activity("1","test","1")
+            var newActivity = new Stream.Activity("1", "test", "1")
             {
                 Time = now
             };
@@ -109,8 +112,12 @@ namespace stream_net_tests
         [Test]
         public async Task TestAddActivityWithString()
         {
+            int second = 2;
+            double third = 3;
             var newActivity = new Stream.Activity("1", "test", "1");
             newActivity.SetData("complex", "string");
+            newActivity.SetData("second", second);
+            newActivity.SetData("third", third);
             var response = await this._user1.AddActivity(newActivity);
             Assert.IsNotNull(response);
 
@@ -135,6 +142,7 @@ namespace stream_net_tests
 
             var newActivity = new Stream.Activity("1", "test", "1");
             newActivity.SetData("complex", dict);
+
             var response = await this._user1.AddActivity(newActivity);
             Assert.IsNotNull(response);
 
@@ -147,10 +155,98 @@ namespace stream_net_tests
             var first = activities.First();
             Assert.AreEqual(response.Id, first.Id);
 
-            var complex = first.GetData<IDictionary<String,String>>("complex");
+            var complex = first.GetData<IDictionary<String, String>>("complex");
             Assert.IsNotNull(complex);
             Assert.AreEqual(2, complex.Count);
             Assert.AreEqual("shawn", complex["test1"]);
+        }
+
+        public class CustomClass
+        {
+            public string TestString { get; set; }
+
+            public int TestInt { get; set; }
+
+            public double TestDouble { get; set; }
+        }
+
+        [Test]
+        public async Task TestAddActivityWithDifferentVariables()
+        {
+            int second = 2;
+            double third = 3;
+            var dict = new Dictionary<string, object>();
+            dict["test1"] = "shawn";
+            dict["test2"] = "wedge";
+            dict["test3"] = 42;
+
+            var newActivity = new Stream.Activity("1", "test", "1");
+            newActivity.SetData("complex", dict);
+            newActivity.SetData("second", second);
+            newActivity.SetData("third", third);
+            newActivity.SetData("customc", new CustomClass()
+            {
+                TestString = "string",
+                TestInt = 123,
+                TestDouble = 42.2
+            });
+
+            var response = await this._user1.AddActivity(newActivity);
+            Assert.IsNotNull(response);
+
+            System.Threading.Thread.Sleep(3000);
+
+            var activities = await this._user1.GetActivities(0, 1);
+            Assert.IsNotNull(activities);
+            Assert.AreEqual(1, activities.Count());
+
+            var first = activities.First();
+            Assert.AreEqual(response.Id, first.Id);
+
+            var complex = first.GetData<IDictionary<string, object>>("complex");
+            Assert.IsNotNull(complex);
+            Assert.AreEqual(3, complex.Count);
+            Assert.AreEqual("shawn", complex["test1"]);
+            Assert.AreEqual("wedge", complex["test2"]);
+            Assert.AreEqual(42, complex["test3"]);
+
+            Assert.AreEqual(2, first.GetData<int>("second"));
+
+            Assert.AreEqual(3M, first.GetData<double>("third"));
+
+            var customc = first.GetData<CustomClass>("customc");
+            Assert.IsNotNull(customc);
+            Assert.AreEqual("string", customc.TestString);
+            Assert.AreEqual(123, customc.TestInt);
+            Assert.AreEqual(42.2, customc.TestDouble);
+        }
+
+        [Test]
+        public async Task TestAddActivityVariablesOldWayNewWay()
+        {
+            var newActivity = new Stream.Activity("1", "test", "1");
+            newActivity.SetData<string>("stringint", "42");
+            newActivity.SetData<string>("stringdouble", "42.2");
+            newActivity.SetData<string>("stringcomplex", "{ \"test1\": 1, \"test2\": \"testing\" }");
+
+            var response = await this._user1.AddActivity(newActivity);
+            Assert.IsNotNull(response);
+
+            System.Threading.Thread.Sleep(3000);
+
+            var activities = await this._user1.GetActivities(0, 1);
+            Assert.IsNotNull(activities);
+            Assert.AreEqual(1, activities.Count());
+
+            var first = activities.First();
+            Assert.AreEqual(response.Id, first.Id);
+            
+            Assert.AreEqual(42, first.GetData<int>("stringint"));
+
+            Assert.AreEqual(42.2, first.GetData<double>("stringdouble"));
+
+            var complex = first.GetData<IDictionary<string, object>>("stringcomplex");
+            Assert.IsNotNull(complex);
         }
 
         [Test]
@@ -166,13 +262,13 @@ namespace stream_net_tests
             Assert.AreEqual(1, addedActivity.To.SafeCount());
             Assert.AreEqual("flat:remotefeed1", addedActivity.To.First());
 
-            var activities = await _client.Feed("flat", "remotefeed1").GetActivities(0, 1);            
+            var activities = await _client.Feed("flat", "remotefeed1").GetActivities(0, 1);
             Assert.IsNotNull(activities);
             Assert.AreEqual(1, activities.Count());
 
-            var first = activities.First();            
+            var first = activities.First();
             Assert.AreEqual("multi1", first.Actor);
-        }    
+        }
 
         [Test]
         public async Task TestAddActivities()
@@ -181,7 +277,7 @@ namespace stream_net_tests
                 new Stream.Activity("multi1","test","1"),
                 new Stream.Activity("multi2","test","2")
             };
-            
+
             var response = await this._user1.AddActivities(newActivities);
             Assert.IsNotNull(response);
             Assert.AreEqual(2, response.Count());
@@ -233,27 +329,30 @@ namespace stream_net_tests
             var response = await this._user1.AddActivity(newActivity);
             Assert.IsNotNull(response);
 
-            System.Threading.Thread.Sleep(2000);
+            System.Threading.Thread.Sleep(5000);
 
             var activities = await this._user1.GetActivities(0, 1);
             Assert.IsNotNull(activities);
             Assert.AreEqual(1, activities.Count());
             Assert.AreEqual(response.Id, activities.First().Id);
             Assert.AreEqual(fid, activities.First().ForeignId);
-
-            System.Threading.Thread.Sleep(3000);
-
+            
             await this._user1.RemoveActivity(fid, true);
+
+            System.Threading.Thread.Sleep(5000);
+
             activities = await this._user1.GetActivities(0, 1);
             Assert.AreEqual(0, activities.Count());
         }
 
         [Test]
-        public async Task TestDelete() 
-        { 
-            var newActivity = new Stream.Activity("1","test","1");
+        public async Task TestDelete()
+        {
+            var newActivity = new Stream.Activity("1", "test", "1");
             var response = await this._user1.AddActivity(newActivity);
             Assert.IsNotNull(response);
+
+            System.Threading.Thread.Sleep(5000);
 
             var activities = await this._user1.GetActivities(0, 1);
             Assert.IsNotNull(activities);
@@ -261,22 +360,26 @@ namespace stream_net_tests
 
             await this._user1.Delete();
 
+            System.Threading.Thread.Sleep(5000);
+
             var nextActivities = await this._user1.GetActivities(0, 1);
             Assert.IsNotNull(nextActivities);
             Assert.AreEqual(0, nextActivities.Count());
-        } 
+        }
 
         [Test]
         public async Task TestGet()
         {
-            var newActivity = new Stream.Activity("1","test","1");
+            var newActivity = new Stream.Activity("1", "test", "1");
             var first = await this._user1.AddActivity(newActivity);
 
-            newActivity = new Stream.Activity("1","test","2");
+            newActivity = new Stream.Activity("1", "test", "2");
             var second = await this._user1.AddActivity(newActivity);
 
-            newActivity = new Stream.Activity("1","test","3");
+            newActivity = new Stream.Activity("1", "test", "3");
             var third = await this._user1.AddActivity(newActivity);
+
+            Thread.Sleep(3000);
 
             var activities = await this._user1.GetActivities(0, 2);
             Assert.IsNotNull(activities);
@@ -304,6 +407,8 @@ namespace stream_net_tests
             newActivity = new Stream.Activity("1", "test", "3");
             var third = await this._user1.AddActivity(newActivity);
 
+            Thread.Sleep(8000);
+
             var response = await this._user1.GetFlatActivities(GetOptions.Default.WithLimit(2));
             Assert.IsNotNull(response);
             Assert.IsNotNull(response.Duration);
@@ -326,12 +431,12 @@ namespace stream_net_tests
         public async Task TestFlatFollowUnfollow()
         {
             await this._user1.UnfollowFeed("flat", "333");
-            System.Threading.Thread.Sleep(3000);
+            System.Threading.Thread.Sleep(5000);
 
             var newActivity = new Stream.Activity("1", "test", "1");
             var response = await this._flat3.AddActivity(newActivity);
 
-            System.Threading.Thread.Sleep(3000);
+            System.Threading.Thread.Sleep(5000);
 
             await this._user1.FollowFeed("flat", "333");
             System.Threading.Thread.Sleep(5000);
@@ -342,7 +447,7 @@ namespace stream_net_tests
             Assert.AreEqual(response.Id, activities.First().Id);
 
             await this._user1.UnfollowFeed("flat", "333");
-            System.Threading.Thread.Sleep(3000);
+            System.Threading.Thread.Sleep(5000);
 
             activities = await this._user1.GetActivities(0, 1);
             Assert.IsNotNull(activities);
@@ -408,6 +513,8 @@ namespace stream_net_tests
             newActivity = new Stream.Activity("1", "share", "3");
             var third = await _not5.AddActivity(newActivity);
 
+            System.Threading.Thread.Sleep(5000);
+
             var activities = await _not5.GetActivities(0, 2, marker: ActivityMarker.Mark().AllRead());
             Assert.IsNotNull(activities);
             Assert.AreEqual(2, activities.Count());
@@ -419,6 +526,8 @@ namespace stream_net_tests
             notActivity = activities.Skip(1).First() as NotificationActivity;
             Assert.IsNotNull(notActivity);
             Assert.IsFalse(notActivity.IsRead);
+
+            System.Threading.Thread.Sleep(5000);
 
             activities = await _not5.GetActivities(0, 2);
             Assert.IsNotNull(activities);
@@ -445,13 +554,15 @@ namespace stream_net_tests
             newActivity = new Stream.Activity("1", "share", "3");
             var third = await _not5.AddActivity(newActivity);
 
+            System.Threading.Thread.Sleep(5000);
+
             var activities = await _not5.GetActivities(0, 2);
 
             var marker = ActivityMarker.Mark();
             foreach (var activity in activities)
             {
                 marker = marker.Read(activity.Id);
-            }            
+            }
 
             var notActivity = activities.First() as NotificationActivity;
             Assert.IsNotNull(notActivity);
@@ -462,6 +573,8 @@ namespace stream_net_tests
             Assert.IsFalse(notActivity.IsRead);
 
             activities = await _not5.GetActivities(0, 3, marker: marker);
+
+            System.Threading.Thread.Sleep(5000);
 
             activities = await _not5.GetActivities(0, 3);
             Assert.IsNotNull(activities);
@@ -492,11 +605,10 @@ namespace stream_net_tests
             newActivity = new Stream.Activity("1", "share", "3");
             var third = await _not5.AddActivity(newActivity);
 
-            System.Threading.Thread.Sleep(3000);
+            System.Threading.Thread.Sleep(5000);
 
             var response = await _not5.GetNotificationActivities(GetOptions.Default.WithLimit(2).WithMarker(ActivityMarker.Mark().AllRead()));
-            Assert.IsNotNull(response);
-            Assert.AreEqual(3, response.Unseen);
+            Assert.IsNotNull(response);            
 
             var activities = response.Results;
             Assert.IsNotNull(activities);
@@ -510,13 +622,12 @@ namespace stream_net_tests
             Assert.IsNotNull(notActivity);
             Assert.IsFalse(notActivity.IsRead);
 
-            System.Threading.Thread.Sleep(2000);
+            System.Threading.Thread.Sleep(5000);
 
             response = await _not5.GetNotificationActivities(GetOptions.Default.WithLimit(2));
 
             Assert.IsNotNull(response);
-            Assert.AreEqual(0, response.Unread);
-            Assert.AreEqual(3, response.Unseen);
+            Assert.AreEqual(0, response.Unread);            
 
             activities = response.Results;
             Assert.IsNotNull(activities);
@@ -627,10 +738,10 @@ namespace stream_net_tests
             var response = await _user1.AddActivity(newActivity1);
             response = await _user1.AddActivity(newActivity2);
 
-            System.Threading.Thread.Sleep(3000);
+            System.Threading.Thread.Sleep(5000);
 
             await _agg4.FollowFeed("user", "11");
-            System.Threading.Thread.Sleep(3000);
+            System.Threading.Thread.Sleep(5000);
 
             var activities = await this._agg4.GetActivities(0);
             Assert.IsNotNull(activities);
@@ -652,10 +763,10 @@ namespace stream_net_tests
             var response = await _user1.AddActivity(newActivity1);
             response = await _user1.AddActivity(newActivity2);
 
-            System.Threading.Thread.Sleep(3000);
+            System.Threading.Thread.Sleep(5000);
 
             await _agg4.FollowFeed("user", "11");
-            System.Threading.Thread.Sleep(3000);
+            System.Threading.Thread.Sleep(5000);
 
             var result = await this._agg4.GetAggregateActivities();
             var activities = result.Results;
@@ -738,7 +849,7 @@ namespace stream_net_tests
                 new Follow("user:11", "flat:333"),
                 new Follow("user:22", "flat:333")
             }, 10);
-            System.Threading.Thread.Sleep(3000);
+            System.Threading.Thread.Sleep(5000);
 
             var newActivity = new Stream.Activity("1", "test", "1");
             var response = await this._flat3.AddActivity(newActivity);
@@ -762,11 +873,11 @@ namespace stream_net_tests
         public async Task TestAddToMany()
         {
             var newActivity = new Stream.Activity("1", "test", "1");
-            await _client.Batch.AddToMany(newActivity, new []
+            await _client.Batch.AddToMany(newActivity, new[]
             {
                 _user1, _user2
             });
-            System.Threading.Thread.Sleep(3000);
+            System.Threading.Thread.Sleep(5000);
 
             var activities = await this._user1.GetActivities(0, 1);
             Assert.IsNotNull(activities);

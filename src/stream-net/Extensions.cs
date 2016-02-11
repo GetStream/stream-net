@@ -6,17 +6,6 @@ namespace Stream
 {
     internal static class Extensions
     {
-        //internal static IEnumerable<T> OrEmpty<T>(this IEnumerable<T> input)
-        //{
-        //    if (input == null) return Enumerable.Empty<T>();
-        //    return input;
-        //}
-
-        //internal static IEnumerable<T> Yield<T>(this T one)
-        //{
-        //    yield return one;
-        //}
-
         internal static void ForEach<T>(this IEnumerable<T> items, Action<T> action)
         {
             if ((items == null) || (action == null)) return; // do nothing
@@ -28,6 +17,22 @@ namespace Stream
         {
             if (list == null) return nullCountAs;
             return list.Count();
+        }
+
+        internal static bool IsBuiltInType(this Type type)
+        {
+            return
+                type.IsValueType ||
+                type.IsPrimitive ||
+                new Type[] {
+                typeof(String),
+                typeof(Decimal),
+                typeof(DateTime),
+                typeof(DateTimeOffset),
+                typeof(TimeSpan),
+                typeof(Guid)
+                }.Contains(type) ||
+                Convert.GetTypeCode(type) != TypeCode.Object;
         }
     }
 }
