@@ -25,7 +25,7 @@ namespace stream_net_tests
 
             var feed = client.Feed("flat", "1");
             var token = feed.ReadOnlyToken;
-            Assert.AreEqual("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJyZXNvdXJjZSI6IioiLCJhY3Rpb24iOiIqIiwiZmVlZF9pZCI6ImZsYXQ6MSJ9.1gJgfGKbuOz793rYBlEFFICRHkM4a7a1VaEdelgYW9Y", token);
+            Assert.AreEqual("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJyZXNvdXJjZSI6IioiLCJhY3Rpb24iOiIqIiwiZmVlZF9pZCI6ImZsYXQxIn0.7435I3bhISLU2RdVeVVMtmjhLE7LPHvDgqQ6mnfFwhU", token);
         }
     }
 }
