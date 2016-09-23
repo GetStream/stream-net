@@ -12,6 +12,7 @@ namespace Stream
     {
         internal const string BaseUrlFormat = "https://{0}-api.getstream.io";
         internal const string BaseUrlPath = "/api/v1.0/";
+        internal const string ActivitiesUrlPath = "activities/";
 
         readonly RestClient _client;
         readonly StreamClientOptions _options;
@@ -90,6 +91,18 @@ namespace Stream
             request.AddHeader("Content-Type", "application/json");
             request.AddQueryParameter("api_key", _apiKey);
             request.Timeout = _options.Timeout;
+            return request;
+        }
+
+        internal RestSharp.RestRequest BuildActivitiesRequest(StreamFeed feed)
+        {
+            var request = new RestRequest(BaseUrlPath + ActivitiesUrlPath, Method.POST);
+            request.AddHeader("Authorization", JWToken("*"));
+            request.AddHeader("stream-auth-type", "jwt");
+            request.AddHeader("Content-Type", "application/json");
+            request.AddQueryParameter("api_key", _apiKey);
+            request.Timeout = _options.Timeout;
+
             return request;
         }
 

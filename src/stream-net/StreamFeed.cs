@@ -123,6 +123,39 @@ namespace Stream
         }
 
         /// <summary>
+        /// Update an activity to the feed
+        /// </summary>
+        /// <param name="activity"></param>
+        /// <returns></returns>
+        public Task UpdateActivity(Activity activity)
+        {
+            if (activity == null)
+                throw new ArgumentNullException("activity", "Must have an activity to add");
+            return UpdateActivities(new Activity[] { activity });
+        }
+
+        /// <summary>
+        /// Update a list of activities, Maximum length is 100
+        /// </summary>
+        /// <param name="activities"></param>
+        /// <returns></returns>
+        public async Task UpdateActivities(IEnumerable<Activity> activities)
+        {
+            if (activities.SafeCount() == 0)
+                throw new ArgumentNullException("activities", "Must have activities to add");
+            if (activities.SafeCount() > 100)
+                throw new ArgumentNullException("activities", "Maximum length is 100");
+
+            var request = _client.BuildActivitiesRequest(this);
+            request.AddParameter("application/json", ToActivitiesJson(activities), ParameterType.RequestBody);
+
+            var response = await _client.MakeRequest(request);
+
+            if (response.StatusCode != System.Net.HttpStatusCode.Created)
+                throw StreamException.FromResponse(response);
+        }
+
+        /// <summary>
         /// Remove an activity
         /// </summary>
         /// <param name="activityId"></param>
