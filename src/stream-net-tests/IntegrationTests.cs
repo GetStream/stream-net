@@ -31,11 +31,11 @@ namespace stream_net_tests
         public void Setup()
         {
             _client = new Stream.StreamClient(
-                "98a6bhskrrwj",
-                "t3nj7j8m6dtdbbakzbu9p7akjk5da8an5wxwyt6g73nt5hf9yujp8h4jw244r67p",
+                "ea7xzzkj6kc4",
+                "zd8cdv9rhxcpmkx9zx4jqt7q9qhawpgsfpay2gy7jaubym32crs9kaux2pm67wrx",
                 new Stream.StreamClientOptions()
                 {
-                    Location = Stream.StreamApiLocation.USEast
+                    Location = Stream.StreamApiLocation.USWest
                 });
             _user1 = _client.Feed("user", "11");
             _user2 = _client.Feed("user", "22");
