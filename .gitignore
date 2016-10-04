@@ -15,3 +15,5 @@ Thumbs.db
 *App_Data/
 *PublishProfiles/
 nuget.exe
+*.nupkg
+*TestResults/

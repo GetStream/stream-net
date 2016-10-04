@@ -12,6 +12,7 @@ namespace Stream
     {
         internal const string BaseUrlFormat = "https://{0}-api.getstream.io";
         internal const string BaseUrlPath = "/api/v1.0/";
+        internal const string ActivitiesUrlPath = "activities/";
 
         readonly RestClient _client;
         readonly StreamClientOptions _options;
@@ -83,14 +84,24 @@ namespace Stream
             return string.Format(BaseUrlFormat, region);
         }
 
-        internal RestSharp.RestRequest BuildFeedRequest(StreamFeed feed, string path, Method method)
+        private RestSharp.RestRequest BuildRestRequest(string fullPath, Method method)
         {
-            var request = new RestRequest(BaseUrlPath + feed.UrlPath + path, method);
-            request.AddHeader("Authorization", feed.FeedTokenId + " " + feed.Token);
-            request.AddHeader("Content-Type", "application/json");
+            var request = new RestRequest(fullPath, method);
+            request.AddHeader("Authorization", JWToken("*"));
+            request.AddHeader("stream-auth-type", "jwt");
             request.AddQueryParameter("api_key", _apiKey);
             request.Timeout = _options.Timeout;
             return request;
+        }
+
+        internal RestSharp.RestRequest BuildFeedRequest(StreamFeed feed, string path, Method method)
+        {
+            return BuildRestRequest(BaseUrlPath + feed.UrlPath + path, method);
+        }
+
+        internal RestSharp.RestRequest BuildActivitiesRequest(StreamFeed feed)
+        {
+            return BuildRestRequest(BaseUrlPath + ActivitiesUrlPath, Method.POST);
         }
 
         internal RestSharp.RestRequest BuildAppRequest(string path, Method method)
@@ -99,7 +110,6 @@ namespace Stream
             request.AddHeader("Content-Type", "application/json");
             request.AddHeader("X-Api-Key", _apiKey);
             request.Timeout = _options.Timeout;
-
             return request;
         }
 

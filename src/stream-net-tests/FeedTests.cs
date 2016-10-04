@@ -46,6 +46,28 @@ namespace stream_net_tests
         }
 
         [Test]
+        public void TestUpdateActivityArugments()
+        {
+            Assert.Throws<ArgumentNullException>(() =>
+            {
+                _feed.UpdateActivity(null).GetAwaiter().GetResult();
+            });
+        }
+
+        [Test]
+        public void TestUpdateActivitiesArugments()
+        {
+            Assert.Throws<ArgumentNullException>(() =>
+            {
+                _feed.UpdateActivities(null).GetAwaiter().GetResult();
+            });
+            Assert.Throws<ArgumentNullException>(() =>
+            {
+                _feed.UpdateActivities(new Stream.Activity[101]).GetAwaiter().GetResult();
+            });
+        }
+
+        [Test]
         public void TestGetActivitiesArugments()
         {
             Assert.Throws<ArgumentOutOfRangeException>(() =>
