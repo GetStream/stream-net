@@ -51,7 +51,7 @@ namespace Stream
         {
             get
             {
-                return _client.JWToken(FeedId);
+                return _client.JWToken(FeedTokenId);
             }
         }
 
