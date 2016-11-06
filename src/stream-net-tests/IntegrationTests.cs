@@ -14,6 +14,7 @@ namespace stream_net_tests
     {
         private const int SetupDelay = 3000;
         private const int AddDelay = 7000;
+        private const int UpdateDelay = 7000;
         private const int RemoveDelay = 5000;
         private const int FollowDelay = 5000;
         private const int MarkDelay = 5000;
@@ -30,11 +31,11 @@ namespace stream_net_tests
         public void Setup()
         {
             _client = new Stream.StreamClient(
-                "98a6bhskrrwj",
-                "t3nj7j8m6dtdbbakzbu9p7akjk5da8an5wxwyt6g73nt5hf9yujp8h4jw244r67p",
+                "ea7xzzkj6kc4",
+                "zd8cdv9rhxcpmkx9zx4jqt7q9qhawpgsfpay2gy7jaubym32crs9kaux2pm67wrx",
                 new Stream.StreamClientOptions()
                 {
-                    Location = Stream.StreamApiLocation.USEast
+                    Location = Stream.StreamApiLocation.USWest
                 });
             _user1 = _client.Feed("user", "11");
             _user2 = _client.Feed("user", "22");
@@ -303,6 +304,101 @@ namespace stream_net_tests
 
             Assert.AreEqual(response.Skip(1).First().Id, activities.First().Id);
             Assert.AreEqual(response.First().Id, activities.Skip(1).First().Id);
+        }
+
+        [Test]
+        public async Task TestUpdateActivity()
+        {
+            var newActivity = new Stream.Activity("1", "test", "1")
+            {
+                ForeignId = "post:1",
+                Time = DateTime.UtcNow
+            };
+            newActivity.SetData<string>("myData", "1");
+            var response = await this._user1.AddActivity(newActivity);
+            Assert.IsNotNull(response);
+
+            Thread.Sleep(AddDelay);
+
+            var activities = await this._user1.GetActivities(0, 1);
+            Assert.IsNotNull(activities);
+            Assert.AreEqual(1, activities.Count());
+
+            var first = activities.First();
+            Assert.AreEqual(response.Id, first.Id);
+
+            first.Actor = "editedActor1";
+            first.Object = "editedOject1";
+            first.Verb = "editedVerbTest";
+            first.SetData<string>("myData", "editedMyData1");
+
+            await this._user1.UpdateActivity(first);
+
+            Thread.Sleep(UpdateDelay);
+
+            activities = await this._user1.GetActivities(0, 1);
+            Assert.IsNotNull(activities);
+            Assert.AreEqual(1, activities.Count());
+
+            var editedFirst = activities.First();
+            Assert.AreEqual(first.Id, editedFirst.Id);
+            Assert.AreEqual(first.GetData<string>("myData"), editedFirst.GetData<string>("myData"));
+            Assert.AreEqual(first.Actor, editedFirst.Actor);
+            Assert.AreEqual(first.Object, editedFirst.Object);
+            Assert.AreEqual(first.Verb, editedFirst.Verb);
+        }
+        
+        [Test]
+        public async Task TestUpdateActivities()
+        {
+            var newActivities = new Stream.Activity[] {
+                new Stream.Activity("multi1", "test", "1")
+                {
+                    ForeignId = "post:1",
+                    Time = DateTime.UtcNow
+                },
+                new Stream.Activity("multi2", "test", "2")
+                {
+                    ForeignId = "post:2",
+                    Time = DateTime.UtcNow
+                }
+            };
+
+            var response = await this._user1.AddActivities(newActivities);
+            Assert.IsNotNull(response);
+            Assert.AreEqual(2, response.Count());
+
+            Thread.Sleep(AddDelay * 2);
+
+            var activities = (await this._user1.GetActivities(0, 2)).ToArray();
+            Assert.IsNotNull(activities);
+            Assert.AreEqual(2, activities.Count());
+
+            Assert.AreEqual(response.First().Id, activities.First().Id);
+            Assert.AreEqual(response.Skip(1).First().Id, activities.Skip(1).First().Id);
+
+            for (int i = 0; i < activities.Length; i++)
+            {
+                activities[i].Actor = "editedActor" + activities[i].Actor;
+                activities[i].Object = "editedObject" + activities[i].Object;
+                activities[i].Verb = "editedVerb" + activities[i].Verb;
+            }
+
+            await this._user1.UpdateActivities(activities);
+
+            Thread.Sleep(UpdateDelay);
+
+            var editedActivities = (await this._user1.GetActivities(0, 2)).ToArray();
+            Assert.IsNotNull(activities);
+            Assert.AreEqual(2, activities.Count());
+
+            for (int i = 0; i < activities.Length; i++)
+            {
+                Assert.AreEqual(activities[i].Id, editedActivities[i].Id);
+                Assert.AreEqual(activities[i].Actor, editedActivities[i].Actor);
+                Assert.AreEqual(activities[i].Object, editedActivities[i].Object);
+                Assert.AreEqual(activities[i].Verb, editedActivities[i].Verb);
+            }
         }
 
         [Test]
