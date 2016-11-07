@@ -2,15 +2,6 @@ version: 1.2.{build}
 environment:
   COVERALLS_REPO_TOKEN: 
     secure: Gi55/aHqrZs6SjL0DCGl9jVTQLapvcroI21SLtMZ/7npQIwzoRrx1zA+sP+0O7jj
-install:
-- cmd: >-
-    set NUNIT3_HOME=C:\Tools\NUnit3
-
-    appveyor DownloadFile https://github.com/nunit/nunit/releases/download/3.0.0-beta-3/nunit-3.0.0-beta-3.zip
-
-    7z x -o%NUNIT3_HOME% nunit-3.0.0-beta-3.zip > NUL
-
-    set PATH=%NUNIT3_HOME%\bin;%PATH%
 before_build:
 - cmd: nuget restore .\src\stream-net.sln
 build:
