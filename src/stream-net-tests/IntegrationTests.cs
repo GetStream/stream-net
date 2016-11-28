@@ -537,81 +537,339 @@ namespace stream_net_tests
         }
 
         [Test]
-        public async Task TestFlatFollowUnfollow()
+        public async Task TestFlatFollowUnfollowKeepHistoryDefault()
         {
-            await this._user1.UnfollowFeed("flat", "333");
+            //This initial unfollow is just to reset any existing follows or actvities, not a part of the test
+            await this._user1.UnfollowFeed("flat", "333", false);
             Thread.Sleep(FollowDelay);
-
-            var newActivity = new Stream.Activity("1", "test", "1");
-            var response = await this._flat3.AddActivity(newActivity);
-
-            Thread.Sleep(AddDelay);
-
-            await this._user1.FollowFeed("flat", "333");
-            Thread.Sleep(FollowDelay);
-
             var activities = await this._user1.GetActivities(0, 1);
-            Assert.IsNotNull(activities);
-            Assert.AreEqual(1, activities.Count());
-            Assert.AreEqual(response.Id, activities.First().Id);
 
-            await this._user1.UnfollowFeed("flat", "333");
+            if (activities.Count() == 0)
+            {
+                var newActivity = new Stream.Activity("1", "test", "1");
+                var response = await this._flat3.AddActivity(newActivity);
+
+                Thread.Sleep(AddDelay);
+
+                await this._user1.FollowFeed("flat", "333");
+                Thread.Sleep(FollowDelay);
+
+                activities = await this._user1.GetActivities(0, 1);
+                Assert.IsNotNull(activities);
+                Assert.AreEqual(1, activities.Count());
+                Assert.AreEqual(response.Id, activities.First().Id);
+
+                //Unfollow, do not pass the keepHistory param, expect that it defaults to false and existing activities will be removed
+                await this._user1.UnfollowFeed("flat", "333");
+                Thread.Sleep(FollowDelay);
+
+                activities = await this._user1.GetActivities(0, 1);
+                Assert.IsNotNull(activities);
+                Assert.AreEqual(0, activities.Count());
+            }
+            else
+            {
+                Assert.Fail("Initial activity count not zero.");
+            }
+        }
+        [Test]
+        public async Task TestFlatFollowUnfollowKeepHistoryFalse()
+        {
+            //This initial unfollow is just to reset any existing follows or actvities, not a part of the test
+            await this._user1.UnfollowFeed("flat", "333", false);
             Thread.Sleep(FollowDelay);
+            var activities = await this._user1.GetActivities(0, 1);
 
-            activities = await this._user1.GetActivities(0, 1);
-            Assert.IsNotNull(activities);
-            Assert.AreEqual(0, activities.Count());
+            if (activities.Count() == 0)
+            {
+                var newActivity = new Stream.Activity("1", "test", "1");
+                var response = await this._flat3.AddActivity(newActivity);
+
+                Thread.Sleep(AddDelay);
+
+                await this._user1.FollowFeed("flat", "333");
+                Thread.Sleep(FollowDelay);
+
+                activities = await this._user1.GetActivities(0, 1);
+                Assert.IsNotNull(activities);
+                Assert.AreEqual(1, activities.Count());
+                Assert.AreEqual(response.Id, activities.First().Id);
+
+                //Unfollow, pass the keepHistory param = false, expect that existing activities will be removed
+                await this._user1.UnfollowFeed("flat", "333", false);
+                Thread.Sleep(FollowDelay);
+
+                activities = await this._user1.GetActivities(0, 1);
+                Assert.IsNotNull(activities);
+                Assert.AreEqual(0, activities.Count());
+            }
+            else
+            {
+                Assert.Fail("Initial activity count not zero.");
+            }
+        }
+        [Test]
+        public async Task TestFlatFollowUnfollowKeepHistoryTrue()
+        {
+            //This initial unfollow is just to reset any existing follows or actvities, not a part of the test
+            await this._user1.UnfollowFeed("flat", "333", false);
+            Thread.Sleep(FollowDelay);
+            var activities = await this._user1.GetActivities(0, 1);
+
+            if (activities.Count() == 0)
+            {
+                var newActivity = new Stream.Activity("1", "test", "1");
+                var response = await this._flat3.AddActivity(newActivity);
+
+                Thread.Sleep(AddDelay);
+
+                await this._user1.FollowFeed("flat", "333");
+                Thread.Sleep(FollowDelay);
+
+                activities = await this._user1.GetActivities(0, 1);
+                Assert.IsNotNull(activities);
+                Assert.AreEqual(1, activities.Count());
+                Assert.AreEqual(response.Id, activities.First().Id);
+
+                //Unfollow, pass the keepHistory param = true, expect that existing activities will be retained
+                await this._user1.UnfollowFeed("flat", "333", true);
+                Thread.Sleep(FollowDelay);
+
+                activities = await this._user1.GetActivities(0, 1);
+                Assert.IsNotNull(activities);
+                Assert.AreEqual(1, activities.Count());
+                Assert.AreEqual(response.Id, activities.First().Id);
+            }
+            else
+            {
+                Assert.Fail("Initial activity count not zero.");
+            }
         }
 
         [Test]
-        public async Task TestFlatFollowUnfollowByFeed()
+        public async Task TestFlatFollowUnfollowByFeedKeepHistoryDefault()
         {
-            await this._user1.UnfollowFeed(_flat3);
+            //This initial unfollow is just to reset any existing follows or actvities, not a part of the test
+            await this._user1.UnfollowFeed(_flat3, false);
             Thread.Sleep(FollowDelay);
-
-            var newActivity = new Stream.Activity("1", "test", "1");
-            var response = await this._flat3.AddActivity(newActivity);
-
-            Thread.Sleep(AddDelay);
-
-            await this._user1.FollowFeed(_flat3);
-            Thread.Sleep(FollowDelay);
-
             var activities = await this._user1.GetActivities(0, 1);
-            Assert.IsNotNull(activities);
-            Assert.AreEqual(1, activities.Count());
-            Assert.AreEqual(response.Id, activities.First().Id);
 
-            await this._user1.UnfollowFeed(_flat3);
+            if (activities.Count() == 0)
+            {
+                var newActivity = new Stream.Activity("1", "test", "1");
+                var response = await this._flat3.AddActivity(newActivity);
+
+                Thread.Sleep(AddDelay);
+
+                await this._user1.FollowFeed(_flat3);
+                Thread.Sleep(FollowDelay);
+
+                activities = await this._user1.GetActivities(0, 1);
+                Assert.IsNotNull(activities);
+                Assert.AreEqual(1, activities.Count());
+                Assert.AreEqual(response.Id, activities.First().Id);
+
+                //Unfollow, do not pass the keepHistory param, expect that it defaults to false and existing activities will be removed
+                await this._user1.UnfollowFeed(_flat3);
+                Thread.Sleep(FollowDelay);
+
+                activities = await this._user1.GetActivities(0, 1);
+                Assert.IsNotNull(activities);
+                Assert.AreEqual(0, activities.Count());
+            }
+            else
+            {
+                Assert.Fail("Initial activity count not zero.");
+            }
+        }
+        [Test]
+        public async Task TestFlatFollowUnfollowByFeedKeepHistoryFalse()
+        {
+            //This initial unfollow is just to reset any existing follows or actvities, not a part of the test
+            await this._user1.UnfollowFeed(_flat3, false);
             Thread.Sleep(FollowDelay);
+            var activities = await this._user1.GetActivities(0, 1);
 
-            activities = await this._user1.GetActivities(0, 1);
-            Assert.IsNotNull(activities);
-            Assert.AreEqual(0, activities.Count());
+            if (activities.Count() == 0)
+            {
+                var newActivity = new Stream.Activity("1", "test", "1");
+                var response = await this._flat3.AddActivity(newActivity);
+
+                Thread.Sleep(AddDelay);
+
+                await this._user1.FollowFeed(_flat3);
+                Thread.Sleep(FollowDelay);
+
+                activities = await this._user1.GetActivities(0, 1);
+                Assert.IsNotNull(activities);
+                Assert.AreEqual(1, activities.Count());
+                Assert.AreEqual(response.Id, activities.First().Id);
+
+                //Unfollow, pass the keepHistory param = false, expect that existing activities will be removed
+                await this._user1.UnfollowFeed(_flat3, false);
+                Thread.Sleep(FollowDelay);
+
+                activities = await this._user1.GetActivities(0, 1);
+                Assert.IsNotNull(activities);
+                Assert.AreEqual(0, activities.Count());
+            }
+            else
+            {
+                Assert.Fail("Initial activity count not zero.");
+            }
+        }
+        [Test]
+        public async Task TestFlatFollowUnfollowByFeedKeepHistoryTrue()
+        {
+            //This initial unfollow is just to reset any existing follows or actvities, not a part of the test
+            await this._user1.UnfollowFeed(_flat3, false);
+            Thread.Sleep(FollowDelay);
+            var activities = await this._user1.GetActivities(0, 1);
+
+            if (activities.Count() == 0)
+            {
+                var newActivity = new Stream.Activity("1", "test", "1");
+                var response = await this._flat3.AddActivity(newActivity);
+
+                Thread.Sleep(AddDelay);
+
+                await this._user1.FollowFeed(_flat3);
+                Thread.Sleep(FollowDelay);
+
+                activities = await this._user1.GetActivities(0, 1);
+                Assert.IsNotNull(activities);
+                Assert.AreEqual(1, activities.Count());
+                Assert.AreEqual(response.Id, activities.First().Id);
+
+                //Unfollow, pass the keepHistory param = true, expect that existing activities will be retained
+                await this._user1.UnfollowFeed(_flat3, true);
+                Thread.Sleep(FollowDelay);
+
+                activities = await this._user1.GetActivities(0, 1);
+                Assert.IsNotNull(activities);
+                Assert.AreEqual(1, activities.Count());
+                Assert.AreEqual(response.Id, activities.First().Id);
+            }
+            else
+            {
+                Assert.Fail("Initial activity count not zero.");
+            }
         }
 
         [Test]
-        public async Task TestFlatFollowUnfollowPrivate()
+        public async Task TestFlatFollowUnfollowPrivateKeepHistoryDefault()
         {
             var secret = this._client.Feed("secret", "33");
 
+            //This initial unfollow is just to reset any existing follows or actvities, not a part of the test
             await this._user1.UnfollowFeed("secret", "33");
             Thread.Sleep(FollowDelay);
-
-            var newActivity = new Stream.Activity("1", "test", "1");
-            var response = await secret.AddActivity(newActivity);
-
-            Thread.Sleep(AddDelay);
-
-            await this._user1.FollowFeed("secret", "33");
-            Thread.Sleep(FollowDelay);
-
             var activities = await this._user1.GetActivities(0, 1);
-            Assert.IsNotNull(activities);
-            Assert.AreEqual(1, activities.Count());
-            Assert.AreEqual(response.Id, activities.First().Id);
 
+            if (activities.Count() == 0)
+            {
+                var newActivity = new Stream.Activity("1", "test", "1");
+                var response = await secret.AddActivity(newActivity);
+
+                Thread.Sleep(AddDelay);
+
+                await this._user1.FollowFeed("secret", "33");
+                Thread.Sleep(FollowDelay);
+
+                activities = await this._user1.GetActivities(0, 1);
+                Assert.IsNotNull(activities);
+                Assert.AreEqual(1, activities.Count());
+                Assert.AreEqual(response.Id, activities.First().Id);
+
+                //Unfollow, do not pass the keepHistory param, expect that it defaults to false and existing activities will be removed
+                await this._user1.UnfollowFeed("secret", "33");
+                Thread.Sleep(FollowDelay);
+
+                activities = await this._user1.GetActivities(0, 1);
+                Assert.IsNotNull(activities);
+                Assert.AreEqual(0, activities.Count());
+            }
+            else
+            {
+                Assert.Fail("Initial activity count not zero.");
+            }
+        }
+        [Test]
+        public async Task TestFlatFollowUnfollowPrivateKeepHistoryFalse()
+        {
+            var secret = this._client.Feed("secret", "33");
+
+            //This initial unfollow is just to reset any existing follows or actvities, not a part of the test
             await this._user1.UnfollowFeed("secret", "33");
+            Thread.Sleep(FollowDelay);
+            var activities = await this._user1.GetActivities(0, 1);
+
+            if (activities.Count() == 0)
+            {
+                var newActivity = new Stream.Activity("1", "test", "1");
+                var response = await secret.AddActivity(newActivity);
+
+                Thread.Sleep(AddDelay);
+
+                await this._user1.FollowFeed("secret", "33");
+                Thread.Sleep(FollowDelay);
+
+                activities = await this._user1.GetActivities(0, 1);
+                Assert.IsNotNull(activities);
+                Assert.AreEqual(1, activities.Count());
+                Assert.AreEqual(response.Id, activities.First().Id);
+
+                //Unfollow, pass the keepHistory param = false, expect that existing activities will be removed
+                await this._user1.UnfollowFeed("secret", "33", false);
+                Thread.Sleep(FollowDelay);
+
+                activities = await this._user1.GetActivities(0, 1);
+                Assert.IsNotNull(activities);
+                Assert.AreEqual(0, activities.Count());
+            }
+            else
+            {
+                Assert.Fail("Initial activity count not zero.");
+            }
+        }
+        [Test]
+        public async Task TestFlatFollowUnfollowPrivateKeepHistoryTrue()
+        {
+            var secret = this._client.Feed("secret", "33");
+
+            //This initial unfollow is just to reset any existing follows or actvities, not a part of the test
+            await this._user1.UnfollowFeed("secret", "33");
+            Thread.Sleep(FollowDelay);
+            var activities = await this._user1.GetActivities(0, 1);
+
+            if (activities.Count() == 0)
+            {
+                var newActivity = new Stream.Activity("1", "test", "1");
+                var response = await secret.AddActivity(newActivity);
+
+                Thread.Sleep(AddDelay);
+
+                await this._user1.FollowFeed("secret", "33");
+                Thread.Sleep(FollowDelay);
+
+                activities = await this._user1.GetActivities(0, 1);
+                Assert.IsNotNull(activities);
+                Assert.AreEqual(1, activities.Count());
+                Assert.AreEqual(response.Id, activities.First().Id);
+
+                //Unfollow, pass the keepHistory param = true, expect that existing activities will be retained
+                await this._user1.UnfollowFeed("secret", "33", true);
+                Thread.Sleep(FollowDelay);
+
+                activities = await this._user1.GetActivities(0, 1);
+                Assert.IsNotNull(activities);
+                Assert.AreEqual(1, activities.Count());
+                Assert.AreEqual(response.Id, activities.First().Id);
+            }
+            else
+            {
+                Assert.Fail("Initial activity count not zero.");
+            }
         }
 
         [Test]

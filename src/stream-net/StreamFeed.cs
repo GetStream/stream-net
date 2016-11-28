@@ -304,7 +304,7 @@ namespace Stream
             return FollowFeed(this._client.Feed(targetFeedSlug, targetUserId));
         }
 
-        public async Task UnfollowFeed(StreamFeed feedToUnfollow)
+        public async Task UnfollowFeed(StreamFeed feedToUnfollow, bool keepHistory = false)
         {
             if (feedToUnfollow == null)
                 throw new ArgumentNullException("feedToUnfollow", "Must have a feed to unfollow");
@@ -312,15 +312,17 @@ namespace Stream
                 throw new ArgumentException("Cannot unfollow myself");
 
             var request = _client.BuildFeedRequest(this, "/follows/" + feedToUnfollow.FeedId + "/", Method.DELETE);
+            request.AddQueryParameter("keep_history", keepHistory.ToString());
+
             var response = await _client.MakeRequest(request);
 
             if (response.StatusCode != System.Net.HttpStatusCode.OK)
                 throw StreamException.FromResponse(response);
         }
 
-        public Task UnfollowFeed(String targetFeedSlug, String targetUserId)
+        public Task UnfollowFeed(String targetFeedSlug, String targetUserId, bool keepHistory = false)
         {
-            return UnfollowFeed(this._client.Feed(targetFeedSlug, targetUserId));
+            return UnfollowFeed(this._client.Feed(targetFeedSlug, targetUserId), keepHistory);
         }
 
         internal class FollowersResponse
