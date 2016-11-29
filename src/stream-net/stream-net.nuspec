@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>stream-net</id>
-    <version>1.3.0</version>
+    <version>1.3.1</version>
     <title>$title$</title>
     <authors>$author$</authors>
     <owners>$author$</owners>
@@ -11,7 +11,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
     <language>en-US</language>
-    <releaseNotes>Support added for Updating Activities. All Feed Authentication requests are now using JWT</releaseNotes>
+    <releaseNotes>Support added for keeping history when Unfollowing feeds. Issue with non-getstream.io exceptions resolved.</releaseNotes>
     <copyright>Copyright 2016</copyright>
     <tags>getstreamio</tags>
   </metadata>
