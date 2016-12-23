@@ -645,6 +645,60 @@ namespace stream_net_tests
                 Assert.Fail("Initial activity count not zero.");
             }
         }
+        [Test]
+        public async Task TestFlatFollowActivityCopyLimitDefault()
+        {
+            //This initial unfollow is just to reset any existing follows or actvities, not a part of the test
+            await this._user1.UnfollowFeed("flat", "333", false);
+            Thread.Sleep(FollowDelay);
+            var activities = await this._user1.GetActivities(0, 1);
+
+            if (activities.Count() == 0)
+            {
+                Activity[] newActivities = { new Stream.Activity("1", "test", "1"), new Stream.Activity("1", "test", "2"), new Stream.Activity("1", "test", "3"), new Stream.Activity("1", "test", "4"), new Stream.Activity("1", "test", "5") };
+                var response = await this._flat3.AddActivities(newActivities);
+
+                Thread.Sleep(AddDelay);
+
+                await this._user1.FollowFeed("flat", "333");
+                Thread.Sleep(FollowDelay);
+
+                activities = await this._user1.GetActivities(0, 5);
+                Assert.IsNotNull(activities);
+                Assert.AreEqual(5, activities.Count());
+            }
+            else
+            {
+                Assert.Fail("Initial activity count not zero.");
+            }
+        }
+        [Test]
+        public async Task TestFlatFollowActivityCopyLimitNonDefault()
+        {
+            //This initial unfollow is just to reset any existing follows or actvities, not a part of the test
+            await this._user1.UnfollowFeed("flat", "333", false);
+            Thread.Sleep(FollowDelay);
+            var activities = await this._user1.GetActivities(0, 1);
+
+            if (activities.Count() == 0)
+            {
+                Activity[] newActivities = { new Stream.Activity("1", "test", "1"), new Stream.Activity("1", "test", "2"), new Stream.Activity("1", "test", "3"), new Stream.Activity("1", "test", "4"), new Stream.Activity("1", "test", "5") };
+                var response = await this._flat3.AddActivities(newActivities);
+
+                Thread.Sleep(AddDelay);
+
+                await this._user1.FollowFeed("flat", "333", 3);
+                Thread.Sleep(FollowDelay);
+
+                activities = await this._user1.GetActivities(0, 5);
+                Assert.IsNotNull(activities);
+                Assert.AreEqual(3, activities.Count());
+            }
+            else
+            {
+                Assert.Fail("Initial activity count not zero.");
+            }
+        }
 
         [Test]
         public async Task TestFlatFollowUnfollowByFeedKeepHistoryDefault()
@@ -749,6 +803,60 @@ namespace stream_net_tests
                 Assert.IsNotNull(activities);
                 Assert.AreEqual(1, activities.Count());
                 Assert.AreEqual(response.Id, activities.First().Id);
+            }
+            else
+            {
+                Assert.Fail("Initial activity count not zero.");
+            }
+        }
+        [Test]
+        public async Task TestFlatFollowByFeedActivityCopyLimitDefault()
+        {
+            //This initial unfollow is just to reset any existing follows or actvities, not a part of the test
+            await this._user1.UnfollowFeed(_flat3, false);
+            Thread.Sleep(FollowDelay);
+            var activities = await this._user1.GetActivities(0, 1);
+
+            if (activities.Count() == 0)
+            {
+                Activity[] newActivities = { new Stream.Activity("1", "test", "1"), new Stream.Activity("1", "test", "2"), new Stream.Activity("1", "test", "3"), new Stream.Activity("1", "test", "4"), new Stream.Activity("1", "test", "5") };
+                var response = await this._flat3.AddActivities(newActivities);
+
+                Thread.Sleep(AddDelay);
+
+                await this._user1.FollowFeed(_flat3);
+                Thread.Sleep(FollowDelay);
+
+                activities = await this._user1.GetActivities(0, 5);
+                Assert.IsNotNull(activities);
+                Assert.AreEqual(5, activities.Count());
+            }
+            else
+            {
+                Assert.Fail("Initial activity count not zero.");
+            }
+        }
+        [Test]
+        public async Task TestFlatFollowByFeedActivityCopyLimitNonDefault()
+        {
+            //This initial unfollow is just to reset any existing follows or actvities, not a part of the test
+            await this._user1.UnfollowFeed(_flat3, false);
+            Thread.Sleep(FollowDelay);
+            var activities = await this._user1.GetActivities(0, 1);
+
+            if (activities.Count() == 0)
+            {
+                Activity[] newActivities = { new Stream.Activity("1", "test", "1"), new Stream.Activity("1", "test", "2"), new Stream.Activity("1", "test", "3"), new Stream.Activity("1", "test", "4"), new Stream.Activity("1", "test", "5") };
+                var response = await this._flat3.AddActivities(newActivities);
+
+                Thread.Sleep(AddDelay);
+
+                await this._user1.FollowFeed(_flat3, 3);
+                Thread.Sleep(FollowDelay);
+
+                activities = await this._user1.GetActivities(0, 5);
+                Assert.IsNotNull(activities);
+                Assert.AreEqual(3, activities.Count());
             }
             else
             {
@@ -865,6 +973,64 @@ namespace stream_net_tests
                 Assert.IsNotNull(activities);
                 Assert.AreEqual(1, activities.Count());
                 Assert.AreEqual(response.Id, activities.First().Id);
+            }
+            else
+            {
+                Assert.Fail("Initial activity count not zero.");
+            }
+        }
+        [Test]
+        public async Task TestFlatFollowPrivateActivityCopyLimitDefault()
+        {
+            var secret = this._client.Feed("secret", "33");
+
+            //This initial unfollow is just to reset any existing follows or actvities, not a part of the test
+            await this._user1.UnfollowFeed("secret", "33", false);
+            Thread.Sleep(FollowDelay);
+            var activities = await this._user1.GetActivities(0, 1);
+
+            if (activities.Count() == 0)
+            {
+                Activity[] newActivities = { new Stream.Activity("1", "test", "1"), new Stream.Activity("1", "test", "2"), new Stream.Activity("1", "test", "3"), new Stream.Activity("1", "test", "4"), new Stream.Activity("1", "test", "5") };
+                var response = await secret.AddActivities(newActivities);
+
+                Thread.Sleep(AddDelay);
+
+                await this._user1.FollowFeed("secret", "33");
+                Thread.Sleep(FollowDelay);
+
+                activities = await this._user1.GetActivities(0, 5);
+                Assert.IsNotNull(activities);
+                Assert.AreEqual(5, activities.Count());
+            }
+            else
+            {
+                Assert.Fail("Initial activity count not zero.");
+            }
+        }
+        [Test]
+        public async Task TestFlatFollowPrivateActivityCopyLimitNonDefault()
+        {
+            var secret = this._client.Feed("secret", "33");
+
+            //This initial unfollow is just to reset any existing follows or actvities, not a part of the test
+            await this._user1.UnfollowFeed("secret", "33", false);
+            Thread.Sleep(FollowDelay);
+            var activities = await this._user1.GetActivities(0, 1);
+
+            if (activities.Count() == 0)
+            {
+                Activity[] newActivities = { new Stream.Activity("1", "test", "1"), new Stream.Activity("1", "test", "2"), new Stream.Activity("1", "test", "3"), new Stream.Activity("1", "test", "4"), new Stream.Activity("1", "test", "5") };
+                var response = await secret.AddActivities(newActivities);
+
+                Thread.Sleep(AddDelay);
+
+                await this._user1.FollowFeed("secret", "33", 3);
+                Thread.Sleep(FollowDelay);
+
+                activities = await this._user1.GetActivities(0, 5);
+                Assert.IsNotNull(activities);
+                Assert.AreEqual(3, activities.Count());
             }
             else
             {

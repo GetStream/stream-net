@@ -9,6 +9,7 @@ namespace Stream
     public class BatchOperations
     {
         private const int CopyLimitDefault = 300;
+        private const int CopyLimitMax = 1000;
 
         readonly StreamClient _client;
 
@@ -38,10 +39,11 @@ namespace Stream
 
         public async Task FollowMany(IEnumerable<Follow> follows, int activityCopyLimit = CopyLimitDefault)
         {
-            var request = _client.BuildAppRequest("follow_many/", RestSharp.Method.POST);
-            if (activityCopyLimit != CopyLimitDefault)
-                request.AddQueryParameter("activity_copy_limit", activityCopyLimit.ToString());
+            if (activityCopyLimit > CopyLimitMax) activityCopyLimit = CopyLimitMax;
 
+            var request = _client.BuildAppRequest("follow_many/", RestSharp.Method.POST);
+
+            request.AddQueryParameter("activity_copy_limit", activityCopyLimit.ToString());
             request.AddJsonBody(from f in follows
                                 select new
                                 {
