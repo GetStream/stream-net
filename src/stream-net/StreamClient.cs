@@ -13,6 +13,8 @@ namespace Stream
         internal const string BaseUrlFormat = "https://{0}-api.getstream.io";
         internal const string BaseUrlPath = "/api/v1.0/";
         internal const string ActivitiesUrlPath = "activities/";
+        internal const int ActivityCopyLimitDefault = 300;
+        internal const int ActivityCopyLimitMax = 1000;
 
         readonly RestClient _client;
         readonly StreamClientOptions _options;

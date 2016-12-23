@@ -20,9 +20,6 @@ namespace Stream
         readonly string _feedSlug;
         readonly string _userId;
 
-        private const int CopyLimitDefault = 300;
-        private const int CopyLimitMax = 1000;
-
         internal StreamFeed(StreamClient client, string feedSlug, string userId, string token)
         {
             if (!_feedRegex.IsMatch(feedSlug))
@@ -282,13 +279,16 @@ namespace Stream
             return GetWithOptions<NotificationActivity>(options);
         }
 
-        public async Task FollowFeed(StreamFeed feedToFollow, int activityCopyLimit = CopyLimitDefault)
+        public async Task FollowFeed(StreamFeed feedToFollow, int activityCopyLimit = StreamClient.ActivityCopyLimitDefault)
         {
             if (feedToFollow == null)
                 throw new ArgumentNullException("feedToFollow", "Must have a feed to follow");
             if (feedToFollow.FeedTokenId == this.FeedTokenId)
                 throw new ArgumentException("Cannot follow myself");
-            if (activityCopyLimit > CopyLimitMax) activityCopyLimit = CopyLimitMax;
+            if (activityCopyLimit < 1)
+                throw new ArgumentOutOfRangeException("activityCopyLimit", "Activity copy limit must be greater than 0");
+            if (activityCopyLimit > StreamClient.ActivityCopyLimitMax)
+                throw new ArgumentOutOfRangeException("activityCopyLimit", string.Format("Activity copy limit must be less than or equal to {0}", StreamClient.ActivityCopyLimitMax));
 
             var request = _client.BuildFeedRequest(this, "/following/", Method.POST);
 
@@ -305,7 +305,7 @@ namespace Stream
                 throw StreamException.FromResponse(response);
         }
 
-        public Task FollowFeed(string targetFeedSlug, string targetUserId, int activityCopyLimit = CopyLimitDefault)
+        public Task FollowFeed(string targetFeedSlug, string targetUserId, int activityCopyLimit = StreamClient.ActivityCopyLimitDefault)
         {
             return FollowFeed(this._client.Feed(targetFeedSlug, targetUserId), activityCopyLimit);
         }

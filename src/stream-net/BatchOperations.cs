@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using RestSharp;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,9 +9,6 @@ namespace Stream
 {
     public class BatchOperations
     {
-        private const int CopyLimitDefault = 300;
-        private const int CopyLimitMax = 1000;
-
         readonly StreamClient _client;
 
         internal BatchOperations(StreamClient client)
@@ -37,9 +35,12 @@ namespace Stream
                 throw StreamException.FromResponse(response);
         }
 
-        public async Task FollowMany(IEnumerable<Follow> follows, int activityCopyLimit = CopyLimitDefault)
+        public async Task FollowMany(IEnumerable<Follow> follows, int activityCopyLimit = StreamClient.ActivityCopyLimitDefault)
         {
-            if (activityCopyLimit > CopyLimitMax) activityCopyLimit = CopyLimitMax;
+            if (activityCopyLimit < 1)
+                throw new ArgumentOutOfRangeException("activityCopyLimit", "Activity copy limit must be greater than 0");
+            if (activityCopyLimit > StreamClient.ActivityCopyLimitMax)
+                throw new ArgumentOutOfRangeException("activityCopyLimit", string.Format("Activity copy limit must be less than or equal to {0}", StreamClient.ActivityCopyLimitMax));
 
             var request = _client.BuildAppRequest("follow_many/", RestSharp.Method.POST);
 
