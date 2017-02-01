@@ -1,5 +1,4 @@
-﻿using RestSharp;
-using System;
+﻿using Stream.Rest;
 using System.Collections.Generic;
 
 namespace Stream
@@ -57,7 +56,7 @@ namespace Stream
             return this;
         }
 
-        internal void Apply(IRestRequest request)
+        internal void Apply(RestRequest request)
         {
             _ops.ForEach((op) =>
             {

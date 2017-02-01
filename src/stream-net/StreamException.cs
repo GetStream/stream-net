@@ -1,10 +1,13 @@
 ﻿using Newtonsoft.Json;
-using RestSharp;
+using Stream.Rest;
 using System;
 
 namespace Stream
 {
+#if !NETCORE
     [Serializable]
+#endif
+
     public class StreamException : Exception
     {
         internal StreamException(ExceptionState state)
@@ -25,7 +28,7 @@ namespace Stream
             public int HttpStatusCode { get; set; }
         }
 
-        internal static StreamException FromResponse(IRestResponse response)
+        internal static StreamException FromResponse(RestResponse response)
         {
             //If we get an error response from getstream.io with the following structure then use it to populate the exception details, 
             //otherwise fill in the properties from the response, the most likely case being when we get a timeout.

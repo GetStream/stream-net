@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace Stream
 {
@@ -21,6 +22,20 @@ namespace Stream
 
         internal static bool IsBuiltInType(this Type type)
         {
+#if NETCORE
+            return
+                type.GetTypeInfo().IsValueType ||
+                type.GetTypeInfo().IsPrimitive ||
+                new Type[] {
+                typeof(String),
+                typeof(Decimal),
+                typeof(DateTime),
+                typeof(DateTimeOffset),
+                typeof(TimeSpan),
+                typeof(Guid)
+                }.Contains(type) ||
+                Convert.GetTypeCode(type) != TypeCode.Object;
+#else
             return
                 type.IsValueType ||
                 type.IsPrimitive ||
@@ -33,6 +48,7 @@ namespace Stream
                 typeof(Guid)
                 }.Contains(type) ||
                 Convert.GetTypeCode(type) != TypeCode.Object;
+#endif
         }
     }
 }

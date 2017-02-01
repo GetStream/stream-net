@@ -1,5 +1,5 @@
 ﻿using Newtonsoft.Json;
-using RestSharp;
+using Stream.Rest;
 using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
@@ -31,7 +31,7 @@ namespace Stream
             _apiKey = apiKey;
             _apiSecret = apiSecret;
             _options = options ?? StreamClientOptions.Default;
-            _client = new RestClient(GetBaseUrl());
+            _client = new RestClient(GetBaseUrl(), TimeSpan.FromMilliseconds(_options.Timeout));
         }
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace Stream
             }
         }
 
-        private string GetBaseUrl()
+        private Uri GetBaseUrl()
         {
             string region = "";
             switch (_options.Location)
@@ -83,49 +83,43 @@ namespace Stream
                 default:
                     break;
             }
-            return string.Format(BaseUrlFormat, region);
+            return new Uri(string.Format(BaseUrlFormat, region));
         }
 
-        private RestSharp.RestRequest BuildRestRequest(string fullPath, Method method)
+        private RestRequest BuildRestRequest(string fullPath, HttpMethod method)
         {
             var request = new RestRequest(fullPath, method);
             request.AddHeader("Authorization", JWToken("*"));
             request.AddHeader("stream-auth-type", "jwt");
             request.AddQueryParameter("api_key", _apiKey);
-            request.Timeout = _options.Timeout;
             return request;
         }
 
-        internal RestSharp.RestRequest BuildFeedRequest(StreamFeed feed, string path, Method method)
+        internal RestRequest BuildFeedRequest(StreamFeed feed, string path, HttpMethod method)
         {
             return BuildRestRequest(BaseUrlPath + feed.UrlPath + path, method);
         }
 
-        internal RestSharp.RestRequest BuildActivitiesRequest(StreamFeed feed)
+        internal RestRequest BuildActivitiesRequest(StreamFeed feed)
         {
-            return BuildRestRequest(BaseUrlPath + ActivitiesUrlPath, Method.POST);
+            return BuildRestRequest(BaseUrlPath + ActivitiesUrlPath, HttpMethod.POST);
         }
 
-        internal RestSharp.RestRequest BuildAppRequest(string path, Method method)
+        internal RestRequest BuildAppRequest(string path, HttpMethod method)
         {
             var request = new RestRequest(BaseUrlPath + path, method);
-            request.AddHeader("Content-Type", "application/json");
             request.AddHeader("X-Api-Key", _apiKey);
-            request.Timeout = _options.Timeout;
             return request;
         }
 
-        internal void SignRequest(RestSharp.RestRequest request)
+        internal void SignRequest(RestRequest request)
         {
             // make signature
             var queryString = "";
-            request.Parameters.ForEach((p) =>
-            {
-                if (p.Type == ParameterType.QueryString)
-                {
-                    queryString += (queryString.Length == 0) ? "?" : "&";
-                    queryString += string.Format("{0}={1}", p.Name, Uri.EscapeDataString(p.Value.ToString()));
-                }
+            request.QueryParameters.ForEach((p) =>
+            {   
+                queryString += (queryString.Length == 0) ? "?" : "&";
+                queryString += string.Format("{0}={1}", p.Key, Uri.EscapeDataString(p.Value.ToString()));
             });
             var toSign = string.Format("(request-target): {0} {1}", request.Method.ToString().ToLower(), request.Resource + queryString);
 
@@ -133,9 +127,9 @@ namespace Stream
             request.AddHeader("Authorization", "Signature " + signature);
         }
 
-        internal Task<IRestResponse> MakeRequest(RestRequest request)
+        internal Task<RestResponse> MakeRequest(RestRequest request)
         {
-            return _client.ExecuteTaskAsync(request);
+            return _client.Execute(request);
         }
 
         private static string Base64UrlEncode(byte[] input)
@@ -149,7 +143,12 @@ namespace Stream
         internal string Sign(string feedId)
         {
             Encoding encoding = new ASCIIEncoding();
+#if NETCORE
+            var hashedSecret = SHA1.Create().ComputeHash(encoding.GetBytes(_apiSecret));
+#else
             var hashedSecret = (new SHA1Managed()).ComputeHash(encoding.GetBytes(_apiSecret));
+#endif
+
             var hmac = new HMACSHA1(hashedSecret);
             return Base64UrlEncode(hmac.ComputeHash(encoding.GetBytes(feedId)));
         }
