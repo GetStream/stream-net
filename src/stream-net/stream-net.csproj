@@ -9,13 +9,14 @@
     <PackageId>stream-net</PackageId>
     <PackageVersion>2.0.0</PackageVersion>
     <Authors>Shawn Beach</Authors>
-    <Description />
+    <Description>A library for building newsfeed and activity stream applications with http://getstream.io</Description>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageReleaseNotes>Removed dependancy on RestSharp and added .Net Core support</PackageReleaseNotes>
+    <Copyright>Copyright 2016</Copyright>
+    <PackageProjectUrl>https://github.com/shawnspeak/stream-net</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/shawnspeak/stream-net/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageTags>getstreamio</PackageTags>
   </PropertyGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="**\*.resx" />
-  </ItemGroup>
   <ItemGroup>
     <Compile Remove="Properties\AssemblyInfo.cs" />
   </ItemGroup>
