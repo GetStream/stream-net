@@ -40,7 +40,7 @@ var activity = new Activity("1", "run", "1")
 var course = new Dictionary<string,objects>();
 course["name"] = "Shevlin Park";
 course["distance"] = 10;
-activity.SetData("course", course)
+activity.SetData("course", course);
 userFeed1.AddActivity(activity);
 
 // Remove an activity by its id
