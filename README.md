@@ -4,6 +4,10 @@ stream-net
 [![Build status](https://ci.appveyor.com/api/projects/status/9eh9kvhai6aj7p1q?svg=true)](https://ci.appveyor.com/project/shawnspeak/stream-net)
 [![Coverage Status](https://coveralls.io/repos/shawnspeak/stream-net/badge.svg)](https://coveralls.io/github/shawnspeak/stream-net)
 
+[stream-net](https://github.com/GetStream/stream-net) is a .Net client for [Stream](https://getstream.io/).
+
+You can sign up for a Stream account at https://getstream.io/get_started.
+
 ### Installation via Nuget
 
 ```sh
@@ -26,14 +30,14 @@ var results = await userFeed1.GetActivities(0, 20, FeedFilter.Where().IdLessThan
 var results = await userFeed1.GetActivities(5, 10);
 
 // Create a new activity
-var activity = new Activity("1", "like", "3") 
+var activity = new Activity("1", "like", "3")
 {
 	ForeignId = "post:42"
-};  
+};
 userFeed1.AddActivity(activity);
 
 // Create a complex activity
-var activity = new Activity("1", "run", "1") 
+var activity = new Activity("1", "run", "1")
 {
 	ForeignId = "run:1"
 };
@@ -75,3 +79,9 @@ userFeed1.Following(0, 2, new String[] { "user:42", "user:43" });
 
 
 ```
+
+### Copyright and License Information
+
+Copyright (c) 2015-2017 Shawn Beach, Stream.io Inc, and individual contributors. All rights reserved.
+
+See the file "LICENSE" for information on the history of this software, terms & conditions for usage, and a DISCLAIMER OF ALL WARRANTIES.
