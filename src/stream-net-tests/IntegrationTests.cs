@@ -93,7 +93,7 @@ namespace stream_net_tests
 
             // using long date string here to skip milliseconds
             //  "now" will have the milliseconds whereas the response or lookup wont
-            Assert.AreEqual(now.ToLongDateString(), first.Time.Value.ToLongDateString());
+            Assert.AreEqual(now.ToString(), first.Time.Value.ToString());
         }
 
         [Test]

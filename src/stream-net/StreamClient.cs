@@ -10,7 +10,7 @@ namespace Stream
 {
     public class StreamClient
     {
-        internal const string BaseUrlFormat = "https://{0}-api.getstream.io";
+        internal const string BaseUrlFormat = "https://{0}-api.stream-io-api.com";
         internal const string BaseUrlPath = "/api/v1.0/";
         internal const string ActivitiesUrlPath = "activities/";
         internal const int ActivityCopyLimitDefault = 300;
@@ -74,11 +74,8 @@ namespace Stream
                 case StreamApiLocation.USWest:
                     region = "us-west";
                     break;
-                case StreamApiLocation.EUWest:
-                    region = "eu-west";
-                    break;
-                case StreamApiLocation.AsiaJapan:
-                    region = "ap-northeast";
+                case StreamApiLocation.EUCentral:
+                    region = "eu-central";
                     break;
                 default:
                     break;

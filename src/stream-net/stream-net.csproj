@@ -3,7 +3,7 @@
     <DefineConstants>TRACE;DEBUG;NETCORE</DefineConstants>
   </PropertyGroup>
   <PropertyGroup>
-    <TargetFrameworks>net45;net461;netstandard1.6</TargetFrameworks>
+    <TargetFrameworks>net45;net461;netstandard1.6;netstandard2.0</TargetFrameworks>
   </PropertyGroup>
   <PropertyGroup>
     <PackageId>stream-net</PackageId>
@@ -11,7 +11,7 @@
     <Authors>Shawn Beach</Authors>
     <Description>A library for building newsfeed and activity stream applications with http://getstream.io</Description>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <PackageReleaseNotes>Removed dependancy on RestSharp and added .Net Core support</PackageReleaseNotes>
+    <PackageReleaseNotes>Removed dependancy on RestSharp and added .Net Core support. Updated the Stream api endpoints.</PackageReleaseNotes>
     <Copyright>Copyright 2016</Copyright>
     <PackageProjectUrl>https://github.com/shawnspeak/stream-net</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/shawnspeak/stream-net/blob/master/LICENSE</PackageLicenseUrl>
