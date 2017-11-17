@@ -7,19 +7,20 @@
   </PropertyGroup>
   <PropertyGroup>
     <PackageId>stream-net</PackageId>
-    <PackageVersion>2.0.0</PackageVersion>
+    <Version>2.0.1</Version>
+    <PackageVersion>2.0.1</PackageVersion>
     <Authors>Shawn Beach</Authors>
     <Description>A library for building newsfeed and activity stream applications with http://getstream.io</Description>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageReleaseNotes>Removed dependancy on RestSharp and added .Net Core support. Updated the Stream api endpoints.</PackageReleaseNotes>
-    <Copyright>Copyright 2016</Copyright>
+    <Copyright>Copyright 2017</Copyright>
     <PackageProjectUrl>https://github.com/shawnspeak/stream-net</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/shawnspeak/stream-net/blob/master/LICENSE</PackageLicenseUrl>
     <PackageTags>getstreamio</PackageTags>
   </PropertyGroup>
-  <ItemGroup>
-    <Compile Remove="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
+  <PropertyGroup Condition="  '$(TargetFramework)' == 'net45' ">
+    <DefineConstants>NET45</DefineConstants>
+  </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
   </ItemGroup>
@@ -42,8 +43,5 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
+  </ItemGroup>  
 </Project>
