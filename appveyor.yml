@@ -1,26 +1,18 @@
-version: 1.2.{build}
+version: 2.0.{build}  
+image: Visual Studio 2017 
+
 environment:
   COVERALLS_REPO_TOKEN: 
     secure: Gi55/aHqrZs6SjL0DCGl9jVTQLapvcroI21SLtMZ/7npQIwzoRrx1zA+sP+0O7jj
-install:
-- cmd: >-
-    set NUNIT3_HOME=C:\Tools\NUnit3
-
-    appveyor DownloadFile https://github.com/nunit/nunit/releases/download/3.0.0-beta-3/nunit-3.0.0-beta-3.zip
-
-    7z x -o%NUNIT3_HOME% nunit-3.0.0-beta-3.zip > NUL
-
-    set PATH=%NUNIT3_HOME%\bin;%PATH%
 before_build:
-- cmd: nuget restore .\src\stream-net.sln
-build:
-  project: ./src/stream-net.sln
-  verbosity: minimal
+- appveyor-retry dotnet restore .\src -v Minimal
+build_script:
+- dotnet build .\src
 after_test:
 - cmd: >-
-    src\packages\OpenCover.4.6.166\tools\OpenCover.Console.exe -register:user -filter:"+[*]*" -target:"src\packages\NUnit.Console.3.0.1\tools\nunit3-console.exe" -targetargs:"/domain:single  src\stream-net-tests\bin\debug\stream-net-tests.dll" -output:coverage.xml
+    C:\Users\appveyor\.nuget\packages\OpenCover\4.6.519\tools\OpenCover.Console.exe -register:user -filter:"+[*]*" -target:"C:\Users\appveyor\.nuget\packages\nunit.consolerunner\3.7.0\tools\nunit3-console.exe" -targetargs:"/domain:single  src\stream-net-tests\bin\debug\net461\stream-net-tests.dll" -output:coverage.xml
 
-    src\packages\coveralls.io.1.3.4\tools\coveralls.net.exe --opencover coverage.xml
+    C:\Users\appveyor\.nuget\packages\coveralls.io.1.4.2\tools\coveralls.net.exe --opencover coverage.xml
 on_finish:
 - ps: >-
     $wc = New-Object 'System.Net.WebClient'

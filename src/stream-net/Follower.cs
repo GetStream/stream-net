@@ -14,8 +14,15 @@ namespace Stream
         [JsonProperty("created_at")]
         public DateTime CreatedAt { get; set; }
 
-        [JsonProperty("updated_at")]
-        public DateTime UpdatedAt { get; set; }
+        [JsonIgnore()]
+        [Obsolete("No longer a meaningful value according to GetStream. Returns the same value as CreatedAt and will be removed in a future release")]
+        public DateTime UpdatedAt
+        {
+            get
+            {
+                return CreatedAt;
+            }
+        }
 
         [JsonConstructor]
         internal Follower()

@@ -28,7 +28,7 @@ namespace stream_net_tests
         }
 
         [Test]
-        public void TestAddActivityArugments()
+        public void TestAddActivityArguments()
         {
             Assert.Throws<ArgumentNullException>(() =>
             {
@@ -37,7 +37,7 @@ namespace stream_net_tests
         }
 
         [Test]
-        public void TestAddActivitiesArugments()
+        public void TestAddActivitiesArguments()
         {
             Assert.Throws<ArgumentNullException>(() =>
             {
@@ -46,7 +46,29 @@ namespace stream_net_tests
         }
 
         [Test]
-        public void TestGetActivitiesArugments()
+        public void TestUpdateActivityArguments()
+        {
+            Assert.Throws<ArgumentNullException>(() =>
+            {
+                _feed.UpdateActivity(null).GetAwaiter().GetResult();
+            });
+        }
+
+        [Test]
+        public void TestUpdateActivitiesArguments()
+        {
+            Assert.Throws<ArgumentNullException>(() =>
+            {
+                _feed.UpdateActivities(null).GetAwaiter().GetResult();
+            });
+            Assert.Throws<ArgumentNullException>(() =>
+            {
+                _feed.UpdateActivities(new Stream.Activity[101]).GetAwaiter().GetResult();
+            });
+        }
+
+        [Test]
+        public void TestGetActivitiesArguments()
         {
             Assert.Throws<ArgumentOutOfRangeException>(() =>
             {
@@ -59,7 +81,7 @@ namespace stream_net_tests
         }
 
         [Test]
-        public void TestFollowFeedArugments()
+        public void TestFollowFeedArguments()
         {
             Assert.Throws<ArgumentNullException>(() =>
             {
@@ -72,7 +94,7 @@ namespace stream_net_tests
         }
 
         [Test]
-        public void TestUnfollowFeedArugments()
+        public void TestUnfollowFeedArguments()
         {
             Assert.Throws<ArgumentNullException>(() =>
             {
@@ -85,7 +107,7 @@ namespace stream_net_tests
         }
 
         [Test]
-        public void TestFollowersArugments()
+        public void TestFollowersArguments()
         {
             Assert.Throws<ArgumentOutOfRangeException>(() =>
             {
@@ -98,7 +120,7 @@ namespace stream_net_tests
         }
 
         [Test]
-        public void TestFollowingArugments()
+        public void TestFollowingArguments()
         {
             Assert.Throws<ArgumentOutOfRangeException>(() =>
             {

@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using RestSharp;
+using Stream.Rest;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -51,7 +51,7 @@ namespace Stream
         {
             get
             {
-                return _client.JWToken(FeedId);
+                return _client.JWToken(FeedTokenId);
             }
         }
 
@@ -67,8 +67,8 @@ namespace Stream
             if (activity == null)
                 throw new ArgumentNullException("activity", "Must have an activity to add");
 
-            var request = _client.BuildFeedRequest(this, "/", Method.POST);
-            request.AddParameter("application/json", activity.ToJson(this._client), ParameterType.RequestBody);
+            var request = _client.BuildFeedRequest(this, "/", HttpMethod.POST);
+            request.SetJsonBody(activity.ToJson(this._client));
 
             var response = await _client.MakeRequest(request);
 
@@ -111,8 +111,8 @@ namespace Stream
             if (activities.SafeCount() == 0)
                 throw new ArgumentNullException("activities", "Must have activities to add");
 
-            var request = _client.BuildFeedRequest(this, "/", Method.POST);
-            request.AddParameter("application/json", ToActivitiesJson(activities), ParameterType.RequestBody);
+            var request = _client.BuildFeedRequest(this, "/", HttpMethod.POST);
+            request.SetJsonBody(ToActivitiesJson(activities));
 
             var response = await _client.MakeRequest(request);
 
@@ -123,6 +123,39 @@ namespace Stream
         }
 
         /// <summary>
+        /// Update an activity to the feed
+        /// </summary>
+        /// <param name="activity"></param>
+        /// <returns></returns>
+        public Task UpdateActivity(Activity activity)
+        {
+            if (activity == null)
+                throw new ArgumentNullException("activity", "Must have an activity to add");
+            return UpdateActivities(new Activity[] { activity });
+        }
+
+        /// <summary>
+        /// Update a list of activities, Maximum length is 100
+        /// </summary>
+        /// <param name="activities"></param>
+        /// <returns></returns>
+        public async Task UpdateActivities(IEnumerable<Activity> activities)
+        {
+            if (activities.SafeCount() == 0)
+                throw new ArgumentNullException("activities", "Must have activities to add");
+            if (activities.SafeCount() > 100)
+                throw new ArgumentNullException("activities", "Maximum length is 100");
+
+            var request = _client.BuildActivitiesRequest(this);
+            request.SetJsonBody(ToActivitiesJson(activities));
+
+            var response = await _client.MakeRequest(request);
+
+            if (response.StatusCode != System.Net.HttpStatusCode.Created)
+                throw StreamException.FromResponse(response);
+        }
+
+        /// <summary>
         /// Remove an activity
         /// </summary>
         /// <param name="activityId"></param>
@@ -130,7 +163,7 @@ namespace Stream
         /// <returns></returns>
         public async Task RemoveActivity(string activityId, bool foreignId = false)
         {
-            var request = _client.BuildFeedRequest(this, "/" + activityId + "/", Method.DELETE);
+            var request = _client.BuildFeedRequest(this, "/" + activityId + "/", HttpMethod.DELETE);
             if (foreignId)
                 request.AddQueryParameter("foreign_id", "1");
             var response = await _client.MakeRequest(request);
@@ -161,7 +194,7 @@ namespace Stream
             if (limit < 0)
                 throw new ArgumentOutOfRangeException("limit", "Limit must be greater than or equal to zero");
 
-            var request = _client.BuildFeedRequest(this, "/", Method.GET);
+            var request = _client.BuildFeedRequest(this, "/", HttpMethod.GET);
             request.AddQueryParameter("offset", offset.ToString());
             request.AddQueryParameter("limit", limit.ToString());
 
@@ -185,7 +218,7 @@ namespace Stream
         {
             // build request
             options = options ?? GetOptions.Default;
-            var request = _client.BuildFeedRequest(this, "/", Method.GET);
+            var request = _client.BuildFeedRequest(this, "/", HttpMethod.GET);
             options.Apply(request);
 
             // make request
@@ -246,19 +279,25 @@ namespace Stream
             return GetWithOptions<NotificationActivity>(options);
         }
 
-        public async Task FollowFeed(StreamFeed feedToFollow)
+        public async Task FollowFeed(StreamFeed feedToFollow, int activityCopyLimit = StreamClient.ActivityCopyLimitDefault)
         {
             if (feedToFollow == null)
                 throw new ArgumentNullException("feedToFollow", "Must have a feed to follow");
             if (feedToFollow.FeedTokenId == this.FeedTokenId)
                 throw new ArgumentException("Cannot follow myself");
+            if (activityCopyLimit < 1)
+                throw new ArgumentOutOfRangeException("activityCopyLimit", "Activity copy limit must be greater than 0");
+            if (activityCopyLimit > StreamClient.ActivityCopyLimitMax)
+                throw new ArgumentOutOfRangeException("activityCopyLimit", string.Format("Activity copy limit must be less than or equal to {0}", StreamClient.ActivityCopyLimitMax));
 
-            var request = _client.BuildFeedRequest(this, "/follows/", Method.POST);
-            request.AddJsonBody(new
+            var request = _client.BuildFeedRequest(this, "/following/", HttpMethod.POST);
+
+            request.SetJsonBody(JsonConvert.SerializeObject(new
             {
                 target = feedToFollow.FeedId,
+                activity_copy_limit = activityCopyLimit,
                 target_token = feedToFollow.Token
-            });
+            }));
 
             var response = await _client.MakeRequest(request);
 
@@ -266,28 +305,30 @@ namespace Stream
                 throw StreamException.FromResponse(response);
         }
 
-        public Task FollowFeed(string targetFeedSlug, string targetUserId)
+        public Task FollowFeed(string targetFeedSlug, string targetUserId, int activityCopyLimit = StreamClient.ActivityCopyLimitDefault)
         {
-            return FollowFeed(this._client.Feed(targetFeedSlug, targetUserId));
+            return FollowFeed(this._client.Feed(targetFeedSlug, targetUserId), activityCopyLimit);
         }
 
-        public async Task UnfollowFeed(StreamFeed feedToUnfollow)
+        public async Task UnfollowFeed(StreamFeed feedToUnfollow, bool keepHistory = false)
         {
             if (feedToUnfollow == null)
                 throw new ArgumentNullException("feedToUnfollow", "Must have a feed to unfollow");
             if (feedToUnfollow.FeedTokenId == this.FeedTokenId)
                 throw new ArgumentException("Cannot unfollow myself");
 
-            var request = _client.BuildFeedRequest(this, "/follows/" + feedToUnfollow.FeedId + "/", Method.DELETE);
+            var request = _client.BuildFeedRequest(this, "/following/" + feedToUnfollow.FeedId + "/", HttpMethod.DELETE);
+            request.AddQueryParameter("keep_history", keepHistory.ToString());
+
             var response = await _client.MakeRequest(request);
 
             if (response.StatusCode != System.Net.HttpStatusCode.OK)
                 throw StreamException.FromResponse(response);
         }
 
-        public Task UnfollowFeed(String targetFeedSlug, String targetUserId)
+        public Task UnfollowFeed(string targetFeedSlug, string targetUserId, bool keepHistory = false)
         {
-            return UnfollowFeed(this._client.Feed(targetFeedSlug, targetUserId));
+            return UnfollowFeed(this._client.Feed(targetFeedSlug, targetUserId), keepHistory);
         }
 
         internal class FollowersResponse
@@ -302,7 +343,7 @@ namespace Stream
             if (limit < 0)
                 throw new ArgumentOutOfRangeException("limit", "Limit must be greater than or equal to zero");
 
-            var request = _client.BuildFeedRequest(this, "/followers/", Method.GET);
+            var request = _client.BuildFeedRequest(this, "/followers/", HttpMethod.GET);
             request.AddQueryParameter("offset", offset.ToString());
             request.AddQueryParameter("limit", limit.ToString());
 
@@ -317,19 +358,19 @@ namespace Stream
             return JsonConvert.DeserializeObject<FollowersResponse>(response.Content).results;
         }
 
-        public async Task<IEnumerable<Follower>> Following(int offset = 0, int limit = 25, String[] filterBy = null)
+        public async Task<IEnumerable<Follower>> Following(int offset = 0, int limit = 25, string[] filterBy = null)
         {
             if (offset < 0)
                 throw new ArgumentOutOfRangeException("offset", "Offset must be greater than or equal to zero");
             if (limit < 0)
                 throw new ArgumentOutOfRangeException("limit", "Limit must be greater than or equal to zero");
 
-            var request = _client.BuildFeedRequest(this, "/following/", Method.GET);
+            var request = _client.BuildFeedRequest(this, "/following/", HttpMethod.GET);
             request.AddQueryParameter("offset", offset.ToString());
             request.AddQueryParameter("limit", limit.ToString());
 
             if (filterBy.SafeCount() > 0)
-                request.AddQueryParameter("filter", String.Join(",", filterBy));
+                request.AddQueryParameter("filter", string.Join(",", filterBy));
 
             var response = await _client.MakeRequest(request);
 
@@ -344,9 +385,10 @@ namespace Stream
         /// </summary>
         public async Task Delete()
         {
-            var request = _client.BuildFeedRequest(this, "/", Method.DELETE);
+            var request = _client.BuildFeedRequest(this, "/", HttpMethod.DELETE);
             var response = await _client.MakeRequest(request);
-            if (response.StatusCode != System.Net.HttpStatusCode.OK)
+            if ((response.StatusCode != System.Net.HttpStatusCode.OK) &&
+                (response.StatusCode != System.Net.HttpStatusCode.NotFound))
                 throw StreamException.FromResponse(response);
         }
     }

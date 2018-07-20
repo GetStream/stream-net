@@ -5,8 +5,7 @@ namespace Stream
     {
         USEast,
         USWest,
-        EUWest,
-        AsiaJapan
+        EUCentral
     }
 
     public class StreamClientOptions
