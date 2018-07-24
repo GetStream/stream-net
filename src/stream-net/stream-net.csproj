@@ -10,12 +10,12 @@
     <Version>2.0.3</Version>
     <PackageVersion>2.0.3</PackageVersion>
     <Authors>Shawn Beach</Authors>
-    <Description>A library for building newsfeed and activity stream applications with http://getstream.io</Description>
+    <Description>Client for getstream.io. Build scalable newsfeeds & activity streams in a few hours instead of weeks.</Description>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageReleaseNotes>Added another target framework. Ignoring the Follower.UpdatedAt value.</PackageReleaseNotes>
     <Copyright>Copyright 2018</Copyright>
-    <PackageProjectUrl>https://github.com/shawnspeak/stream-net</PackageProjectUrl>
-    <PackageLicenseUrl>https://github.com/shawnspeak/stream-net/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/GetStream/stream-net</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/GetStream/stream-net/blob/master/LICENSE</PackageLicenseUrl>
     <PackageTags>getstreamio</PackageTags>
   </PropertyGroup>
   <PropertyGroup Condition="  '$(TargetFramework)' == 'net45' ">
