@@ -379,17 +379,5 @@ namespace Stream
 
             return JsonConvert.DeserializeObject<FollowersResponse>(response.Content).results;
         }
-
-        /// <summary>
-        /// Delete the feed
-        /// </summary>
-        public async Task Delete()
-        {
-            var request = _client.BuildFeedRequest(this, "/", HttpMethod.DELETE);
-            var response = await _client.MakeRequest(request);
-            if ((response.StatusCode != System.Net.HttpStatusCode.OK) &&
-                (response.StatusCode != System.Net.HttpStatusCode.NotFound))
-                throw StreamException.FromResponse(response);
-        }
     }
 }

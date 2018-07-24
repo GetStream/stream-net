@@ -71,11 +71,14 @@ namespace Stream
                 case StreamApiLocation.USEast:
                     region = "us-east";
                     break;
-                case StreamApiLocation.USWest:
-                    region = "us-west";
+                case StreamApiLocation.Tokyo:
+                    region = "tokyo";
                     break;
-                case StreamApiLocation.EUCentral:
-                    region = "eu-central";
+                case StreamApiLocation.Dublin:
+                    region = "dublin";
+                    break;
+                case StreamApiLocation.Singapore:
+                    region = "singapore";
                     break;
                 default:
                     break;

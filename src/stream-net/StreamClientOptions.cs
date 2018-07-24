@@ -4,8 +4,9 @@ namespace Stream
     public enum StreamApiLocation
     {
         USEast,
-        USWest,
-        EUCentral
+        Dublin,
+        Singapore,
+        Tokyo
     }
 
     public class StreamClientOptions
