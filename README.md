@@ -2,7 +2,6 @@ stream-net
 ===========
 
 [![Build status](https://ci.appveyor.com/api/projects/status/nhnrdhf64clbcv19/branch/master?svg=true)](https://ci.appveyor.com/project/tbarbugli/stream-net/branch/master)
-[![Coverage Status](https://coveralls.io/repos/shawnspeak/stream-net/badge.svg)](https://coveralls.io/github/shawnspeak/stream-net)
 
 [stream-net](https://github.com/GetStream/stream-net) is a .Net client for [Stream](https://getstream.io/).
 
