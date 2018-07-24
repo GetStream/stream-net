@@ -1,11 +1,18 @@
-﻿
+﻿using System;
+
 namespace Stream
 {
     public enum StreamApiLocation
     {
         USEast,
+        Dublin,
+        Singapore,
+        Tokyo,
+
+        [Obsolete("This api location is no longer in use and will be removed in the future")]
         USWest,
-        EUCentral
+        [Obsolete("This api location is no longer in use and will be removed in the future")]
+        EUCentral,
     }
 
     public class StreamClientOptions
