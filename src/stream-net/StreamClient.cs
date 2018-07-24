@@ -80,6 +80,12 @@ namespace Stream
                 case StreamApiLocation.Singapore:
                     region = "singapore";
                     break;
+                case StreamApiLocation.USWest:
+                    region = "us-west";
+                    break;
+                case StreamApiLocation.EUCentral:
+                    region = "eu-central";
+                    break;
                 default:
                     break;
             }
