@@ -1244,10 +1244,7 @@ namespace stream_net_tests
             var response = await _user1.AddActivity(newActivity1);
             response = await _user1.AddActivity(newActivity2);
 
-            
-
-            await _agg4.FollowFeed(this._user1);
-            
+            await _agg4.FollowFeed(this._user1);            
 
             var result = await this._agg4.GetAggregateActivities();
             var activities = result.Results;
@@ -1375,6 +1372,82 @@ namespace stream_net_tests
             Assert.AreEqual(newActivity.Actor, first.Actor);
             Assert.AreEqual(newActivity.Object, first.Object);
             Assert.AreEqual(newActivity.Verb, first.Verb);
+        }
+
+        [Test]
+        public async Task TestGetActivitiesByID()
+        {
+            var newActivity1 = new Stream.Activity("1", "test", "1");
+            var newActivity2 = new Stream.Activity("1", "test", "2");
+            var newActivity3 = new Stream.Activity("1", "other", "2");
+            var addedActivities = new List<Stream.Activity>();
+
+            var response = await this._user1.AddActivity(newActivity1);
+            addedActivities.Add(response);
+            response = await this._user2.AddActivity(newActivity2);
+            addedActivities.Add(response);
+            response = await this._flat3.AddActivity(newActivity3);
+            addedActivities.Add(response);
+     
+
+            var activities = await this._client.Batch.GetActivities(addedActivities.Select(a => a.Id));
+            Assert.IsNotNull(activities);
+            Assert.AreEqual(addedActivities.Count, activities.Count());
+
+            activities.ForEach(a => {
+                var found = addedActivities.Find(x => x.Id == a.Id);
+                Assert.NotNull(found);
+                Assert.AreEqual(found.Actor, a.Actor);
+                Assert.AreEqual(found.Object, a.Object);
+                Assert.AreEqual(found.Verb, a.Verb);
+            });
+        }
+
+        [Test]
+        public async Task TestGetActivitiesByForeignIDAndTime()
+        {
+            var newActivity1 = new Stream.Activity("1", "test", "1")
+            {
+                ForeignId = "fid-test-1",
+                Time = DateTime.Parse("2000-08-16T16:32:32")
+            };
+            
+            var newActivity2 = new Stream.Activity("1", "test", "2")
+            {
+                ForeignId = "fid-test-2",
+                Time = DateTime.Parse("2000-08-17T16:32:32")
+            };
+            
+            var newActivity3 = new Stream.Activity("1", "other", "2")
+            {
+                ForeignId = "fid-other-1",
+                Time = DateTime.Parse("2000-08-19T16:32:32")
+            };
+
+            var addedActivities = new List<Stream.Activity>();
+
+            var response = await this._user1.AddActivity(newActivity1);
+            addedActivities.Add(response);
+            response = await this._user2.AddActivity(newActivity2);
+            addedActivities.Add(response);
+            response = await this._flat3.AddActivity(newActivity3);
+            addedActivities.Add(response);
+     
+
+            var activities = await this._client.Batch.GetActivities(null, 
+                addedActivities.Select(a => new Stream.ForeignIDTime(a.ForeignId, a.Time.Value)));    
+            Assert.IsNotNull(activities);
+            Assert.AreEqual(addedActivities.Count, activities.Count());
+
+            activities.ForEach(a => {
+                var found = addedActivities.Find(x => x.Id == a.Id);
+                Assert.NotNull(found);
+                Assert.AreEqual(found.Actor, a.Actor);
+                Assert.AreEqual(found.Object, a.Object);
+                Assert.AreEqual(found.Verb, a.Verb);
+                Assert.AreEqual(found.ForeignId, a.ForeignId);
+                Assert.AreEqual(found.Time, a.Time);
+            });
         }
     }
 }

@@ -111,6 +111,11 @@ namespace Stream
             return BuildRestRequest(BaseUrlPath + ActivitiesUrlPath, HttpMethod.POST);
         }
 
+        internal RestRequest BuildJWTAppRequest(string path, HttpMethod method)
+        {
+            return BuildRestRequest(BaseUrlPath + path, method);
+        }
+
         internal RestRequest BuildAppRequest(string path, HttpMethod method)
         {
             var request = new RestRequest(BaseUrlPath + path, method);

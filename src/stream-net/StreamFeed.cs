@@ -117,7 +117,7 @@ namespace Stream
             var response = await _client.MakeRequest(request);
 
             if (response.StatusCode == System.Net.HttpStatusCode.Created)
-                return GetResults(response.Content);
+                return Activity.GetResults(response.Content);
 
             throw StreamException.FromResponse(response);
         }
@@ -172,21 +172,6 @@ namespace Stream
                 throw StreamException.FromResponse(response);
         }
 
-        internal IEnumerable<Activity> GetResults(string json)
-        {
-            JObject obj = JObject.Parse(json);
-            foreach (var prop in obj.Properties())
-            {
-                if ((prop.Name == "results") || (prop.Name == "activities"))
-                {
-                    // get the array
-                    var array = prop.Value as JArray;
-                    foreach (var val in array)
-                        yield return Activity.FromJson((JObject)val);
-                }
-            }
-        }
-
         public async Task<IEnumerable<Activity>> GetActivities(int offset = 0, int limit = 20, FeedFilter filter = null, ActivityMarker marker = null)
         {
             if (offset < 0)
@@ -209,7 +194,7 @@ namespace Stream
             var response = await _client.MakeRequest(request);
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
-                return GetResults(response.Content);
+                return Activity.GetResults(response.Content);
 
             throw StreamException.FromResponse(response);
         }
