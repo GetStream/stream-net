@@ -809,10 +809,10 @@ namespace stream_net_tests
         [Test]
         public async Task TestFlatFollowUnfollowPrivateKeepHistoryDefault()
         {
-            var secret = this._client.Feed("secret", "33");
+            var secret = this._client.Feed("secret", System.Guid.NewGuid().ToString());
 
             //This initial unfollow is just to reset any existing follows or actvities, not a part of the test
-            await this._user1.UnfollowFeed("secret", "33");
+            await this._user1.UnfollowFeed(secret);
             
             var activities = await this._user1.GetActivities(0, 1);
 
@@ -823,7 +823,7 @@ namespace stream_net_tests
 
 
 
-                await this._user1.FollowFeed("secret", "33");
+                await this._user1.FollowFeed(secret);
                 
 
                 activities = await this._user1.GetActivities(0, 1);
@@ -832,7 +832,7 @@ namespace stream_net_tests
                 Assert.AreEqual(response.Id, activities.First().Id);
 
                 //Unfollow, do not pass the keepHistory param, expect that it defaults to false and existing activities will be removed
-                await this._user1.UnfollowFeed("secret", "33");
+                await this._user1.UnfollowFeed(secret);
                 
 
                 activities = await this._user1.GetActivities(0, 1);
@@ -847,10 +847,10 @@ namespace stream_net_tests
         [Test]
         public async Task TestFlatFollowUnfollowPrivateKeepHistoryFalse()
         {
-            var secret = this._client.Feed("secret", "33");
+            var secret = this._client.Feed("secret", System.Guid.NewGuid().ToString());
 
             //This initial unfollow is just to reset any existing follows or actvities, not a part of the test
-            await this._user1.UnfollowFeed("secret", "33");
+            await this._user1.UnfollowFeed(secret);
             
             var activities = await this._user1.GetActivities(0, 1);
 
@@ -861,7 +861,7 @@ namespace stream_net_tests
 
 
 
-                await this._user1.FollowFeed("secret", "33");
+                await this._user1.FollowFeed(secret);
                 
 
                 activities = await this._user1.GetActivities(0, 1);
@@ -870,7 +870,7 @@ namespace stream_net_tests
                 Assert.AreEqual(response.Id, activities.First().Id);
 
                 //Unfollow, pass the keepHistory param = false, expect that existing activities will be removed
-                await this._user1.UnfollowFeed("secret", "33", false);
+                await this._user1.UnfollowFeed(secret, false);
                 
 
                 activities = await this._user1.GetActivities(0, 1);
@@ -885,10 +885,10 @@ namespace stream_net_tests
         [Test]
         public async Task TestFlatFollowUnfollowPrivateKeepHistoryTrue()
         {
-            var secret = this._client.Feed("secret", "33");
+            var secret = this._client.Feed("secret", System.Guid.NewGuid().ToString());
 
             //This initial unfollow is just to reset any existing follows or actvities, not a part of the test
-            await this._user1.UnfollowFeed("secret", "33");
+            await this._user1.UnfollowFeed(secret);
             
             var activities = await this._user1.GetActivities(0, 1);
 
@@ -899,7 +899,7 @@ namespace stream_net_tests
 
 
 
-                await this._user1.FollowFeed("secret", "33");
+                await this._user1.FollowFeed(secret);
                 
 
                 activities = await this._user1.GetActivities(0, 1);
@@ -908,7 +908,7 @@ namespace stream_net_tests
                 Assert.AreEqual(response.Id, activities.First().Id);
 
                 //Unfollow, pass the keepHistory param = true, expect that existing activities will be retained
-                await this._user1.UnfollowFeed("secret", "33", true);
+                await this._user1.UnfollowFeed(secret, true);
                 
 
                 activities = await this._user1.GetActivities(0, 1);
@@ -924,10 +924,10 @@ namespace stream_net_tests
         [Test]
         public async Task TestFlatFollowPrivateActivityCopyLimitDefault()
         {
-            var secret = this._client.Feed("secret", "33");
+            var secret = this._client.Feed("secret", System.Guid.NewGuid().ToString());
 
             //This initial unfollow is just to reset any existing follows or actvities, not a part of the test
-            await this._user1.UnfollowFeed("secret", "33", false);
+            await this._user1.UnfollowFeed(secret, false);
             
             var activities = await this._user1.GetActivities(0, 1);
 
@@ -938,7 +938,7 @@ namespace stream_net_tests
 
 
 
-                await this._user1.FollowFeed("secret", "33");
+                await this._user1.FollowFeed(secret);
                 
 
                 activities = await this._user1.GetActivities(0, 5);
@@ -953,10 +953,10 @@ namespace stream_net_tests
         [Test]
         public async Task TestFlatFollowPrivateActivityCopyLimitNonDefault()
         {
-            var secret = this._client.Feed("secret", "33");
+            var secret = this._client.Feed("secret", System.Guid.NewGuid().ToString());
 
             //This initial unfollow is just to reset any existing follows or actvities, not a part of the test
-            await this._user1.UnfollowFeed("secret", "33", false);
+            await this._user1.UnfollowFeed(secret, false);
             
             var activities = await this._user1.GetActivities(0, 1);
 
@@ -967,7 +967,7 @@ namespace stream_net_tests
 
 
 
-                await this._user1.FollowFeed("secret", "33", 3);
+                await this._user1.FollowFeed(secret, 3);
                 
 
                 activities = await this._user1.GetActivities(0, 5);
@@ -1133,9 +1133,9 @@ namespace stream_net_tests
         [Test]
         public async Task TestFollowersWithLimit()
         {
-            var feed = this._client.Feed("flat", "csharp42");
-            var feed1 = this._client.Feed("flat", "csharp43");
-            var feed2 = this._client.Feed("flat", "csharp44");
+            var feed = this._client.Feed("flat", System.Guid.NewGuid().ToString());
+            var feed1 = this._client.Feed("flat", System.Guid.NewGuid().ToString());
+            var feed2 = this._client.Feed("flat", System.Guid.NewGuid().ToString());
 
             // unfollow
             await feed1.UnfollowFeed(feed);
@@ -1157,8 +1157,8 @@ namespace stream_net_tests
             Assert.AreEqual(2, response.Count());
 
             var first = response.First();
-            Assert.AreEqual(first.FeedId, "flat:csharp44");
-            Assert.AreEqual(first.TargetId, "flat:csharp42");
+            Assert.AreEqual(first.FeedId, feed2.FeedId);
+            Assert.AreEqual(first.TargetId, feed.FeedId);
 
             Assert.IsTrue(first.CreatedAt > DateTime.Now.AddDays(-1));
             Assert.IsTrue(first.UpdatedAt > DateTime.Now.AddDays(-1));
@@ -1176,9 +1176,9 @@ namespace stream_net_tests
         [Test]
         public async Task TestFollowingsWithLimit()
         {
-            var feed = this._client.Feed("flat", "csharp42");
-            var feed1 = this._client.Feed("flat", "csharp43");
-            var feed2 = this._client.Feed("flat", "csharp44");
+            var feed = this._client.Feed("flat", System.Guid.NewGuid().ToString());
+            var feed1 = this._client.Feed("flat", System.Guid.NewGuid().ToString());
+            var feed2 = this._client.Feed("flat", System.Guid.NewGuid().ToString());
 
             // unfollow
             await feed1.UnfollowFeed(feed);
@@ -1198,8 +1198,8 @@ namespace stream_net_tests
             response = await feed1.Following(0, 2);
             Assert.IsNotNull(response);
             Assert.AreEqual(2, response.Count());
-            Assert.AreEqual(response.First().FeedId, "flat:csharp43");
-            Assert.AreEqual(response.First().TargetId, "flat:csharp44");
+            Assert.AreEqual(response.First().FeedId, feed1.FeedId);
+            Assert.AreEqual(response.First().TargetId, feed2.FeedId);
         }
 
         [Test]

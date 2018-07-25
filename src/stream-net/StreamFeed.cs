@@ -37,7 +37,7 @@ namespace Stream
 
         internal string FeedTokenId { get; private set; }
 
-        internal string FeedId
+        public string FeedId
         {
             get
             {
