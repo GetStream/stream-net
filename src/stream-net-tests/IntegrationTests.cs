@@ -1380,7 +1380,7 @@ namespace stream_net_tests
             var newActivity1 = new Stream.Activity("1", "test", "1");
             var newActivity2 = new Stream.Activity("1", "test", "2");
             var newActivity3 = new Stream.Activity("1", "other", "2");
-            List<Stream.Activity> addedActivities = new List<Stream.Activity>();
+            var addedActivities = new List<Stream.Activity>();
 
             var response = await this._user1.AddActivity(newActivity1);
             addedActivities.Add(response);
@@ -1406,19 +1406,25 @@ namespace stream_net_tests
         [Test]
         public async Task TestGetActivitiesByForeignIDAndTime()
         {
-            var newActivity1 = new Stream.Activity("1", "test", "1");
-            newActivity1.ForeignId = "fid-test-1";
-            newActivity1.Time = DateTime.Parse("2000-08-16T16:32:32");
+            var newActivity1 = new Stream.Activity("1", "test", "1")
+            {
+                ForeignId = "fid-test-1",
+                Time = DateTime.Parse("2000-08-16T16:32:32")
+            };
             
-            var newActivity2 = new Stream.Activity("1", "test", "2");
-            newActivity2.ForeignId = "fid-test-2";
-            newActivity2.Time = DateTime.Parse("2000-08-17T16:32:32");
+            var newActivity2 = new Stream.Activity("1", "test", "2")
+            {
+                ForeignId = "fid-test-2",
+                Time = DateTime.Parse("2000-08-17T16:32:32")
+            };
             
-            var newActivity3 = new Stream.Activity("1", "other", "2");
-            newActivity3.ForeignId = "fid-other-1";
-            newActivity3.Time = DateTime.Parse("2000-08-19T16:32:32");
+            var newActivity3 = new Stream.Activity("1", "other", "2")
+            {
+                ForeignId = "fid-other-1",
+                Time = DateTime.Parse("2000-08-19T16:32:32")
+            };
 
-            List<Stream.Activity> addedActivities = new List<Stream.Activity>();
+            var addedActivities = new List<Stream.Activity>();
 
             var response = await this._user1.AddActivity(newActivity1);
             addedActivities.Add(response);
