@@ -10,7 +10,7 @@
     <Version>2.0.3</Version>
     <PackageVersion>2.0.3</PackageVersion>
     <Authors>Shawn Beach</Authors>
-    <Description>Client for getstream.io. Build scalable newsfeeds & activity streams in a few hours instead of weeks.</Description>
+    <Description>Client for getstream.io. Build scalable newsfeeds and activity streams in a few hours instead of weeks.</Description>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageReleaseNotes>Added another target framework. Ignoring the Follower.UpdatedAt value.</PackageReleaseNotes>
     <Copyright>Copyright 2018</Copyright>
