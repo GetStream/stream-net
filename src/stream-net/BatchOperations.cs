@@ -7,6 +7,18 @@ using System.Threading.Tasks;
 
 namespace Stream
 {
+    public class ForeignIDTime
+    {
+        public string ForeignID   {get; set; }
+        public DateTime Time  {get; set; }
+
+        public ForeignIDTime(string foreignID, DateTime time)
+        {
+            ForeignID = foreignID;
+            Time = time;
+        }
+    }
+
     public class BatchOperations
     {
         readonly StreamClient _client;
@@ -58,6 +70,34 @@ namespace Stream
 
             if (response.StatusCode != System.Net.HttpStatusCode.Created)
                 throw StreamException.FromResponse(response);
+        }
+
+        public async Task<IEnumerable<Activity>> GetActivities(IEnumerable<string> ids = null, IEnumerable<ForeignIDTime> foreignIDTimes = null)
+        {
+            if (ids == null && foreignIDTimes == null)
+                throw new ArgumentException("one the parameters ids or foreignIdTimes must be provided and not null", "ids, foreignIDTimes");
+            if (ids != null && foreignIDTimes != null)
+                throw new ArgumentException("at most one of the parameters ids or foreignIdTimes must be provided", "ids, foreignIDTimes");
+
+            var request = _client.BuildJWTAppRequest("activities/", HttpMethod.GET);
+
+            if (ids != null)
+            {
+                request.AddQueryParameter("ids", string.Join(",", ids));
+            }
+
+            if (foreignIDTimes != null)
+            {
+                request.AddQueryParameter("foreign_ids", string.Join(",", foreignIDTimes.Select(f => f.ForeignID)));
+                request.AddQueryParameter("timestamps", string.Join(",", foreignIDTimes.Select(f => f.Time.ToString("o"))));
+            }
+
+            var response = await _client.MakeRequest(request);
+
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                return Activity.GetResults(response.Content);
+
+            throw StreamException.FromResponse(response);
         }
     }
 }

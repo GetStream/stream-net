@@ -43,6 +43,21 @@ namespace Stream
 
         public IList<string> To { get; set; }
 
+        internal static IEnumerable<Activity> GetResults(string json)
+        {
+            JObject obj = JObject.Parse(json);
+            foreach (var prop in obj.Properties())
+            {
+                if ((prop.Name == "results") || (prop.Name == "activities"))
+                {
+                    // get the array
+                    var array = prop.Value as JArray;
+                    foreach (var val in array)
+                        yield return Activity.FromJson((JObject)val);
+                }
+            }
+        }
+
         public T GetData<T>(string name)
         {
             if (_data.ContainsKey(name))
