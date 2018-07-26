@@ -1478,28 +1478,6 @@ namespace stream_net_tests
             });    
         }
 
-         [Test]
-        public async Task TestCollectionsSelectOne()
-        {
-            string id1 = System.Guid.NewGuid().ToString(),
-            id2 = System.Guid.NewGuid().ToString(); 
-            var data1 = new CollectionObject(id1, "Stream-Tester");
-            data1.SetData<List<string>>("hobbies", new List<string>{"eating", "coding"});
-            var data2 = new CollectionObject(id2, "Stream-User");
-            data2.SetData<List<string>>("vacation", new List<string>{"Spain", "Iceland"});
-            
-            var data = new List<CollectionObject>{data1, data2};
-
-            await this._client.Collections.UpsertMany("people", data);
-
-            var result = await this._client.Collections.SelectOne("people", id1);
-
-            Assert.NotNull(result);
-            Assert.AreEqual(data1.ID, result.ID);
-            Assert.AreEqual(data1.Name, result.Name);
-            Assert.AreEqual(data1.GetData<List<string>>("hobbies"), result.GetData<List<string>>("hobbies"));
-        }
-
         [Test]
         public async Task TestCollectionsSelect()
         {
@@ -1514,7 +1492,29 @@ namespace stream_net_tests
 
             await this._client.Collections.UpsertMany("people", data);
 
-            var results = await this._client.Collections.Select("people", new string[]{id1, id2});
+            var result = await this._client.Collections.Select("people", id1);
+
+            Assert.NotNull(result);
+            Assert.AreEqual(data1.ID, result.ID);
+            Assert.AreEqual(data1.Name, result.Name);
+            Assert.AreEqual(data1.GetData<List<string>>("hobbies"), result.GetData<List<string>>("hobbies"));
+        }
+
+        [Test]
+        public async Task TestCollectionsSelectMany()
+        {
+            string id1 = System.Guid.NewGuid().ToString(),
+            id2 = System.Guid.NewGuid().ToString(); 
+            var data1 = new CollectionObject(id1, "Stream-Tester");
+            data1.SetData<List<string>>("hobbies", new List<string>{"eating", "coding"});
+            var data2 = new CollectionObject(id2, "Stream-User");
+            data2.SetData<List<string>>("vacation", new List<string>{"Spain", "Iceland"});
+            
+            var data = new List<CollectionObject>{data1, data2};
+
+            await this._client.Collections.UpsertMany("people", data);
+
+            var results = await this._client.Collections.SelectMany("people", new string[]{id1, id2});
 
             Assert.NotNull(results);
             Assert.AreEqual(data.Count, results.SafeCount());
@@ -1528,6 +1528,58 @@ namespace stream_net_tests
                 var key = r.Name == "Stream-Tester" ? "hobbies" : "vacation";
                 Assert.AreEqual(found.GetData<List<string>>(key), r.GetData<List<string>>(key));
             });
+        }
+
+        [Test]
+        public async Task TestCollectionsDelete()
+        {
+            string id1 = System.Guid.NewGuid().ToString(),
+            id2 = System.Guid.NewGuid().ToString();
+            var data1 = new CollectionObject(id1, "Stream-Tester");
+            data1.SetData<List<string>>("hobbies", new List<string>{"eating", "coding"});
+            var data2 = new CollectionObject(id2, "Stream-User");
+            data2.SetData<List<string>>("vacation", new List<string>{"Spain", "Iceland"});
+            
+            var data = new List<CollectionObject>{data1, data2};
+
+            await this._client.Collections.UpsertMany("people", data);
+
+            Assert.DoesNotThrowAsync(async ()=>{
+                await this._client.Collections.Delete("people", id2);
+            });
+
+            var results = await this._client.Collections.SelectMany("people", new string[]{id1, id2});
+
+            Assert.NotNull(results);
+            Assert.AreEqual(1, results.SafeCount());
+            var result = results.First();
+            Assert.AreEqual(id1, result.ID);
+            Assert.AreEqual(data1.Name, result.Name);
+            Assert.AreEqual(data1.GetData<List<string>>("hobbies"), result.GetData<List<string>>("hobbies"));
+        }
+
+        [Test]
+        public async Task TestCollectionsDeleteMany()
+        {
+            string id1 = System.Guid.NewGuid().ToString(),
+            id2 = System.Guid.NewGuid().ToString(); 
+            var data1 = new CollectionObject(id1, "Stream-Tester");
+            data1.SetData<List<string>>("hobbies", new List<string>{"eating", "coding"});
+            var data2 = new CollectionObject(id2, "Stream-User");
+            data2.SetData<List<string>>("vacation", new List<string>{"Spain", "Iceland"});
+            
+            var data = new List<CollectionObject>{data1, data2};
+
+            await this._client.Collections.UpsertMany("people", data);
+
+            Assert.DoesNotThrowAsync(async ()=>{
+                await this._client.Collections.DeleteMany("people", new string[]{id1,id2});
+            });
+
+            var results = await this._client.Collections.SelectMany("people", new string[]{id1, id2});
+
+            Assert.NotNull(results);
+            Assert.AreEqual(0, results.SafeCount());
         }
     }
 }

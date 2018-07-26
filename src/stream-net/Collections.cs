@@ -89,13 +89,13 @@ namespace Stream
                 throw StreamException.FromResponse(response);
         }
 
-        public async Task<CollectionObject> SelectOne(string collectionName, string id)
+        public async Task<CollectionObject> Select(string collectionName, string id)
         {
-            var result = await this.Select(collectionName, new string[]{id});
+            var result = await this.SelectMany(collectionName, new string[]{id});
             return result.FirstOrDefault();
         }
 
-        public async Task<IEnumerable<CollectionObject>> Select(string collectionName, IEnumerable<string> ids)
+        public async Task<IEnumerable<CollectionObject>> SelectMany(string collectionName, IEnumerable<string> ids)
         {
             var foreignIds = ids.Select(x => string.Format("{0}:{1}", collectionName, x));
             
@@ -110,6 +110,23 @@ namespace Stream
             throw StreamException.FromResponse(response);
         }
 
+        public async Task Delete(string collectionName, string id)
+        {
+            await this.DeleteMany(collectionName, new string[]{id});
+        }
+
+        public async Task DeleteMany(string collectionName, IEnumerable<string> ids)
+        {    
+            var request = this._client.BuildJWTAppRequest("meta/", HttpMethod.DELETE);
+            request.AddQueryParameter("collection_name", collectionName);
+            request.AddQueryParameter("ids", string.Join(",", ids));
+
+            var response = await this._client.MakeRequest(request);
+
+             if (response.StatusCode != System.Net.HttpStatusCode.OK)
+                throw StreamException.FromResponse(response);
+        }
+
         private static IEnumerable<CollectionObject> GetResults(string json)
         {
             var obj = JObject.Parse(json);
@@ -122,7 +139,7 @@ namespace Stream
                 
                 var foreignID = resultObj.Property("foreign_id").Value.Value<string>();
                 var objectID = foreignID.Split(':')[1];
-                
+
                 var objectData = resultObj.Property("data").Value as JObject;
             
                 var collectionObject = CollectionObject.FromJSON(objectData);
