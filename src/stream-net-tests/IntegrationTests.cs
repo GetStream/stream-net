@@ -1465,7 +1465,6 @@ namespace stream_net_tests
         [Test]
         public void TestCollectionsUpsertMany()
         {
-            //check insert aspect of upsert
             var data1 = new CollectionObject(System.Guid.NewGuid().ToString(), "Stream-Tester");
             data1.SetData<List<string>>("hobbies", new List<string>{"eating", "coding"});
             var data2 = new CollectionObject(System.Guid.NewGuid().ToString(), "Stream-User");
@@ -1477,6 +1476,58 @@ namespace stream_net_tests
             {
                 await this._client.Collections.UpsertMany("people", data);
             });    
+        }
+
+         [Test]
+        public async Task TestCollectionsSelectOne()
+        {
+            string id1 = System.Guid.NewGuid().ToString(),
+            id2 = System.Guid.NewGuid().ToString(); 
+            var data1 = new CollectionObject(id1, "Stream-Tester");
+            data1.SetData<List<string>>("hobbies", new List<string>{"eating", "coding"});
+            var data2 = new CollectionObject(id2, "Stream-User");
+            data2.SetData<List<string>>("vacation", new List<string>{"Spain", "Iceland"});
+            
+            var data = new List<CollectionObject>{data1, data2};
+
+            await this._client.Collections.UpsertMany("people", data);
+
+            var result = await this._client.Collections.SelectOne("people", id1);
+
+            Assert.NotNull(result);
+            Assert.AreEqual(data1.ID, result.ID);
+            Assert.AreEqual(data1.Name, result.Name);
+            Assert.AreEqual(data1.GetData<List<string>>("hobbies"), result.GetData<List<string>>("hobbies"));
+        }
+
+        [Test]
+        public async Task TestCollectionsSelect()
+        {
+            string id1 = System.Guid.NewGuid().ToString(),
+            id2 = System.Guid.NewGuid().ToString(); 
+            var data1 = new CollectionObject(id1, "Stream-Tester");
+            data1.SetData<List<string>>("hobbies", new List<string>{"eating", "coding"});
+            var data2 = new CollectionObject(id2, "Stream-User");
+            data2.SetData<List<string>>("vacation", new List<string>{"Spain", "Iceland"});
+            
+            var data = new List<CollectionObject>{data1, data2};
+
+            await this._client.Collections.UpsertMany("people", data);
+
+            var results = await this._client.Collections.Select("people", new string[]{id1, id2});
+
+            Assert.NotNull(results);
+            Assert.AreEqual(data.Count, results.SafeCount());
+            results.ForEach(r =>
+            {
+                var found = data.Find(x => x.ID == r.ID);
+                Assert.NotNull(found);
+                Assert.AreEqual(found.Name, r.Name);
+                if (r.Name != "Stream-Tester" && r.Name != "Stream-User")
+                    Assert.Fail("unknown select result");
+                var key = r.Name == "Stream-Tester" ? "hobbies" : "vacation";
+                Assert.AreEqual(found.GetData<List<string>>(key), r.GetData<List<string>>(key));
+            });
         }
     }
 }

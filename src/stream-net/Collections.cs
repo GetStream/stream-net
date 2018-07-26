@@ -71,7 +71,7 @@ namespace Stream
 
         public async Task Upsert(string collectionName, CollectionObject data)
         {
-            await this.UpsertMany(collectionName, new List<CollectionObject>{data});
+            await this.UpsertMany(collectionName, new CollectionObject[]{data});
         }
 
         public async Task UpsertMany(string collectionName, IEnumerable<CollectionObject> data)
@@ -89,17 +89,46 @@ namespace Stream
                 throw StreamException.FromResponse(response);
         }
 
+        public async Task<CollectionObject> SelectOne(string collectionName, string id)
+        {
+            var result = await this.Select(collectionName, new string[]{id});
+            return result.FirstOrDefault();
+        }
+
+        public async Task<IEnumerable<CollectionObject>> Select(string collectionName, IEnumerable<string> ids)
+        {
+            var foreignIds = ids.Select(x => string.Format("{0}:{1}", collectionName, x));
+            
+            var request = this._client.BuildJWTAppRequest("meta/", HttpMethod.GET);
+            request.AddQueryParameter("foreign_ids", string.Join(",", foreignIds));
+
+            var response = await this._client.MakeRequest(request);
+
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                return Collections.GetResults(response.Content);
+            
+            throw StreamException.FromResponse(response);
+        }
+
         private static IEnumerable<CollectionObject> GetResults(string json)
         {
             var obj = JObject.Parse(json);
-            var data = obj.Property("data").Value as JObject;
+            var response = obj.Property("response").Value as JObject;
+            var data = response.Property("data").Value as JArray;
 
-            var values = data.PropertyValues().Select(x => x as JArray);
-            foreach (var value in values)
+            foreach (var result in data)
             {
-                foreach (var res in value)
-                    yield return CollectionObject.FromJSON((JObject)res);
+                var resultObj = result as JObject;
+                
+                var foreignID = resultObj.Property("foreign_id").Value.Value<string>();
+                var objectID = foreignID.Split(':')[1];
+                
+                var objectData = resultObj.Property("data").Value as JObject;
+            
+                var collectionObject = CollectionObject.FromJSON(objectData);
+                collectionObject.ID = objectID;
 
+                yield return collectionObject;
             }
         }
     }
