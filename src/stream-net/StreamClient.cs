@@ -63,6 +63,14 @@ namespace Stream
             }
         }
 
+        public Collections Collections
+        {
+            get
+            {
+                return new Collections(this);
+            }
+        }
+
         private Uri GetBaseUrl()
         {
             string region = "";

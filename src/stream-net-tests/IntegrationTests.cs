@@ -1449,5 +1449,34 @@ namespace stream_net_tests
                 Assert.AreEqual(found.Time, a.Time);
             });
         }
+
+        [Test]
+        public void TestCollectionsUpsert()
+        {
+            var data = new CollectionObject(System.Guid.NewGuid().ToString(), "Stream-Tester");
+            data.SetData<List<string>>("hobbies", new List<string>{"eating", "coding"});
+
+            Assert.DoesNotThrowAsync(async () =>
+            {
+                await this._client.Collections.Upsert("people", data);
+            });    
+        }
+
+        [Test]
+        public void TestCollectionsUpsertMany()
+        {
+            //check insert aspect of upsert
+            var data1 = new CollectionObject(System.Guid.NewGuid().ToString(), "Stream-Tester");
+            data1.SetData<List<string>>("hobbies", new List<string>{"eating", "coding"});
+            var data2 = new CollectionObject(System.Guid.NewGuid().ToString(), "Stream-User");
+            data2.SetData<List<string>>("vacation", new List<string>{"Spain", "Iceland"});
+            
+            var data = new List<CollectionObject>{data1, data2};
+
+            Assert.DoesNotThrowAsync(async () =>
+            {
+                await this._client.Collections.UpsertMany("people", data);
+            });    
+        }
     }
 }
