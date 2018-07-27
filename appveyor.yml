@@ -1,15 +1,27 @@
 version: 2.0.{build}
 image: Visual Studio 2017
 
-before_build:
-- appveyor-retry dotnet restore .\src -v Minimal
+init:
 - ps: >-
     if ($env:APPVEYOR_REPO_TAG -eq 'true') {
        Update-AppveyorBuild -Version "${env:APPVEYOR_REPO_TAG_NAME}"
     }
 
+dotnet_csproj:
+  patch: true
+  file: '**\stream-net.csproj'
+  assembly_version: '{version}'
+  assembly_file_version: '{version}'
+  assembly_informational_version: '{version}'
+
+before_build:
+- appveyor-retry dotnet restore .\src -v Minimal
+
 build_script:
 - dotnet build .\src
+
+build:
+  publish_nuget: true
 
 deploy:
   provider: NuGet

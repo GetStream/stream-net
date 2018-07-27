@@ -4,6 +4,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <TargetFrameworks>net461</TargetFrameworks>
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="coveralls.io" Version="1.4.2" />
