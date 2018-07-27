@@ -10,7 +10,7 @@ init:
 
 dotnet_csproj:
   patch: true
-  file: '.src\stream-net\stream-net.csproj'
+  file: '**\stream-net.csproj'
   version: '{version}'
   package_version: '{version}'
   assembly_version: '{version}'
