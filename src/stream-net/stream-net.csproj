@@ -1,4 +1,4 @@
-﻿<Project ToolsVersion="15.0" Sdk="Microsoft.NET.Sdk">
+﻿<Project ToolsVersion="15.0" Sdk="Microsoft.NET.Sdk" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Label="Configuration">
     <DefineConstants>TRACE;DEBUG;NETCORE</DefineConstants>
   </PropertyGroup>
@@ -43,5 +43,5 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-  </ItemGroup>  
+  </ItemGroup>
 </Project>
