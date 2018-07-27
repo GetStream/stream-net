@@ -1454,7 +1454,7 @@ namespace stream_net_tests
         public void TestCollectionsUpsert()
         {
             var data = new CollectionObject(System.Guid.NewGuid().ToString());
-            data.SetData<List<string>>("hobbies", new List<string>{"eating", "coding"});
+            data.SetData("hobbies", new List<string>{"eating", "coding"});
 
             Assert.DoesNotThrowAsync(async () =>
             {
@@ -1466,9 +1466,9 @@ namespace stream_net_tests
         public void TestCollectionsUpsertMany()
         {
             var data1 = new CollectionObject(System.Guid.NewGuid().ToString());
-            data1.SetData<List<string>>("hobbies", new List<string>{"eating", "coding"});
+            data1.SetData("hobbies", new List<string>{"eating", "coding"});
             var data2 = new CollectionObject(System.Guid.NewGuid().ToString());
-            data2.SetData<List<string>>("vacation", new List<string>{"Spain", "Iceland"});
+            data2.SetData("vacation", new List<string>{"Spain", "Iceland"});
             
             var data = new List<CollectionObject>{data1, data2};
 
@@ -1484,9 +1484,9 @@ namespace stream_net_tests
             string id1 = System.Guid.NewGuid().ToString(),
             id2 = System.Guid.NewGuid().ToString(); 
             var data1 = new CollectionObject(id1);
-            data1.SetData<List<string>>("hobbies", new List<string>{"eating", "coding"});
+            data1.SetData("hobbies", new List<string>{"eating", "coding"});
             var data2 = new CollectionObject(id2);
-            data2.SetData<List<string>>("vacation", new List<string>{"Spain", "Iceland"});
+            data2.SetData("vacation", new List<string>{"Spain", "Iceland"});
             
             var data = new List<CollectionObject>{data1, data2};
 
@@ -1505,9 +1505,9 @@ namespace stream_net_tests
             string id1 = System.Guid.NewGuid().ToString(),
             id2 = System.Guid.NewGuid().ToString(); 
             var data1 = new CollectionObject(id1);
-            data1.SetData<List<string>>("hobbies", new List<string>{"eating", "coding"});
+            data1.SetData("hobbies", new List<string>{"eating", "coding"});
             var data2 = new CollectionObject(id2);
-            data2.SetData<List<string>>("vacation", new List<string>{"Spain", "Iceland"});
+            data2.SetData("vacation", new List<string>{"Spain", "Iceland"});
             
             var data = new List<CollectionObject>{data1, data2};
 
@@ -1532,9 +1532,9 @@ namespace stream_net_tests
             string id1 = System.Guid.NewGuid().ToString(),
             id2 = System.Guid.NewGuid().ToString();
             var data1 = new CollectionObject(id1);
-            data1.SetData<List<string>>("hobbies", new List<string>{"eating", "coding"});
+            data1.SetData("hobbies", new List<string>{"eating", "coding"});
             var data2 = new CollectionObject(id2);
-            data2.SetData<List<string>>("vacation", new List<string>{"Spain", "Iceland"});
+            data2.SetData("vacation", new List<string>{"Spain", "Iceland"});
             
             var data = new List<CollectionObject>{data1, data2};
 
@@ -1559,9 +1559,9 @@ namespace stream_net_tests
             string id1 = System.Guid.NewGuid().ToString(),
             id2 = System.Guid.NewGuid().ToString(); 
             var data1 = new CollectionObject(id1);
-            data1.SetData<List<string>>("hobbies", new List<string>{"eating", "coding"});
+            data1.SetData("hobbies", new List<string>{"eating", "coding"});
             var data2 = new CollectionObject(id2);
-            data2.SetData<List<string>>("vacation", new List<string>{"Spain", "Iceland"});
+            data2.SetData("vacation", new List<string>{"Spain", "Iceland"});
             
             var data = new List<CollectionObject>{data1, data2};
 
