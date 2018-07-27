@@ -122,6 +122,11 @@ namespace Stream
                 throw StreamException.FromResponse(response);
         }
 
+        public string Ref(string collectionName, CollectionObject obj)
+        {
+            return string.Format("SO:{1}:{2}", collectionName, obj.ID);
+        }
+
         private static IEnumerable<CollectionObject> GetResults(string json)
         {
             var obj = JObject.Parse(json);
