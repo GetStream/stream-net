@@ -1,4 +1,4 @@
-version: 2.0.{build}
+version: 2.0.5-{build}
 image: Visual Studio 2017
 configuration: Release
 
@@ -30,7 +30,7 @@ deploy:
   provider: NuGet
   server:
   api_key:
-    secure: WeDMJfGDHtrR530W7XTocd5nguQXaY5YXrsjdkPwA9J1WudU9m7Y7MU1Kp/L9KtZ
+    secure: m6faziM7bb+vGkLObwOvwBj9D6fZ8CJ58ZkPHqVKsPONTGcB/gJt7ZL6bVl/dS2a
   skip_symbols: false
   symbol_server:
   artifact: /.*\.nupkg/
