@@ -1453,7 +1453,7 @@ namespace stream_net_tests
         [Test]
         public void TestCollectionsUpsert()
         {
-            var data = new CollectionObject(System.Guid.NewGuid().ToString(), "Stream-Tester");
+            var data = new CollectionObject(System.Guid.NewGuid().ToString());
             data.SetData<List<string>>("hobbies", new List<string>{"eating", "coding"});
 
             Assert.DoesNotThrowAsync(async () =>
@@ -1465,9 +1465,9 @@ namespace stream_net_tests
         [Test]
         public void TestCollectionsUpsertMany()
         {
-            var data1 = new CollectionObject(System.Guid.NewGuid().ToString(), "Stream-Tester");
+            var data1 = new CollectionObject(System.Guid.NewGuid().ToString());
             data1.SetData<List<string>>("hobbies", new List<string>{"eating", "coding"});
-            var data2 = new CollectionObject(System.Guid.NewGuid().ToString(), "Stream-User");
+            var data2 = new CollectionObject(System.Guid.NewGuid().ToString());
             data2.SetData<List<string>>("vacation", new List<string>{"Spain", "Iceland"});
             
             var data = new List<CollectionObject>{data1, data2};
@@ -1483,9 +1483,9 @@ namespace stream_net_tests
         {
             string id1 = System.Guid.NewGuid().ToString(),
             id2 = System.Guid.NewGuid().ToString(); 
-            var data1 = new CollectionObject(id1, "Stream-Tester");
+            var data1 = new CollectionObject(id1);
             data1.SetData<List<string>>("hobbies", new List<string>{"eating", "coding"});
-            var data2 = new CollectionObject(id2, "Stream-User");
+            var data2 = new CollectionObject(id2);
             data2.SetData<List<string>>("vacation", new List<string>{"Spain", "Iceland"});
             
             var data = new List<CollectionObject>{data1, data2};
@@ -1496,7 +1496,6 @@ namespace stream_net_tests
 
             Assert.NotNull(result);
             Assert.AreEqual(data1.ID, result.ID);
-            Assert.AreEqual(data1.Name, result.Name);
             Assert.AreEqual(data1.GetData<List<string>>("hobbies"), result.GetData<List<string>>("hobbies"));
         }
 
@@ -1505,9 +1504,9 @@ namespace stream_net_tests
         {
             string id1 = System.Guid.NewGuid().ToString(),
             id2 = System.Guid.NewGuid().ToString(); 
-            var data1 = new CollectionObject(id1, "Stream-Tester");
+            var data1 = new CollectionObject(id1);
             data1.SetData<List<string>>("hobbies", new List<string>{"eating", "coding"});
-            var data2 = new CollectionObject(id2, "Stream-User");
+            var data2 = new CollectionObject(id2);
             data2.SetData<List<string>>("vacation", new List<string>{"Spain", "Iceland"});
             
             var data = new List<CollectionObject>{data1, data2};
@@ -1522,10 +1521,7 @@ namespace stream_net_tests
             {
                 var found = data.Find(x => x.ID == r.ID);
                 Assert.NotNull(found);
-                Assert.AreEqual(found.Name, r.Name);
-                if (r.Name != "Stream-Tester" && r.Name != "Stream-User")
-                    Assert.Fail("unknown select result");
-                var key = r.Name == "Stream-Tester" ? "hobbies" : "vacation";
+                var key = r.ID == id1 ? "hobbies" : "vacation";
                 Assert.AreEqual(found.GetData<List<string>>(key), r.GetData<List<string>>(key));
             });
         }
@@ -1535,9 +1531,9 @@ namespace stream_net_tests
         {
             string id1 = System.Guid.NewGuid().ToString(),
             id2 = System.Guid.NewGuid().ToString();
-            var data1 = new CollectionObject(id1, "Stream-Tester");
+            var data1 = new CollectionObject(id1);
             data1.SetData<List<string>>("hobbies", new List<string>{"eating", "coding"});
-            var data2 = new CollectionObject(id2, "Stream-User");
+            var data2 = new CollectionObject(id2);
             data2.SetData<List<string>>("vacation", new List<string>{"Spain", "Iceland"});
             
             var data = new List<CollectionObject>{data1, data2};
@@ -1554,7 +1550,6 @@ namespace stream_net_tests
             Assert.AreEqual(1, results.SafeCount());
             var result = results.First();
             Assert.AreEqual(id1, result.ID);
-            Assert.AreEqual(data1.Name, result.Name);
             Assert.AreEqual(data1.GetData<List<string>>("hobbies"), result.GetData<List<string>>("hobbies"));
         }
 
@@ -1563,9 +1558,9 @@ namespace stream_net_tests
         {
             string id1 = System.Guid.NewGuid().ToString(),
             id2 = System.Guid.NewGuid().ToString(); 
-            var data1 = new CollectionObject(id1, "Stream-Tester");
+            var data1 = new CollectionObject(id1);
             data1.SetData<List<string>>("hobbies", new List<string>{"eating", "coding"});
-            var data2 = new CollectionObject(id2, "Stream-User");
+            var data2 = new CollectionObject(id2);
             data2.SetData<List<string>>("vacation", new List<string>{"Spain", "Iceland"});
             
             var data = new List<CollectionObject>{data1, data2};

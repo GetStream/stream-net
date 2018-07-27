@@ -11,16 +11,13 @@ namespace Stream
     public class CollectionObject
     {
         public string ID { get; set; }
-        public string Name { get; set; }
-
         readonly IDictionary<string, JToken> _data = new Dictionary<string, JToken>();
 
         internal CollectionObject(){}
 
-        public CollectionObject(string id, string name)
+        public CollectionObject(string id)
         {
             ID = id;
-            Name = name;
         }
 
         public T GetData<T>(string name)
@@ -38,7 +35,6 @@ namespace Stream
         {
             var root = new JObject();
             root.Add(new JProperty("id", this.ID));
-            root.Add(new JProperty("name", this.Name));
             this._data.ForEach( x => root.Add(x.Key, x.Value));
             return root;
         }
@@ -51,7 +47,6 @@ namespace Stream
                 switch(prop.Name)
                 {
                     case "id": result.ID = prop.Value.Value<string>(); break;
-                    case "name": result.Name = prop.Value.Value<string>(); break;
                     default: result._data[prop.Name] = prop.Value; break;
                 }
             });
