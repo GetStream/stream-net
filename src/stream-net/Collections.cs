@@ -11,7 +11,7 @@ namespace Stream
     public class CollectionObject
     {
         public string ID { get; set; }
-        readonly IDictionary<string, JToken> _data = new Dictionary<string, JToken>();
+        readonly GenericData _data = new GenericData();
 
         internal CollectionObject(){}
 
@@ -22,20 +22,19 @@ namespace Stream
 
         public T GetData<T>(string name)
         {
-            JToken val;
-            return this._data.TryGetValue(name, out val) ? val.ToObject<T>() : default(T);
+            return this._data.GetData<T>(name);
         }
 
         public void SetData<T>(string name, T data)
         {
-            this._data[name] = JValue.FromObject(data);
+            this._data.SetData<T>(name, data);
         }
 
         internal JObject ToJObject()
         {
             var root = new JObject();
             root.Add(new JProperty("id", this.ID));
-            this._data.ForEach( x => root.Add(x.Key, x.Value));
+            this._data.AddToJObject(ref root);
             return root;
         }
 
@@ -47,7 +46,7 @@ namespace Stream
                 switch(prop.Name)
                 {
                     case "id": result.ID = prop.Value.Value<string>(); break;
-                    default: result._data[prop.Name] = prop.Value; break;
+                    default: result._data.SetData(prop.Name, prop.Value); break;
                 }
             });
 
