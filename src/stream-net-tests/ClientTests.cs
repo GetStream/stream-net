@@ -99,5 +99,18 @@ namespace stream_net_tests
                 user1.FollowFeed("flat1", "2:3").GetAwaiter().GetResult();
             });
         }
+
+        [Test]
+        public void TestUpdateActivityArgumentValidation()
+        {
+            Assert.ThrowsAsync<ArgumentException>(async () =>
+            {
+                await _client.UpdateActivity();
+            });
+            Assert.ThrowsAsync<ArgumentException>(async () =>
+            {
+                await _client.UpdateActivity("id", new Stream.ForeignIDTime("fid", DateTime.Now));
+            });
+        }
     }
 }

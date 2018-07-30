@@ -75,7 +75,7 @@ namespace Stream
         public async Task<IEnumerable<Activity>> GetActivities(IEnumerable<string> ids = null, IEnumerable<ForeignIDTime> foreignIDTimes = null)
         {
             if (ids == null && foreignIDTimes == null)
-                throw new ArgumentException("one the parameters ids or foreignIdTimes must be provided and not null", "ids, foreignIDTimes");
+                throw new ArgumentException("one of the parameters ids or foreignIdTimes must be provided and not null", "ids, foreignIDTimes");
             if (ids != null && foreignIDTimes != null)
                 throw new ArgumentException("at most one of the parameters ids or foreignIdTimes must be provided", "ids, foreignIDTimes");
 
@@ -89,7 +89,8 @@ namespace Stream
             if (foreignIDTimes != null)
             {
                 request.AddQueryParameter("foreign_ids", string.Join(",", foreignIDTimes.Select(f => f.ForeignID)));
-                request.AddQueryParameter("timestamps", string.Join(",", foreignIDTimes.Select(f => f.Time.ToString("o"))));
+                request.AddQueryParameter("timestamps", string.Join(",", foreignIDTimes.Select(f =>
+                        f.Time.ToString("s", System.Globalization.CultureInfo.InvariantCulture))));
             }
 
             var response = await _client.MakeRequest(request);

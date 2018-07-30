@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Stream.Rest;
 using System;
 using System.Collections.Generic;
@@ -50,6 +51,42 @@ namespace Stream
 
             string token = Sign(feedSlug + userId);
             return new StreamFeed(this, feedSlug, userId, token);
+        }
+
+        public async Task UpdateActivity(string id = null, ForeignIDTime foreignIDTime = null, GenericData set = null, IEnumerable<string> unset = null)
+        {
+            if (id == null && foreignIDTime == null)
+                throw new ArgumentException("one the parameters ids or foreignIdTimes must be provided and not null", "ids, foreignIDTimes");
+            if (id != null && foreignIDTime != null)
+                throw new ArgumentException("at most one of the parameters ids or foreignIdTimes must be provided", "ids, foreignIDTimes");
+
+            var request = this.BuildJWTAppRequest("activity/", HttpMethod.POST);
+
+            var requestJSON = new JObject();
+
+            if (id != null)
+            {
+                requestJSON.Add(new JProperty("id", id));
+            }
+            else
+            {
+                requestJSON.Add(new JProperty("foreign_id", foreignIDTime.ForeignID));
+                requestJSON.Add(new JProperty("time", foreignIDTime.Time.ToString("s", System.Globalization.CultureInfo.InvariantCulture)));
+            }
+
+            var setObj = new JObject();
+            if (set != null) {
+                set.AddToJObject(ref setObj);
+            }
+            requestJSON.Add("set", setObj);
+
+            requestJSON.Add(new JProperty("unset", unset != null ? unset : new string[]{}));
+
+            request.SetJsonBody(requestJSON.ToString());
+            var response = await this.MakeRequest(request);
+
+            if (response.StatusCode != System.Net.HttpStatusCode.Created)
+                throw StreamException.FromResponse(response);
         }
 
         /// <summary>
@@ -136,7 +173,7 @@ namespace Stream
             // make signature
             var queryString = "";
             request.QueryParameters.ForEach((p) =>
-            {   
+            {
                 queryString += (queryString.Length == 0) ? "?" : "&";
                 queryString += string.Format("{0}={1}", p.Key, Uri.EscapeDataString(p.Value.ToString()));
             });
@@ -184,7 +221,7 @@ namespace Stream
             var segments = new List<string>();
             var header = new {
                 typ = "JWT",
-                alg = "HS256" 
+                alg = "HS256"
             };
             var noTimestamp = !this._options.ExpireTokens;
             var payload = new
@@ -199,7 +236,7 @@ namespace Stream
 
             segments.Add(Base64UrlEncode(headerBytes));
             segments.Add(Base64UrlEncode(payloadBytes));
-            
+
             var stringToSign = string.Join(".", segments.ToArray());
             var bytesToSign = Encoding.UTF8.GetBytes(stringToSign);
 
@@ -207,7 +244,7 @@ namespace Stream
             {
                 byte[] signature = sha.ComputeHash(bytesToSign);
                 segments.Add(Base64UrlEncode(signature));
-            }            
+            }
             return string.Join(".", segments.ToArray());
         }
 
