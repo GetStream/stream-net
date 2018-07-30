@@ -76,14 +76,25 @@ userFeed1.Following(10, 20);
 // Check if $user_feed_1 follows specific feeds
 userFeed1.Following(0, 2, new String[] { "user:42", "user:43" });
 
-// Retrieve activities by their ids 
+// Retrieve activities by their ids
 var ids = new string[] { "e561de8f-00f1-11e4-b400-0cc47a024be0", "a34ndjsh-00f1-11e4-b400-0c9jdnbn0eb0" };
 var activities = await client.Batch.GetActivities(ids)
 
-// Retrieve activities by their ForeignID/Time 
-var foreignIDTimes = new ForeignIDTime[] {new ForeignIDTime("fid-1",  DateTime.Parse("2000-08-19T16:32:32")), new Stream.ForeignIDTime("fid-2",  DateTime.Parse("2000-08-21T16:32:32"))};
+// Retrieve activities by their ForeignID/Time
+var foreignIDTimes = new ForeignIDTime[] {new ForeignIDTime("fid-1", DateTime.Parse("2000-08-19T16:32:32")), new Stream.ForeignIDTime("fid-2",  DateTime.Parse("2000-08-21T16:32:32"))};
 var activities = await client.Batch.GetActivities(null, foreignIDTimes)
 
+//Partially update an activity
+var set = new GenericData();
+set.SetData("custom_field", "new value");
+var unset = new string[]{"field to remove"};
+
+//by id
+await client.UpdateActivity("e561de8f-00f1-11e4-b400-0cc47a024be0", null, set, unset);
+
+//by foreign id and time
+var fidTime = new ForeignIDTime("fid-1", DateTime.Parse("2000-08-19T16:32:32"));
+await client.UpdateActivity(null, fidTime, set, unset);
 ```
 
 ### Copyright and License Information
