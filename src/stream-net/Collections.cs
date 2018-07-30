@@ -13,7 +13,7 @@ namespace Stream
         public string ID { get; set; }
         readonly GenericData _data = new GenericData();
 
-        internal CollectionObject(){}
+        internal CollectionObject() { }
 
         public CollectionObject(string id)
         {
@@ -42,8 +42,9 @@ namespace Stream
         {
             CollectionObject result = new CollectionObject();
 
-            obj.Properties().ForEach(prop => {
-                switch(prop.Name)
+            obj.Properties().ForEach(prop =>
+            {
+                switch (prop.Name)
                 {
                     case "id": result.ID = prop.Value.Value<string>(); break;
                     default: result._data.SetData(prop.Name, prop.Value); break;
@@ -58,14 +59,14 @@ namespace Stream
     {
         readonly StreamClient _client;
 
-        internal Collections(StreamClient client) 
+        internal Collections(StreamClient client)
         {
             _client = client;
         }
 
         public async Task Upsert(string collectionName, CollectionObject data)
         {
-            await this.UpsertMany(collectionName, new CollectionObject[]{data});
+            await this.UpsertMany(collectionName, new CollectionObject[] { data });
         }
 
         public async Task UpsertMany(string collectionName, IEnumerable<CollectionObject> data)
@@ -85,14 +86,14 @@ namespace Stream
 
         public async Task<CollectionObject> Select(string collectionName, string id)
         {
-            var result = await this.SelectMany(collectionName, new string[]{id});
+            var result = await this.SelectMany(collectionName, new string[] { id });
             return result.FirstOrDefault();
         }
 
         public async Task<IEnumerable<CollectionObject>> SelectMany(string collectionName, IEnumerable<string> ids)
         {
             var foreignIds = ids.Select(x => string.Format("{0}:{1}", collectionName, x));
-            
+
             var request = this._client.BuildJWTAppRequest("meta/", HttpMethod.GET);
             request.AddQueryParameter("foreign_ids", string.Join(",", foreignIds));
 
@@ -100,30 +101,30 @@ namespace Stream
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 return Collections.GetResults(response.Content);
-            
+
             throw StreamException.FromResponse(response);
         }
 
         public async Task Delete(string collectionName, string id)
         {
-            await this.DeleteMany(collectionName, new string[]{id});
+            await this.DeleteMany(collectionName, new string[] { id });
         }
 
         public async Task DeleteMany(string collectionName, IEnumerable<string> ids)
-        {    
+        {
             var request = this._client.BuildJWTAppRequest("meta/", HttpMethod.DELETE);
             request.AddQueryParameter("collection_name", collectionName);
             request.AddQueryParameter("ids", string.Join(",", ids));
 
             var response = await this._client.MakeRequest(request);
 
-             if (response.StatusCode != System.Net.HttpStatusCode.OK)
+            if (response.StatusCode != System.Net.HttpStatusCode.OK)
                 throw StreamException.FromResponse(response);
         }
 
-        public string Ref(string collectionName, CollectionObject obj)
+        public static string Ref(string collectionName, CollectionObject obj)
         {
-            return string.Format("SO:{1}:{2}", collectionName, obj.ID);
+            return string.Format("SO:{0}:{1}", collectionName, obj.ID);
         }
 
         private static IEnumerable<CollectionObject> GetResults(string json)
@@ -135,12 +136,12 @@ namespace Stream
             foreach (var result in data)
             {
                 var resultObj = result as JObject;
-                
+
                 var foreignID = resultObj.Property("foreign_id").Value.Value<string>();
                 var objectID = foreignID.Split(':')[1];
 
                 var objectData = resultObj.Property("data").Value as JObject;
-            
+
                 var collectionObject = CollectionObject.FromJSON(objectData);
                 collectionObject.ID = objectID;
 
