@@ -40,7 +40,7 @@ var activity = new Activity("1", "run", "1")
 {
 	ForeignId = "run:1"
 };
-var course = new Dictionary<string,objects>();
+var course = new Dictionary<string,object>();
 course["name"] = "Shevlin Park";
 course["distance"] = 10;
 activity.SetData("course", course);
