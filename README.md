@@ -10,7 +10,7 @@ You can sign up for a Stream account at https://getstream.io/get_started.
 ### Installation via Nuget
 
 ```sh
-PM> Install-Package stream-net
+nuget install stream-net
 ```
 
 ### Usage
