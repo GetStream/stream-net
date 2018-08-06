@@ -106,7 +106,7 @@ namespace Stream
             var request = _client.BuildJWTAppRequest("activities/", HttpMethod.POST);
             request.SetJsonBody(Activity.ToActivitiesJson(activities, this._client));
 
-            var response = await _client.MakeRequest(request);
+            var response = await this._client.MakeRequest(request);
 
             if (response.StatusCode != System.Net.HttpStatusCode.Created)
                 throw StreamException.FromResponse(response);
