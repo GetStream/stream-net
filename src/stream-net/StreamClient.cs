@@ -53,7 +53,7 @@ namespace Stream
             return new StreamFeed(this, feedSlug, userId, token);
         }
 
-        public async Task UpdateActivity(string id = null, ForeignIDTime foreignIDTime = null, GenericData set = null, IEnumerable<string> unset = null)
+        public async Task ActivityPartialUpdate(string id = null, ForeignIDTime foreignIDTime = null, GenericData set = null, IEnumerable<string> unset = null)
         {
             if (id == null && foreignIDTime == null)
                 throw new ArgumentException("one the parameters ids or foreignIdTimes must be provided and not null", "ids, foreignIDTimes");
@@ -75,12 +75,13 @@ namespace Stream
             }
 
             var setObj = new JObject();
-            if (set != null) {
+            if (set != null)
+            {
                 set.AddToJObject(ref setObj);
             }
             requestJSON.Add("set", setObj);
 
-            requestJSON.Add(new JProperty("unset", unset != null ? unset : new string[]{}));
+            requestJSON.Add(new JProperty("unset", unset != null ? unset : new string[] { }));
 
             request.SetJsonBody(requestJSON.ToString());
             var response = await this.MakeRequest(request);
@@ -219,7 +220,8 @@ namespace Stream
         internal string JWToken(string feedId)
         {
             var segments = new List<string>();
-            var header = new {
+            var header = new
+            {
                 typ = "JWT",
                 alg = "HS256"
             };
