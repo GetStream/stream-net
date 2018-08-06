@@ -101,7 +101,19 @@ namespace Stream
             Object = @object;
         }
 
+        internal static string ToActivitiesJson(IEnumerable<Activity> activities, StreamClient client)
+        {
+            var acts = new JArray(from a in activities select a.ToJObject(client));
+            var obj = new JObject(new JProperty("activities", acts));
+            return obj.ToString();
+        }
+
         internal string ToJson(StreamClient client)
+        {
+            return ToJObject(client).ToString();
+        }
+
+        internal JObject ToJObject(StreamClient client)
         {
             JObject obj = new JObject(
                 new JProperty(Field_Actor, this.Actor),
@@ -135,7 +147,7 @@ namespace Stream
                 });
             }
 
-            return obj.ToString();
+            return obj;
         }
 
         internal static Activity FromJson(string json)
