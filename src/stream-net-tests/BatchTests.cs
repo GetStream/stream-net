@@ -51,6 +51,14 @@ namespace stream_net_tests
             {
                 await this._client.Batch.FollowMany(null, 1001);
             });
+            Assert.DoesNotThrowAsync(async () =>
+            {
+                await this._client.Batch.FollowMany(new Stream.Follow[] { new Stream.Follow("user:1", "user:2") }, 0);
+            });
+            Assert.DoesNotThrowAsync(async () =>
+            {
+                await this._client.Batch.FollowMany(new Stream.Follow[] { new Stream.Follow("user:1", "user:2") }, 1000);
+            });
         }
     }
 }

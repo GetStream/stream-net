@@ -91,6 +91,26 @@ namespace stream_net_tests
             {
                 _feed.FollowFeed(_feed).GetAwaiter().GetResult();
             });
+            Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
+            {
+                var feed = _client.Feed("flat", Guid.NewGuid().ToString());
+                await _feed.FollowFeed(feed, -1);
+            });
+            Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
+            {
+                var feed = _client.Feed("flat", Guid.NewGuid().ToString());
+                await _feed.FollowFeed(feed, 1001);
+            });
+            Assert.DoesNotThrowAsync(async () =>
+            {
+                var feed = _client.Feed("flat", Guid.NewGuid().ToString());
+                await _feed.FollowFeed(feed, 0);
+            });
+            Assert.DoesNotThrowAsync(async () =>
+            {
+                var feed = _client.Feed("flat", Guid.NewGuid().ToString());
+                await _feed.FollowFeed(feed, 1000);
+            });
         }
 
         [Test]
