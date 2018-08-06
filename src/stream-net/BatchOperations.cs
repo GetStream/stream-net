@@ -49,8 +49,8 @@ namespace Stream
 
         public async Task FollowMany(IEnumerable<Follow> follows, int activityCopyLimit = StreamClient.ActivityCopyLimitDefault)
         {
-            if (activityCopyLimit < 1)
-                throw new ArgumentOutOfRangeException("activityCopyLimit", "Activity copy limit must be greater than 0");
+            if (activityCopyLimit < 0)
+                throw new ArgumentOutOfRangeException("activityCopyLimit", "Activity copy limit must be greater than or equal to 0");
             if (activityCopyLimit > StreamClient.ActivityCopyLimitMax)
                 throw new ArgumentOutOfRangeException("activityCopyLimit", string.Format("Activity copy limit must be less than or equal to {0}", StreamClient.ActivityCopyLimitMax));
 
