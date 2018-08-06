@@ -1691,5 +1691,76 @@ namespace stream_net_tests
             Assert.IsNull(updatedAct.GetData<string>("custom_thing3"));
             Assert.AreEqual("zyx", updatedAct.GetData<string>("custom_thing"));
         }
+
+        [Test]
+        public async Task TestBatchUpdateActivity()
+        {
+            var activity = new Stream.Activity("user:1", "like", "cake")
+            {
+                ForeignId = "cake:1",
+                Time = DateTime.UtcNow,
+                Target = "johnny"
+            };
+            activity.SetData("custom", "field");
+            var insertedActivity = await this._user1.AddActivity(activity);
+
+            activity.Target = "timmy";
+            activity.SetData("custom", "data");
+            activity.SetData("another", "thing");
+
+            Assert.DoesNotThrowAsync(async () =>
+            {
+                await this._client.Batch.UpdateActivity(activity);
+            });
+
+            var updatedActivity = (await this._user1.GetActivities(0, 1)).FirstOrDefault();
+            Assert.NotNull(updatedActivity);
+            Assert.AreEqual(insertedActivity.Id, updatedActivity.Id);
+            Assert.AreEqual(activity.Target, updatedActivity.Target);
+            Assert.AreEqual(activity.GetData<string>("custom"), updatedActivity.GetData<string>("custom"));
+            Assert.AreEqual(activity.GetData<string>("another"), updatedActivity.GetData<string>("another"));
+        }
+
+        [Test]
+        public async Task TestBatchUpdateActivities()
+        {
+            var activity = new Stream.Activity("user:1", "like", "cake")
+            {
+                ForeignId = "cake:1",
+                Time = DateTime.UtcNow,
+                Target = "johnny"
+            };
+            activity.SetData("custom", "field");
+            var activity2 = new Stream.Activity("user:123", "posts", "selfie")
+            {
+                ForeignId = "selfie:2",
+                Time = DateTime.UtcNow,
+            };
+
+            var insertedActivity = await this._user1.AddActivity(activity);
+            var insertedActivity2 = await this._flat3.AddActivity(activity2);
+
+            activity.SetData("custom", "data");
+            activity.Target = null;
+            activity2.SetData("new-stuff", new int[] { 3, 2, 1 });
+            activity2.Actor = "user:3";
+
+            Assert.DoesNotThrowAsync(async () =>
+            {
+                await this._client.Batch.UpdateActivities(new Stream.Activity[] { activity, activity2 });
+            });
+
+            var updatedActivity = (await this._user1.GetActivities(0, 1)).FirstOrDefault();
+            Assert.NotNull(updatedActivity);
+            Assert.AreEqual(insertedActivity.Id, updatedActivity.Id);
+            Assert.AreEqual(string.Empty, updatedActivity.Target);
+            Assert.AreEqual(activity.GetData<string>("custom"), updatedActivity.GetData<string>("custom"));
+
+            var updatedActivity2 = (await this._flat3.GetActivities(0, 1)).FirstOrDefault();
+            Assert.NotNull(updatedActivity2);
+            Assert.AreEqual(insertedActivity2.Id, updatedActivity2.Id);
+            Assert.AreEqual(activity2.Actor, updatedActivity2.Actor);
+            Assert.AreEqual(activity2.GetData<int[]>("custom"), updatedActivity2.GetData<int[]>("custom"));
+        }
     }
 }

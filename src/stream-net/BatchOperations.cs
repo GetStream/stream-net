@@ -9,8 +9,8 @@ namespace Stream
 {
     public class ForeignIDTime
     {
-        public string ForeignID   {get; set; }
-        public DateTime Time  {get; set; }
+        public string ForeignID { get; set; }
+        public DateTime Time { get; set; }
 
         public ForeignIDTime(string foreignID, DateTime time)
         {
@@ -58,11 +58,11 @@ namespace Stream
 
             request.AddQueryParameter("activity_copy_limit", activityCopyLimit.ToString());
             request.SetJsonBody(JsonConvert.SerializeObject(from f in follows
-                                select new
-                                {
-                                    source = f.Source,
-                                    target = f.Target
-                                }));
+                                                            select new
+                                                            {
+                                                                source = f.Source,
+                                                                target = f.Target
+                                                            }));
 
             _client.SignRequest(request);
 
@@ -100,5 +100,22 @@ namespace Stream
 
             throw StreamException.FromResponse(response);
         }
+
+        public async Task UpdateActivities(IEnumerable<Activity> activities)
+        {
+            var request = _client.BuildJWTAppRequest("activities/", HttpMethod.POST);
+            request.SetJsonBody(Activity.ToActivitiesJson(activities, this._client));
+
+            var response = await _client.MakeRequest(request);
+
+            if (response.StatusCode != System.Net.HttpStatusCode.Created)
+                throw StreamException.FromResponse(response);
+        }
+
+        public async Task UpdateActivity(Activity activity)
+        {
+            await UpdateActivities(new Activity[] { activity });
+        }
+
     }
 }
