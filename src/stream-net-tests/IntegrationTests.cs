@@ -1394,7 +1394,8 @@ namespace stream_net_tests
             Assert.IsNotNull(activities);
             Assert.AreEqual(addedActivities.Count, activities.Count());
 
-            activities.ForEach(a => {
+            activities.ForEach(a =>
+            {
                 var found = addedActivities.Find(x => x.Id == a.Id);
                 Assert.NotNull(found);
                 Assert.AreEqual(found.Actor, a.Actor);
@@ -1439,7 +1440,8 @@ namespace stream_net_tests
             Assert.IsNotNull(activities);
             Assert.AreEqual(addedActivities.Count, activities.Count());
 
-            activities.ForEach(a => {
+            activities.ForEach(a =>
+            {
                 var found = addedActivities.Find(x => x.Id == a.Id);
                 Assert.NotNull(found);
                 Assert.AreEqual(found.Actor, a.Actor);
@@ -1454,7 +1456,7 @@ namespace stream_net_tests
         public void TestCollectionsUpsert()
         {
             var data = new CollectionObject(System.Guid.NewGuid().ToString());
-            data.SetData("hobbies", new List<string>{"eating", "coding"});
+            data.SetData("hobbies", new List<string> { "eating", "coding" });
 
             Assert.DoesNotThrowAsync(async () =>
             {
@@ -1466,11 +1468,11 @@ namespace stream_net_tests
         public void TestCollectionsUpsertMany()
         {
             var data1 = new CollectionObject(System.Guid.NewGuid().ToString());
-            data1.SetData("hobbies", new List<string>{"eating", "coding"});
+            data1.SetData("hobbies", new List<string> { "eating", "coding" });
             var data2 = new CollectionObject(System.Guid.NewGuid().ToString());
-            data2.SetData("vacation", new List<string>{"Spain", "Iceland"});
+            data2.SetData("vacation", new List<string> { "Spain", "Iceland" });
 
-            var data = new List<CollectionObject>{data1, data2};
+            var data = new List<CollectionObject> { data1, data2 };
 
             Assert.DoesNotThrowAsync(async () =>
             {
@@ -1484,11 +1486,11 @@ namespace stream_net_tests
             string id1 = System.Guid.NewGuid().ToString(),
             id2 = System.Guid.NewGuid().ToString();
             var data1 = new CollectionObject(id1);
-            data1.SetData("hobbies", new List<string>{"eating", "coding"});
+            data1.SetData("hobbies", new List<string> { "eating", "coding" });
             var data2 = new CollectionObject(id2);
-            data2.SetData("vacation", new List<string>{"Spain", "Iceland"});
+            data2.SetData("vacation", new List<string> { "Spain", "Iceland" });
 
-            var data = new List<CollectionObject>{data1, data2};
+            var data = new List<CollectionObject> { data1, data2 };
 
             await this._client.Collections.UpsertMany("people", data);
 
@@ -1505,15 +1507,15 @@ namespace stream_net_tests
             string id1 = System.Guid.NewGuid().ToString(),
             id2 = System.Guid.NewGuid().ToString();
             var data1 = new CollectionObject(id1);
-            data1.SetData("hobbies", new List<string>{"eating", "coding"});
+            data1.SetData("hobbies", new List<string> { "eating", "coding" });
             var data2 = new CollectionObject(id2);
-            data2.SetData("vacation", new List<string>{"Spain", "Iceland"});
+            data2.SetData("vacation", new List<string> { "Spain", "Iceland" });
 
-            var data = new List<CollectionObject>{data1, data2};
+            var data = new List<CollectionObject> { data1, data2 };
 
             await this._client.Collections.UpsertMany("people", data);
 
-            var results = await this._client.Collections.SelectMany("people", new string[]{id1, id2});
+            var results = await this._client.Collections.SelectMany("people", new string[] { id1, id2 });
 
             Assert.NotNull(results);
             Assert.AreEqual(data.Count, results.SafeCount());
@@ -1532,19 +1534,20 @@ namespace stream_net_tests
             string id1 = System.Guid.NewGuid().ToString(),
             id2 = System.Guid.NewGuid().ToString();
             var data1 = new CollectionObject(id1);
-            data1.SetData("hobbies", new List<string>{"eating", "coding"});
+            data1.SetData("hobbies", new List<string> { "eating", "coding" });
             var data2 = new CollectionObject(id2);
-            data2.SetData("vacation", new List<string>{"Spain", "Iceland"});
+            data2.SetData("vacation", new List<string> { "Spain", "Iceland" });
 
-            var data = new List<CollectionObject>{data1, data2};
+            var data = new List<CollectionObject> { data1, data2 };
 
             await this._client.Collections.UpsertMany("people", data);
 
-            Assert.DoesNotThrowAsync(async ()=>{
+            Assert.DoesNotThrowAsync(async () =>
+            {
                 await this._client.Collections.Delete("people", id2);
             });
 
-            var results = await this._client.Collections.SelectMany("people", new string[]{id1, id2});
+            var results = await this._client.Collections.SelectMany("people", new string[] { id1, id2 });
 
             Assert.NotNull(results);
             Assert.AreEqual(1, results.SafeCount());
@@ -1559,26 +1562,27 @@ namespace stream_net_tests
             string id1 = System.Guid.NewGuid().ToString(),
             id2 = System.Guid.NewGuid().ToString();
             var data1 = new CollectionObject(id1);
-            data1.SetData("hobbies", new List<string>{"eating", "coding"});
+            data1.SetData("hobbies", new List<string> { "eating", "coding" });
             var data2 = new CollectionObject(id2);
-            data2.SetData("vacation", new List<string>{"Spain", "Iceland"});
+            data2.SetData("vacation", new List<string> { "Spain", "Iceland" });
 
-            var data = new List<CollectionObject>{data1, data2};
+            var data = new List<CollectionObject> { data1, data2 };
 
             await this._client.Collections.UpsertMany("people", data);
 
-            Assert.DoesNotThrowAsync(async ()=>{
-                await this._client.Collections.DeleteMany("people", new string[]{id1,id2});
+            Assert.DoesNotThrowAsync(async () =>
+            {
+                await this._client.Collections.DeleteMany("people", new string[] { id1, id2 });
             });
 
-            var results = await this._client.Collections.SelectMany("people", new string[]{id1, id2});
+            var results = await this._client.Collections.SelectMany("people", new string[] { id1, id2 });
 
             Assert.NotNull(results);
             Assert.AreEqual(0, results.SafeCount());
         }
 
         [Test]
-        public async Task TestUpdateActivityByID()
+        public async Task TestActivityPartialUpdateByID()
         {
             var act = new Stream.Activity("upd", "test", "1")
             {
@@ -1600,21 +1604,21 @@ namespace stream_net_tests
 
             Assert.DoesNotThrowAsync(async () =>
             {
-                await this._client.UpdateActivity(insertedAct.Id, null, set);
+                await this._client.ActivityPartialUpdate(insertedAct.Id, null, set);
             });
 
-            var updatedAct = (await this._client.Batch.GetActivities(new string[]{insertedAct.Id})).FirstOrDefault();
+            var updatedAct = (await this._client.Batch.GetActivities(new string[] { insertedAct.Id })).FirstOrDefault();
             Assert.NotNull(updatedAct);
             Assert.AreEqual("abcdef", updatedAct.GetData<string>("custom_thing"));
 
-            var unset = new string[]{"custom_thing2"};
+            var unset = new string[] { "custom_thing2" };
 
             Assert.DoesNotThrowAsync(async () =>
             {
-                await this._client.UpdateActivity(insertedAct.Id, null, null, unset);
+                await this._client.ActivityPartialUpdate(insertedAct.Id, null, null, unset);
             });
 
-            updatedAct = (await this._client.Batch.GetActivities(new string[]{insertedAct.Id})).FirstOrDefault();
+            updatedAct = (await this._client.Batch.GetActivities(new string[] { insertedAct.Id })).FirstOrDefault();
             Assert.NotNull(updatedAct);
             Assert.IsNull(updatedAct.GetData<string>("custom_thing2"));
 
@@ -1623,17 +1627,17 @@ namespace stream_net_tests
 
             Assert.DoesNotThrowAsync(async () =>
             {
-                await this._client.UpdateActivity(insertedAct.Id, null, set, unset);
+                await this._client.ActivityPartialUpdate(insertedAct.Id, null, set, unset);
             });
 
-            updatedAct = (await this._client.Batch.GetActivities(new string[]{insertedAct.Id})).FirstOrDefault();
+            updatedAct = (await this._client.Batch.GetActivities(new string[] { insertedAct.Id })).FirstOrDefault();
             Assert.NotNull(updatedAct);
             Assert.IsNull(updatedAct.GetData<string>("custom_thing3"));
             Assert.AreEqual("zyx", updatedAct.GetData<string>("custom_thing"));
         }
 
         [Test]
-        public async Task TestUpdateActivityByForeignIDTime()
+        public async Task TestActivityPartialUpdateByForeignIDTime()
         {
             var fidTime = new Stream.ForeignIDTime(System.Guid.NewGuid().ToString(), DateTime.UtcNow);
             var act = new Stream.Activity("upd", "test", "1")
@@ -1656,21 +1660,21 @@ namespace stream_net_tests
 
             Assert.DoesNotThrowAsync(async () =>
             {
-                await this._client.UpdateActivity(null, fidTime, set);
+                await this._client.ActivityPartialUpdate(null, fidTime, set);
             });
 
-            var updatedAct = (await this._client.Batch.GetActivities(new string[]{insertedAct.Id})).FirstOrDefault();
+            var updatedAct = (await this._client.Batch.GetActivities(new string[] { insertedAct.Id })).FirstOrDefault();
             Assert.NotNull(updatedAct);
             Assert.AreEqual("abcdef", updatedAct.GetData<string>("custom_thing"));
 
-            var unset = new string[]{"custom_thing2"};
+            var unset = new string[] { "custom_thing2" };
 
             Assert.DoesNotThrowAsync(async () =>
             {
-                await this._client.UpdateActivity(null, fidTime, null, unset);
+                await this._client.ActivityPartialUpdate(null, fidTime, null, unset);
             });
 
-            updatedAct = (await this._client.Batch.GetActivities(new string[]{insertedAct.Id})).FirstOrDefault();
+            updatedAct = (await this._client.Batch.GetActivities(new string[] { insertedAct.Id })).FirstOrDefault();
             Assert.NotNull(updatedAct);
             Assert.IsNull(updatedAct.GetData<string>("custom_thing2"));
 
@@ -1679,13 +1683,84 @@ namespace stream_net_tests
 
             Assert.DoesNotThrowAsync(async () =>
             {
-                await this._client.UpdateActivity(null, fidTime, set, unset);
+                await this._client.ActivityPartialUpdate(null, fidTime, set, unset);
             });
 
-            updatedAct = (await this._client.Batch.GetActivities(new string[]{insertedAct.Id})).FirstOrDefault();
+            updatedAct = (await this._client.Batch.GetActivities(new string[] { insertedAct.Id })).FirstOrDefault();
             Assert.NotNull(updatedAct);
             Assert.IsNull(updatedAct.GetData<string>("custom_thing3"));
             Assert.AreEqual("zyx", updatedAct.GetData<string>("custom_thing"));
+        }
+
+        [Test]
+        public async Task TestBatchUpdateActivity()
+        {
+            var activity = new Stream.Activity("user:1", "like", "cake")
+            {
+                ForeignId = "cake:1",
+                Time = DateTime.UtcNow,
+                Target = "johnny"
+            };
+            activity.SetData("custom", "field");
+            var insertedActivity = await this._user1.AddActivity(activity);
+
+            activity.Target = "timmy";
+            activity.SetData("custom", "data");
+            activity.SetData("another", "thing");
+
+            Assert.DoesNotThrowAsync(async () =>
+            {
+                await this._client.Batch.UpdateActivity(activity);
+            });
+
+            var updatedActivity = (await this._user1.GetActivities(0, 1)).FirstOrDefault();
+            Assert.NotNull(updatedActivity);
+            Assert.AreEqual(insertedActivity.Id, updatedActivity.Id);
+            Assert.AreEqual(activity.Target, updatedActivity.Target);
+            Assert.AreEqual(activity.GetData<string>("custom"), updatedActivity.GetData<string>("custom"));
+            Assert.AreEqual(activity.GetData<string>("another"), updatedActivity.GetData<string>("another"));
+        }
+
+        [Test]
+        public async Task TestBatchUpdateActivities()
+        {
+            var activity = new Stream.Activity("user:1", "like", "cake")
+            {
+                ForeignId = "cake:1",
+                Time = DateTime.UtcNow,
+                Target = "johnny"
+            };
+            activity.SetData("custom", "field");
+            var activity2 = new Stream.Activity("user:123", "posts", "selfie")
+            {
+                ForeignId = "selfie:2",
+                Time = DateTime.UtcNow,
+            };
+
+            var insertedActivity = await this._user1.AddActivity(activity);
+            var insertedActivity2 = await this._flat3.AddActivity(activity2);
+
+            activity.SetData("custom", "data");
+            activity.Target = null;
+            activity2.SetData("new-stuff", new int[] { 3, 2, 1 });
+            activity2.Actor = "user:3";
+
+            Assert.DoesNotThrowAsync(async () =>
+            {
+                await this._client.Batch.UpdateActivities(new Stream.Activity[] { activity, activity2 });
+            });
+
+            var updatedActivity = (await this._user1.GetActivities(0, 1)).FirstOrDefault();
+            Assert.NotNull(updatedActivity);
+            Assert.AreEqual(insertedActivity.Id, updatedActivity.Id);
+            Assert.AreEqual(string.Empty, updatedActivity.Target);
+            Assert.AreEqual(activity.GetData<string>("custom"), updatedActivity.GetData<string>("custom"));
+
+            var updatedActivity2 = (await this._flat3.GetActivities(0, 1)).FirstOrDefault();
+            Assert.NotNull(updatedActivity2);
+            Assert.AreEqual(insertedActivity2.Id, updatedActivity2.Id);
+            Assert.AreEqual(activity2.Actor, updatedActivity2.Actor);
+            Assert.AreEqual(activity2.GetData<int[]>("custom"), updatedActivity2.GetData<int[]>("custom"));
         }
     }
 }

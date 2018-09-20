@@ -78,29 +78,6 @@ namespace Stream
             throw StreamException.FromResponse(response);
         }
 
-        internal string ToActivitiesJson(IEnumerable<Activity> activities)
-        {
-            StringBuilder sb = new StringBuilder();
-            StringWriter sw = new StringWriter(sb);
-
-            using (JsonWriter writer = new JsonTextWriter(sw))
-            {
-                writer.WriteStartObject();
-                writer.WritePropertyName("activities");
-                writer.WriteStartArray();
-
-                activities.ForEach((a) =>
-                {
-                    writer.WriteRawValue(a.ToJson(this._client));
-                });
-
-                writer.WriteEnd();
-                writer.WriteEndObject();
-            }
-
-            return sb.ToString();
-        }
-
         /// <summary>
         /// Add a list of activities
         /// </summary>
@@ -112,7 +89,7 @@ namespace Stream
                 throw new ArgumentNullException("activities", "Must have activities to add");
 
             var request = _client.BuildFeedRequest(this, "/", HttpMethod.POST);
-            request.SetJsonBody(ToActivitiesJson(activities));
+            request.SetJsonBody(Activity.ToActivitiesJson(activities, this._client));
 
             var response = await _client.MakeRequest(request);
 
@@ -147,7 +124,7 @@ namespace Stream
                 throw new ArgumentNullException("activities", "Maximum length is 100");
 
             var request = _client.BuildActivitiesRequest(this);
-            request.SetJsonBody(ToActivitiesJson(activities));
+            request.SetJsonBody(Activity.ToActivitiesJson(activities, this._client));
 
             var response = await _client.MakeRequest(request);
 

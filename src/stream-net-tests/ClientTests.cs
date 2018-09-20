@@ -40,7 +40,7 @@ namespace stream_net_tests
         }
 
         [Test]
-        
+
         public void TestFeedIdValidation()
         {
             Assert.Throws<ArgumentNullException>(() =>
@@ -83,7 +83,7 @@ namespace stream_net_tests
                 user1.FollowFeed("flat", "").GetAwaiter().GetResult();
             });
             Assert.Throws<ArgumentNullException>(() =>
-            {                
+            {
                 user1.FollowFeed("", "1").GetAwaiter().GetResult();
             });
             Assert.Throws<ArgumentException>(() =>
@@ -101,15 +101,15 @@ namespace stream_net_tests
         }
 
         [Test]
-        public void TestUpdateActivityArgumentValidation()
+        public void TestActivityPartialUpdateArgumentValidation()
         {
             Assert.ThrowsAsync<ArgumentException>(async () =>
             {
-                await _client.UpdateActivity();
+                await _client.ActivityPartialUpdate();
             });
             Assert.ThrowsAsync<ArgumentException>(async () =>
             {
-                await _client.UpdateActivity("id", new Stream.ForeignIDTime("fid", DateTime.Now));
+                await _client.ActivityPartialUpdate("id", new Stream.ForeignIDTime("fid", DateTime.Now));
             });
         }
     }
