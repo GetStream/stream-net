@@ -486,6 +486,10 @@ namespace stream_net_tests
             response = await this._user1.GetFlatActivities(GetOptions.Default.WithLimit(2).WithFilter(FeedFilter.Where().IdLessThan(third.Id)));
             activities = response.Results;
             Assert.AreEqual(second.Id, activities.First().Id);
+
+            response = await this._user1.GetFlatActivities(GetOptions.Default.WithLimit(2).WithSession("dummy").WithFilter(FeedFilter.Where().IdLessThan(third.Id)));
+            activities = response.Results;
+            Assert.AreEqual(second.Id, activities.First().Id);
         }
 
         [Test]
