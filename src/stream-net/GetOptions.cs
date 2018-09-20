@@ -14,7 +14,8 @@ namespace Stream
         ActivityMarker _marker = null;
 
         string _ranking = null;
-        
+        string _session = null;
+
         public GetOptions WithOffset(int offset)
         {
             _offset = offset;
@@ -45,6 +46,12 @@ namespace Stream
             return this;
         }
 
+        public GetOptions WithSession(string session)
+        {
+            _session = session;
+            return this;
+        }
+
         internal void Apply(RestRequest request)
         {
             // offset and and limit
@@ -53,7 +60,10 @@ namespace Stream
 
             // add ranking
             if (!string.IsNullOrWhiteSpace(_ranking))
-                request.AddQueryParameter("ranking", _ranking.ToString());
+                request.AddQueryParameter("ranking", _ranking);
+
+            if (!string.IsNullOrWhiteSpace(_session))
+                request.AddQueryParameter("session", _session);
 
             // filter if needed
             if (_filter != null)
@@ -63,7 +73,7 @@ namespace Stream
             if (_marker != null)
                 _marker.Apply(request);
         }
-        
+
         public static GetOptions Default
         {
             get
