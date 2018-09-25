@@ -90,11 +90,11 @@ set.SetData("custom_field", "new value");
 var unset = new string[]{"field to remove"};
 
 //by id
-await client.UpdateActivity("e561de8f-00f1-11e4-b400-0cc47a024be0", null, set, unset);
+await client.ActivityPartialUpdate("e561de8f-00f1-11e4-b400-0cc47a024be0", null, set, unset);
 
 //by foreign id and time
 var fidTime = new ForeignIDTime("fid-1", DateTime.Parse("2000-08-19T16:32:32"));
-await client.UpdateActivity(null, fidTime, set, unset);
+await client.ActivityPartialUpdate(null, fidTime, set, unset);
 ```
 
 ### Copyright and License Information
