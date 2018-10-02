@@ -122,9 +122,14 @@ namespace Stream
                 throw StreamException.FromResponse(response);
         }
 
+        public static string Ref(string collectionName, string collectionObjectID)
+        {
+            return string.Format("SO:{0}:{1}", collectionName, collectionObjectID);
+        }
+
         public static string Ref(string collectionName, CollectionObject obj)
         {
-            return string.Format("SO:{0}:{1}", collectionName, obj.ID);
+            return Ref(collectionName, obj.ID);
         }
 
         private static IEnumerable<CollectionObject> GetResults(string json)
