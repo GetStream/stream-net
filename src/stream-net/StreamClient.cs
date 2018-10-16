@@ -9,8 +9,8 @@ using System.Threading.Tasks;
 
 namespace Stream
 {
-    public class StreamClient
-    {
+    public class StreamClient : IStreamClient
+	{
         internal const string BaseUrlFormat = "https://{0}-api.stream-io-api.com";
         internal const string BaseUrlPath = "/api/v1.0/";
         internal const string ActivitiesUrlPath = "activities/";

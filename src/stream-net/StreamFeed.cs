@@ -11,8 +11,8 @@ using System.Threading.Tasks;
 
 namespace Stream
 {
-    public class StreamFeed
-    {
+    public class StreamFeed : IStreamFeed
+	{
         static Regex _feedRegex = new Regex(@"^\w+$", RegexOptions.Compiled);
         static Regex _userRegex = new Regex(@"^[-\w]+$", RegexOptions.Compiled);
 
@@ -241,43 +241,37 @@ namespace Stream
             return GetWithOptions<NotificationActivity>(options);
         }
 
-        public async Task FollowFeed(StreamFeed feedToFollow, int activityCopyLimit = StreamClient.ActivityCopyLimitDefault)
-        {
-            if (feedToFollow == null)
-                throw new ArgumentNullException("feedToFollow", "Must have a feed to follow");
-            if (feedToFollow.FeedTokenId == this.FeedTokenId)
-                throw new ArgumentException("Cannot follow myself");
-            if (activityCopyLimit < 0)
-                throw new ArgumentOutOfRangeException("activityCopyLimit", "Activity copy limit must be greater than or equal to 0");
-            if (activityCopyLimit > StreamClient.ActivityCopyLimitMax)
-                throw new ArgumentOutOfRangeException("activityCopyLimit", string.Format("Activity copy limit must be less than or equal to {0}", StreamClient.ActivityCopyLimitMax));
+        public async Task FollowFeed(IStreamFeed feedToFollow, int activityCopyLimit = StreamClient.ActivityCopyLimitDefault)
+		{
+			ValidateFeedFollow(feedToFollow);
+			if (activityCopyLimit < 0)
+				throw new ArgumentOutOfRangeException("activityCopyLimit", "Activity copy limit must be greater than or equal to 0");
+			if (activityCopyLimit > StreamClient.ActivityCopyLimitMax)
+				throw new ArgumentOutOfRangeException("activityCopyLimit", string.Format("Activity copy limit must be less than or equal to {0}", StreamClient.ActivityCopyLimitMax));
 
-            var request = _client.BuildFeedRequest(this, "/following/", HttpMethod.POST);
+			var request = _client.BuildFeedRequest(this, "/following/", HttpMethod.POST);
 
-            request.SetJsonBody(JsonConvert.SerializeObject(new
-            {
-                target = feedToFollow.FeedId,
-                activity_copy_limit = activityCopyLimit,
-                target_token = feedToFollow.Token
-            }));
+			request.SetJsonBody(JsonConvert.SerializeObject(new
+			{
+				target = feedToFollow.FeedId,
+				activity_copy_limit = activityCopyLimit,
+				target_token = feedToFollow.Token
+			}));
 
-            var response = await _client.MakeRequest(request);
+			var response = await _client.MakeRequest(request);
 
-            if (response.StatusCode != System.Net.HttpStatusCode.Created)
-                throw StreamException.FromResponse(response);
-        }
+			if (response.StatusCode != System.Net.HttpStatusCode.Created)
+				throw StreamException.FromResponse(response);
+		}
 
-        public Task FollowFeed(string targetFeedSlug, string targetUserId, int activityCopyLimit = StreamClient.ActivityCopyLimitDefault)
+		public Task FollowFeed(string targetFeedSlug, string targetUserId, int activityCopyLimit = StreamClient.ActivityCopyLimitDefault)
         {
             return FollowFeed(this._client.Feed(targetFeedSlug, targetUserId), activityCopyLimit);
         }
 
-        public async Task UnfollowFeed(StreamFeed feedToUnfollow, bool keepHistory = false)
+        public async Task UnfollowFeed(IStreamFeed feedToUnfollow, bool keepHistory = false)
         {
-            if (feedToUnfollow == null)
-                throw new ArgumentNullException("feedToUnfollow", "Must have a feed to unfollow");
-            if (feedToUnfollow.FeedTokenId == this.FeedTokenId)
-                throw new ArgumentException("Cannot unfollow myself");
+			ValidateFeedFollow(feedToUnfollow);
 
             var request = _client.BuildFeedRequest(this, "/following/" + feedToUnfollow.FeedId + "/", HttpMethod.DELETE);
             request.AddQueryParameter("keep_history", keepHistory.ToString());
@@ -341,5 +335,14 @@ namespace Stream
 
             return JsonConvert.DeserializeObject<FollowersResponse>(response.Content).results;
         }
-    }
+
+		private void ValidateFeedFollow(IStreamFeed feed)
+		{
+			if (feed == null)
+				throw new ArgumentNullException("feed", "Must have a feed to follow/unfollow");
+			if (((StreamFeed)feed).FeedTokenId == this.FeedTokenId)
+				throw new ArgumentException("Cannot follow/unfollow myself");
+		}
+
+	}
 }

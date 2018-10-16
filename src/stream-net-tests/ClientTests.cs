@@ -11,7 +11,7 @@ namespace stream_net_tests
     [TestFixture]
     public class ClientTests
     {
-        private Stream.StreamClient _client;
+        private Stream.IStreamClient _client;
 
         [SetUp]
         public void Setup()
