@@ -139,6 +139,8 @@ namespace stream_net_tests
             Assert.AreEqual("dotnet", (string)data);
             Assert.True(tok.Payload.TryGetValue("testing", out data));
             Assert.AreEqual(true, (bool)data);
+
+            Assert.False(tok.Payload.TryGetValue("missing", out data));
         }
     }
 }
