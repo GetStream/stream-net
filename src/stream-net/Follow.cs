@@ -16,7 +16,7 @@ namespace Stream
             Target = target;
         }
 
-        public Follow(StreamFeed source, StreamFeed target)
+        public Follow(IStreamFeed source, IStreamFeed target)
         {
             Source = source.FeedId;
             Target = target.FeedId;

@@ -9,8 +9,8 @@ using System.Threading.Tasks;
 
 namespace Stream
 {
-    public class StreamClient
-    {
+    public class StreamClient : IStreamClient
+	{
         internal const string BaseUrlFormat = "https://{0}-api.stream-io-api.com";
         internal const string BaseUrlPath = "/api/v1.0/";
         internal const string ActivitiesUrlPath = "activities/";
@@ -41,7 +41,7 @@ namespace Stream
         /// <param name="feedSlug"></param>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public StreamFeed Feed(string feedSlug, string userId)
+        public IStreamFeed Feed(string feedSlug, string userId)
         {
             // handle required arguments
             if (string.IsNullOrWhiteSpace(feedSlug))
@@ -93,7 +93,7 @@ namespace Stream
         /// <summary>
         /// Access batch operations
         /// </summary>
-        public BatchOperations Batch
+        public IBatchOperations Batch
         {
             get
             {

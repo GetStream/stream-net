@@ -11,8 +11,8 @@ namespace stream_net_tests
     [TestFixture]
     public class FeedTests
     {
-        private Stream.StreamClient _client;
-        private Stream.StreamFeed _feed;
+        private Stream.IStreamClient _client;
+        private Stream.IStreamFeed _feed;
 
         [SetUp]
         public void Setup()

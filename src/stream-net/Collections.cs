@@ -56,7 +56,7 @@ namespace Stream
     }
 
     public class Collections
-    {
+	{
         readonly StreamClient _client;
 
         internal Collections(StreamClient client)

@@ -12,12 +12,12 @@ namespace stream_net_tests
     [TestFixture]
     public class IntegrationTests
     {
-        private Stream.StreamClient _client;
-        private Stream.StreamFeed _user1;
-        private Stream.StreamFeed _user2;
-        private Stream.StreamFeed _flat3;
-        private Stream.StreamFeed _agg4;
-        private Stream.StreamFeed _not5;
+        private Stream.IStreamClient _client;
+        private Stream.IStreamFeed _user1;
+        private Stream.IStreamFeed _user2;
+        private Stream.IStreamFeed _flat3;
+        private Stream.IStreamFeed _agg4;
+        private Stream.IStreamFeed _not5;
 
         [SetUp]
         public void Setup()

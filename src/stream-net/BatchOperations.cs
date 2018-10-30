@@ -19,8 +19,8 @@ namespace Stream
         }
     }
 
-    public class BatchOperations
-    {
+    public class BatchOperations : IBatchOperations
+	{
         readonly StreamClient _client;
 
         internal BatchOperations(StreamClient client)
@@ -28,7 +28,7 @@ namespace Stream
             _client = client;
         }
 
-        public Task AddToMany(Activity activity, IEnumerable<StreamFeed> feeds)
+        public Task AddToMany(Activity activity, IEnumerable<IStreamFeed> feeds)
         {
             return AddToMany(activity, feeds.Select(f => f.FeedId));
         }
