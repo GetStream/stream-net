@@ -10,12 +10,18 @@ using System.Threading.Tasks;
 namespace Stream
 {
     public class StreamClient : IStreamClient
-	{
+    {
         internal const string BaseUrlFormat = "https://{0}-api.stream-io-api.com";
         internal const string BaseUrlPath = "/api/v1.0/";
         internal const string ActivitiesUrlPath = "activities/";
         internal const int ActivityCopyLimitDefault = 300;
         internal const int ActivityCopyLimitMax = 1000;
+
+        internal static readonly object JWTHeader = new
+        {
+            typ = "JWT",
+            alg = "HS256"
+        };
 
         readonly RestClient _client;
         readonly StreamClientOptions _options;
@@ -88,6 +94,19 @@ namespace Stream
 
             if (response.StatusCode != System.Net.HttpStatusCode.Created)
                 throw StreamException.FromResponse(response);
+        }
+
+        public string CreateUserSessionToken(string userId, IDictionary<string, object> extraData = null)
+        {
+            var payload = new Dictionary<string, object>
+            {
+                {"user_id", userId}
+            };
+            if (extraData != null)
+            {
+                extraData.ForEach(x => payload[x.Key] = x.Value);
+            }
+            return this.JWToken(payload);
         }
 
         /// <summary>
@@ -219,21 +238,20 @@ namespace Stream
 
         internal string JWToken(string feedId)
         {
-            var segments = new List<string>();
-            var header = new
-            {
-                typ = "JWT",
-                alg = "HS256"
-            };
-            var noTimestamp = !this._options.ExpireTokens;
             var payload = new
             {
                 resource = "*",
                 action = "*",
                 feed_id = feedId
             };
+            return this.JWToken(payload);
+        }
 
-            byte[] headerBytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(header));
+        internal string JWToken(object payload)
+        {
+            var segments = new List<string>();
+
+            byte[] headerBytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(StreamClient.JWTHeader));
             byte[] payloadBytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(payload));
 
             segments.Add(Base64UrlEncode(headerBytes));

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.IdentityModel.Tokens.JWT;
 using System.Threading.Tasks;
 
 namespace stream_net_tests
@@ -111,6 +112,35 @@ namespace stream_net_tests
             {
                 await _client.ActivityPartialUpdate("id", new Stream.ForeignIDTime("fid", DateTime.Now));
             });
+        }
+
+        [Test]
+        public void TestSessionToken()
+        {
+            var tokenString = _client.CreateUserSessionToken("user");
+            var tok = new JWTSecurityToken(tokenString);
+            object actualUserID;
+            Assert.True(tok.Payload.TryGetValue("user_id", out actualUserID));
+            Assert.AreEqual("user", (string)actualUserID);
+
+            var extra = new Dictionary<string, object>()
+            {
+                {"client","dotnet"},
+                {"testing", true}
+            };
+            tokenString = _client.CreateUserSessionToken("user2", extra);
+            tok = new JWTSecurityToken(tokenString);
+
+            object data;
+
+            Assert.True(tok.Payload.TryGetValue("user_id", out data));
+            Assert.AreEqual("user2", (string)data);
+            Assert.True(tok.Payload.TryGetValue("client", out data));
+            Assert.AreEqual("dotnet", (string)data);
+            Assert.True(tok.Payload.TryGetValue("testing", out data));
+            Assert.AreEqual(true, (bool)data);
+
+            Assert.False(tok.Payload.ContainsKey("missing"));
         }
     }
 }
