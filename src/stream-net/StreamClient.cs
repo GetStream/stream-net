@@ -96,7 +96,7 @@ namespace Stream
                 throw StreamException.FromResponse(response);
         }
 
-        public string SessionToken(string userId, IDictionary<string, object> extraData = null)
+        public string CreateUserSessionToken(string userId, IDictionary<string, object> extraData = null)
         {
             var payload = new Dictionary<string, object>
             {

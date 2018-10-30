@@ -117,7 +117,7 @@ namespace stream_net_tests
         [Test]
         public void TestSessionToken()
         {
-            var tokenString = _client.SessionToken("user");
+            var tokenString = _client.CreateUserSessionToken("user");
             var tok = new JWTSecurityToken(tokenString);
             object actualUserID;
             Assert.True(tok.Payload.TryGetValue("user_id", out actualUserID));
@@ -128,7 +128,7 @@ namespace stream_net_tests
                 {"client","dotnet"},
                 {"testing", true}
             };
-            tokenString = _client.SessionToken("user2", extra);
+            tokenString = _client.CreateUserSessionToken("user2", extra);
             tok = new JWTSecurityToken(tokenString);
 
             object data;
