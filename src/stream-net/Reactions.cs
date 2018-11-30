@@ -38,10 +38,10 @@ namespace Stream
         public string ParentID { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "latest_children")]
-        public IDictionary<string, IEnumerable<Reaction>> LatestChildren { get; set; }
+        public Dictionary<string, Reaction[]> LatestChildren { get; set; }
 
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "children_counters")]
-        public IDictionary<string, int> ChildrenCounters { get; set; }
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "children_counts")]
+        public Dictionary<string, int> ChildrenCounters { get; set; }
 
     }
 
@@ -69,7 +69,7 @@ namespace Stream
             return await this.Add(r);
         }
 
-        public async Task<Reaction> AddChild(string kind, string activityID, string userID, string parentID,
+        public async Task<Reaction> AddChild(string parentID, string kind, string activityID, string userID,
             IDictionary<string, object> data = null, IEnumerable<string> targetFeeds = null)
         {
             var r = new Reaction()

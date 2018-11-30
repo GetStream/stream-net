@@ -1833,6 +1833,20 @@ namespace stream_net_tests
             Assert.AreEqual((Int64)n, 321);
             Assert.True(r2.Data.ContainsKey("new"));
 
+            // Add children
+            var c1 = await this._client.Reactions.AddChild(r.ID, "upvote", activity.Id, "tommy");
+            var c2 = await this._client.Reactions.AddChild(r.ID, "downvote", activity.Id, "timmy");
+            var c3 = await this._client.Reactions.AddChild(r.ID, "upvote", activity.Id, "jimmy");
+
+            var parent = await this._client.Reactions.Get(r.ID);
+
+            Assert.AreEqual(parent.ChildrenCounters["upvote"], 2);
+            Assert.AreEqual(parent.ChildrenCounters["downvote"], 1);
+
+            Assert.IsTrue(parent.LatestChildren["upvote"].Select(x => x.ID).Contains(c1.ID));
+            Assert.IsTrue(parent.LatestChildren["upvote"].Select(x => x.ID).Contains(c3.ID));
+            Assert.IsTrue(parent.LatestChildren["downvote"].Select(x => x.ID).Contains(c2.ID));
+
             // Delete reaction
 
             Assert.DoesNotThrowAsync(async () =>
