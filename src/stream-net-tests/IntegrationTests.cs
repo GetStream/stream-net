@@ -4,6 +4,7 @@ using NUnit.Framework;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Stream;
+using Newtonsoft.Json;
 using System.Threading;
 
 namespace stream_net_tests
@@ -1765,6 +1766,84 @@ namespace stream_net_tests
             Assert.AreEqual(insertedActivity2.Id, updatedActivity2.Id);
             Assert.AreEqual(activity2.Actor, updatedActivity2.Actor);
             Assert.AreEqual(activity2.GetData<int[]>("custom"), updatedActivity2.GetData<int[]>("custom"));
+        }
+
+        [Test]
+        public async Task TestReactions()
+        {
+            var a = new Stream.Activity("user:1", "like", "cake")
+            {
+                ForeignId = "cake:1",
+                Time = DateTime.UtcNow,
+                Target = "johnny"
+            };
+
+            var activity = await this._user1.AddActivity(a);
+
+            var data = new Dictionary<string, object>()
+            {
+                {"field", "value"},
+                {"number", 2}
+            };
+
+            Reaction r = null;
+            // Add reaction
+            Assert.DoesNotThrowAsync(async () =>
+            {
+                r = await this._client.Reactions.Add("like", activity.Id, "bobby", data);
+            });
+
+            Assert.NotNull(r);
+            Assert.AreEqual(r.ActivityID, activity.Id);
+            Assert.AreEqual(r.Kind, "like");
+            Assert.AreEqual(r.UserID, "bobby");
+            Assert.AreEqual(r.Data, data);
+            Assert.True(r.CreatedAt.HasValue);
+            Assert.True(r.UpdatedAt.HasValue);
+            Assert.IsNotEmpty(r.ID);
+
+            // get reaction
+            Reaction r2 = null;
+            Assert.DoesNotThrowAsync(async () =>
+            {
+                r2 = await this._client.Reactions.Get(r.ID);
+            });
+
+            Assert.NotNull(r2);
+            Assert.AreEqual(r2.ActivityID, r.ActivityID);
+            Assert.AreEqual(r2.Kind, "like");
+            Assert.AreEqual(r2.UserID, "bobby");
+            Assert.AreEqual(r2.Data, r.Data);
+            Assert.AreEqual(r2.ID, r.ID);
+
+            // Update reaction
+            data["number"] = 321;
+            data["new"] = "field";
+            data.Remove("field");
+
+            var beforeTime = r.UpdatedAt.Value;
+            Assert.DoesNotThrowAsync(async () =>
+            {
+                r2 = await this._client.Reactions.Update(r.ID, data);
+            });
+            Assert.NotNull(r2);
+            Assert.False(r2.Data.ContainsKey("field"));
+            object n;
+            Assert.True(r2.Data.TryGetValue("number", out n));
+            Assert.AreEqual((Int64)n, 321);
+            Assert.True(r2.Data.ContainsKey("new"));
+
+            // Delete reaction
+
+            Assert.DoesNotThrowAsync(async () =>
+            {
+                await this._client.Reactions.Delete(r.ID);
+            });
+
+            Assert.ThrowsAsync<Stream.StreamException>(async () =>
+            {
+                var r3 = await this._client.Reactions.Get(r.ID);
+            });
         }
     }
 }

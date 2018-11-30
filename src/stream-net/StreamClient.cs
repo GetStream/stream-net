@@ -128,6 +128,14 @@ namespace Stream
             }
         }
 
+        public Reactions Reactions
+        {
+            get
+            {
+                return new Reactions(this);
+            }
+        }
+
         private Uri GetBaseUrl()
         {
             string region = "";
