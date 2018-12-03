@@ -11,37 +11,37 @@ namespace Stream
     public class Reaction
     {
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "id")]
-        public string ID { get; set; }
+        public string ID { get; internal set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "kind")]
-        public string Kind { get; set; }
+        public string Kind { get; internal set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "created_at")]
-        public DateTime? CreatedAt { get; set; }
+        public DateTime? CreatedAt { get; internal set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "updated_at")]
-        public DateTime? UpdatedAt { get; set; }
+        public DateTime? UpdatedAt { get; internal set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "activity_id")]
-        public string ActivityID { get; set; }
+        public string ActivityID { get; internal set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "user_id")]
-        public string UserID { get; set; }
+        public string UserID { get; internal set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "data")]
-        public IDictionary<string, object> Data { get; set; }
+        public IDictionary<string, object> Data { get; internal set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "target_feeds")]
-        public IEnumerable<string> TargetFeeds { get; set; }
+        public IEnumerable<string> TargetFeeds { get; internal set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "parent")]
-        public string ParentID { get; set; }
+        public string ParentID { get; internal set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "latest_children")]
-        public Dictionary<string, Reaction[]> LatestChildren { get; set; }
+        public Dictionary<string, Reaction[]> LatestChildren { get; internal set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "children_counts")]
-        public Dictionary<string, int> ChildrenCounters { get; set; }
+        public Dictionary<string, int> ChildrenCounters { get; internal set; }
 
     }
 
