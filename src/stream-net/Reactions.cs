@@ -28,8 +28,8 @@ namespace Stream
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "user_id")]
         public string UserID { get; set; }
 
-        [JsonProperty(PropertyName = "data")]
-        public IDictionary<string, object> Data;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "data")]
+        public IDictionary<string, object> Data { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "target_feeds")]
         public IEnumerable<string> TargetFeeds { get; set; }

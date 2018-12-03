@@ -136,6 +136,14 @@ namespace Stream
             }
         }
 
+        public Users Users
+        {
+            get
+            {
+                return new Users(this);
+            }
+        }
+
         private Uri GetBaseUrl()
         {
             string region = "";

@@ -1859,5 +1859,72 @@ namespace stream_net_tests
                 var r3 = await this._client.Reactions.Get(r.ID);
             });
         }
+
+        [Test]
+        public async Task TestUsers()
+        {
+            //Create user
+            var userID = Guid.NewGuid().ToString();
+            var userData = new Dictionary<string, object>()
+            {
+                {"field", "value"},
+                {"is_admin", true},
+            };
+
+            User u = null;
+            Assert.DoesNotThrowAsync(async () =>
+            {
+                u = await this._client.Users.Add(userID, userData);
+            });
+
+            Assert.NotNull(u);
+            Assert.NotNull(u.CreatedAt);
+            Assert.NotNull(u.UpdatedAt);
+            Assert.AreEqual(userID, u.ID);
+            Assert.AreEqual(userData, u.Data);
+
+            Assert.ThrowsAsync<Stream.StreamException>(async () =>
+            {
+                u = await this._client.Users.Add(userID, userData);
+            });
+
+            var newUserData = new Dictionary<string, object>()
+            {
+                {"field", "othervalue"},
+            };
+            Assert.DoesNotThrowAsync(async () =>
+            {
+                u = await this._client.Users.Add(userID, newUserData, true);
+            });
+            Assert.NotNull(u);
+            Assert.NotNull(u.CreatedAt);
+            Assert.NotNull(u.UpdatedAt);
+            Assert.AreEqual(userID, u.ID);
+            Assert.AreEqual(userData, u.Data);
+
+            //Get user
+            u = await this._client.Users.Get(userID);
+            Assert.NotNull(u);
+            Assert.NotNull(u.CreatedAt);
+            Assert.NotNull(u.UpdatedAt);
+            Assert.AreEqual(userID, u.ID);
+            Assert.AreEqual(userData, u.Data);
+
+            // Update user
+            u = await this._client.Users.Update(userID, newUserData);
+            Assert.NotNull(u);
+            Assert.NotNull(u.CreatedAt);
+            Assert.NotNull(u.UpdatedAt);
+            Assert.AreEqual(userID, u.ID);
+            Assert.AreEqual(newUserData, u.Data);
+
+            //Delete user
+            await this._client.Users.Delete(userID);
+
+            Assert.ThrowsAsync<Stream.StreamException>(async () =>
+            {
+                var x = await this._client.Users.Get(userID);
+            });
+        }
     }
 }
