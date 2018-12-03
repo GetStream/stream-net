@@ -98,7 +98,7 @@ namespace Stream
 
         public static string Ref(string userID)
         {
-            return string.Format("SU:{1}", userID);
+            return string.Format("SU:{0}", userID);
         }
 
         public static string Ref(User obj)
