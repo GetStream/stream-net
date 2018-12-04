@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 
 namespace Stream
 {
+    using ReactionFilter = FeedFilter;
+
     public class Reaction
     {
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "id")]
@@ -45,9 +47,97 @@ namespace Stream
 
     }
 
+    public class ReactionFiltering
+    {
+        const int DefaultLimit = 10;
+        int _limit = DefaultLimit;
+        ReactionFilter _filter = null;
+
+        public ReactionFiltering WithLimit(int limit)
+        {
+            _limit = limit;
+            return this;
+        }
+
+        public ReactionFiltering WithFilter(ReactionFilter filter)
+        {
+            _filter = filter;
+            return this;
+        }
+
+        internal void Apply(RestRequest request)
+        {
+            request.AddQueryParameter("limit", _limit.ToString());
+
+            // filter if needed
+            if (_filter != null)
+                _filter.Apply(request);
+        }
+
+        public static ReactionFiltering Default
+        {
+            get
+            {
+                return new ReactionFiltering()
+                {
+                    _limit = DefaultLimit
+                };
+            }
+        }
+    }
+
+    public class ReactionPagination
+    {
+        string _kind;
+        string _lookup_attr;
+        string _lookup_value;
+
+        private ReactionPagination() { }
+
+        public ReactionPagination ByActivityID(string activityID)
+        {
+            _lookup_attr = "activity_id";
+            _lookup_value = activityID;
+            return this;
+        }
+
+        public ReactionPagination ByReactionID(string reactionID)
+        {
+            _lookup_attr = "reaction_id";
+            _lookup_value = reactionID;
+            return this;
+        }
+
+        public ReactionPagination ByUserID(string userID)
+        {
+            _lookup_attr = "user_id";
+            _lookup_value = userID;
+            return this;
+        }
+
+        public static ReactionPagination ByKind(string kind)
+        {
+            return new ReactionPagination()
+            {
+                _kind = kind
+            };
+        }
+
+        public string GetPath()
+        {
+            return $"{_lookup_attr}/{_lookup_value}/{_kind}/";
+        }
+    }
+
     public class Reactions
     {
         readonly StreamClient _client;
+
+        private class ReactionsFilterResponse
+        {
+            [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "results")]
+            public IEnumerable<Reaction> Reactions { get; internal set; }
+        }
 
         internal Reactions(StreamClient client)
         {
@@ -69,16 +159,15 @@ namespace Stream
             return await this.Add(r);
         }
 
-        public async Task<Reaction> AddChild(string parentID, string kind, string activityID, string userID,
+        public async Task<Reaction> AddChild(Reaction parent, string kind, string userID,
             IDictionary<string, object> data = null, IEnumerable<string> targetFeeds = null)
         {
             var r = new Reaction()
             {
                 Kind = kind,
-                ActivityID = activityID,
                 UserID = userID,
                 Data = data,
-                ParentID = parentID,
+                ParentID = parent.ID,
                 TargetFeeds = targetFeeds
             };
 
@@ -93,6 +182,22 @@ namespace Stream
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 return JsonConvert.DeserializeObject<Reaction>(response.Content);
+
+            throw StreamException.FromResponse(response);
+        }
+
+        public async Task<IEnumerable<Reaction>> Filter(ReactionFiltering filtering, ReactionPagination pagination)
+        {
+            var urlPath = pagination.GetPath();
+            var request = this._client.BuildJWTAppRequest($"reaction/{urlPath}", HttpMethod.GET);
+            filtering.Apply(request);
+
+            var response = await this._client.MakeRequest(request);
+
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                return JsonConvert.DeserializeObject<ReactionsFilterResponse>(response.Content).Reactions;
+            }
 
             throw StreamException.FromResponse(response);
         }

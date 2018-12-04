@@ -1882,9 +1882,9 @@ namespace stream_net_tests
             Assert.True(r2.Data.ContainsKey("new"));
 
             // Add children
-            var c1 = await this._client.Reactions.AddChild(r.ID, "upvote", activity.Id, "tommy");
-            var c2 = await this._client.Reactions.AddChild(r.ID, "downvote", activity.Id, "timmy");
-            var c3 = await this._client.Reactions.AddChild(r.ID, "upvote", activity.Id, "jimmy");
+            var c1 = await this._client.Reactions.AddChild(r, "upvote", "tommy");
+            var c2 = await this._client.Reactions.AddChild(r, "downvote", "timmy");
+            var c3 = await this._client.Reactions.AddChild(r, "upvote", "jimmy");
 
             var parent = await this._client.Reactions.Get(r.ID);
 
@@ -1906,6 +1906,103 @@ namespace stream_net_tests
             {
                 var r3 = await this._client.Reactions.Get(r.ID);
             });
+        }
+
+        [Test]
+        public async Task TestReactionPagination()
+        {
+            var a = new Stream.Activity("user:1", "like", "cake")
+            {
+                ForeignId = "cake:1",
+                Time = DateTime.UtcNow,
+                Target = "johnny"
+            };
+
+            var activity = await this._user1.AddActivity(a);
+
+            a.Time = DateTime.UtcNow;
+            a.ForeignId = "cake:123";
+            var activity2 = await this._user1.AddActivity(a);
+
+            var data = new Dictionary<string, object>()
+            {
+                {"field", "value"},
+                {"number", 2}
+            };
+
+            var userId = Guid.NewGuid().ToString();
+
+            var r1 = await this._client.Reactions.Add("like", activity.Id, userId, data);
+            var r2 = await this._client.Reactions.Add("comment", activity.Id, userId, data);
+            var r3 = await this._client.Reactions.Add("like", activity.Id, "bob", data);
+
+            var r4 = await this._client.Reactions.AddChild(r3, "upvote", "tom", data);
+            var r5 = await this._client.Reactions.AddChild(r3, "upvote", "mary", data);
+
+            // activity id
+            var filter = ReactionFiltering.Default;
+            var pagination = ReactionPagination.ByKind("like").ByActivityID(activity.Id);
+
+            var reactionsByActivity = await this._client.Reactions.Filter(filter, pagination);
+            Assert.AreEqual(2, reactionsByActivity.Count());
+
+            var r = (List<Reaction>)reactionsByActivity;
+            var actual = r.Find(x => x.ID == r1.ID);
+
+            Assert.NotNull(actual);
+            Assert.AreEqual(r1.ID, actual.ID);
+            Assert.AreEqual(r1.Kind, actual.Kind);
+            Assert.AreEqual(r1.ActivityID, actual.ActivityID);
+
+            actual = r.Find(x => x.ID == r3.ID);
+
+            Assert.NotNull(actual);
+            Assert.AreEqual(r3.ID, actual.ID);
+            Assert.AreEqual(r3.Kind, actual.Kind);
+            Assert.AreEqual(r3.ActivityID, actual.ActivityID);
+
+            //with limit
+            reactionsByActivity = await this._client.Reactions.Filter(filter.WithLimit(1), pagination);
+            Assert.AreEqual(1, reactionsByActivity.Count());
+
+            // user id
+            filter = ReactionFiltering.Default;
+            pagination = ReactionPagination.ByKind("like").ByUserID(userId);
+
+            var reactionsByUser = await this._client.Reactions.Filter(filter, pagination);
+            Assert.AreEqual(1, reactionsByUser.Count());
+
+            r = (List<Reaction>)reactionsByUser;
+            actual = r.Find(x => x.ID == r1.ID);
+
+            Assert.NotNull(actual);
+            Assert.AreEqual(r1.ID, actual.ID);
+            Assert.AreEqual(r1.Kind, actual.Kind);
+            Assert.AreEqual(r1.ActivityID, actual.ActivityID);
+
+            // reaction id
+            filter = ReactionFiltering.Default;
+            pagination = ReactionPagination.ByKind("upvote").ByReactionID(r3.ID);
+
+            var reactionsByParent = await this._client.Reactions.Filter(filter, pagination);
+            Assert.AreEqual(2, reactionsByParent.Count());
+
+            r = (List<Reaction>)reactionsByParent;
+            actual = r.Find(x => x.ID == r4.ID);
+
+            Assert.NotNull(actual);
+            Assert.AreEqual(r4.ID, actual.ID);
+            Assert.AreEqual(r4.Kind, actual.Kind);
+            Assert.AreEqual(r4.ActivityID, actual.ActivityID);
+            Assert.AreEqual(r4.UserID, actual.UserID);
+
+            actual = r.Find(x => x.ID == r5.ID);
+
+            Assert.NotNull(actual);
+            Assert.AreEqual(r5.ID, actual.ID);
+            Assert.AreEqual(r5.Kind, actual.Kind);
+            Assert.AreEqual(r5.ActivityID, actual.ActivityID);
+            Assert.AreEqual(r5.UserID, actual.UserID);
         }
 
         [Test]
