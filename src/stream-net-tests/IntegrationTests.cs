@@ -1938,10 +1938,15 @@ namespace stream_net_tests
             var a = new Stream.Activity("actor-1", "add", cRef);
             await this._user1.AddActivity(a);
 
+            var plain = await this._user1.GetFlatActivities();
+            Assert.AreEqual(cRef, plain.Results.First().Object);
+
             var enriched = await this._user1.GetEnrichedFlatActivities();
             Assert.AreEqual(1, enriched.Results.Count());
 
             var act = enriched.Results.First();
+            Assert.IsFalse(act.Actor.IsEnriched);
+            Assert.AreEqual("actor-1", act.Actor.Raw);
             Assert.IsTrue(act.Object.IsEnriched);
             Assert.AreEqual(c.ID, act.Object.Enriched.GetData<string>("id"));
             Assert.AreEqual("testing_value", act.Object.Enriched.GetData<Dictionary<string, string>>("data")["field"]);
@@ -1961,11 +1966,16 @@ namespace stream_net_tests
             var a = new Stream.Activity(uRef, "add", "post");
             await this._user1.AddActivity(a);
 
+            var plain = await this._user1.GetFlatActivities();
+            Assert.AreEqual(uRef, plain.Results.First().Actor);
+
             var enriched = await this._user1.GetEnrichedFlatActivities();
 
             Assert.AreEqual(1, enriched.Results.Count());
 
             var act = enriched.Results.First();
+            Assert.IsFalse(act.Object.IsEnriched);
+            Assert.AreEqual("post", act.Object.Raw);
             Assert.IsTrue(act.Actor.IsEnriched);
             Assert.AreEqual(u.ID, act.Actor.Enriched.GetData<string>("id"));
             Assert.AreEqual(userData, act.Actor.Enriched.GetData<Dictionary<string, object>>("data"));
@@ -1978,7 +1988,7 @@ namespace stream_net_tests
             var act = await this._user1.AddActivity(a);
             var reaction = await this._client.Reactions.Add("like", act.Id, "johhny");
 
-            var enriched = await this._user1.GetEnrichedFlatActivities(GetOptions.Default.WithReaction(ReactionOption.Own()));
+            var enriched = await this._user1.GetEnrichedFlatActivities(GetOptions.Default.WithReaction(ReactionOption.With().Own()));
 
             Assert.AreEqual(1, enriched.Results.Count());
 
@@ -1997,7 +2007,7 @@ namespace stream_net_tests
             var act = await this._user1.AddActivity(a);
             var reaction = await this._client.Reactions.Add("like", act.Id, "johhny");
 
-            var enriched = await this._user1.GetEnrichedFlatActivities(GetOptions.Default.WithReaction(ReactionOption.Recent()));
+            var enriched = await this._user1.GetEnrichedFlatActivities(GetOptions.Default.WithReaction(ReactionOption.With().Recent()));
 
             Assert.AreEqual(1, enriched.Results.Count());
 
@@ -2018,7 +2028,7 @@ namespace stream_net_tests
             var reactionComment = await this._client.Reactions.Add("comment", act.Id, "johhny");
             var reactionLike2 = await this._client.Reactions.Add("like", act.Id, "timmeh");
 
-            var enriched = await this._user1.GetEnrichedFlatActivities(GetOptions.Default.WithReaction(ReactionOption.Counts()));
+            var enriched = await this._user1.GetEnrichedFlatActivities(GetOptions.Default.WithReaction(ReactionOption.With().Counts()));
 
             Assert.AreEqual(1, enriched.Results.Count());
 
@@ -2028,6 +2038,33 @@ namespace stream_net_tests
             Assert.True(enrichedAct.ReactionCounts.ContainsKey(reactionComment.Kind));
             Assert.AreEqual(2, enrichedAct.ReactionCounts[reactionLike.Kind]);
             Assert.AreEqual(1, enrichedAct.ReactionCounts[reactionComment.Kind]);
+        }
+
+        [Test]
+        public async Task TestEnrich()
+        {
+            var a = new Stream.Activity("johhny", "add", "post");
+            var act = await this._user1.AddActivity(a);
+            var reaction = await this._client.Reactions.Add("like", act.Id, "johhny");
+
+            var enriched = await this._user1.GetEnrichedFlatActivities(GetOptions.Default.WithReaction(ReactionOption.With().Recent().Own().Counts()));
+
+            Assert.AreEqual(1, enriched.Results.Count());
+
+            var enrichedAct = enriched.Results.First();
+
+            Assert.True(enrichedAct.LatestReactions.ContainsKey(reaction.Kind));
+            Assert.AreEqual(reaction.ID, enrichedAct.LatestReactions[reaction.Kind].FirstOrDefault().ID);
+            Assert.AreEqual(reaction.Kind, enrichedAct.LatestReactions[reaction.Kind].FirstOrDefault().Kind);
+            Assert.AreEqual(reaction.UserID, enrichedAct.LatestReactions[reaction.Kind].FirstOrDefault().UserID);
+
+            Assert.True(enrichedAct.OwnReactions.ContainsKey(reaction.Kind));
+            Assert.AreEqual(reaction.ID, enrichedAct.OwnReactions[reaction.Kind].FirstOrDefault().ID);
+            Assert.AreEqual(reaction.Kind, enrichedAct.OwnReactions[reaction.Kind].FirstOrDefault().Kind);
+            Assert.AreEqual(reaction.UserID, enrichedAct.OwnReactions[reaction.Kind].FirstOrDefault().UserID);
+
+            Assert.True(enrichedAct.ReactionCounts.ContainsKey(reaction.Kind));
+            Assert.AreEqual(1, enrichedAct.ReactionCounts[reaction.Kind]);
         }
     }
 }

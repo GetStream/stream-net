@@ -5,7 +5,7 @@ namespace Stream
 {
     public class ReactionOption
     {
-        private OpType Type {get; set;}
+        private OpType Type { get; set; }
         private enum OpType
         {
             own,
@@ -13,34 +13,48 @@ namespace Stream
             counts,
         }
 
-        private ReactionOption(OpType type)
+        readonly List<OpType> _ops;
+
+        private ReactionOption()
         {
-            Type = type;
+            _ops = new List<OpType>();
         }
 
         internal void Apply(RestRequest request)
         {
-            switch (Type)
+            _ops.ForEach(op =>
             {
-                case OpType.own: request.AddQueryParameter("withOwnReactions", "true"); break;
-                case OpType.recent: request.AddQueryParameter("withRecentReactions", "true"); break;
-                case OpType.counts: request.AddQueryParameter("withReactionCounts", "true"); break;
-            }
+                switch (op)
+                {
+                    case OpType.own: request.AddQueryParameter("withOwnReactions", "true"); break;
+                    case OpType.recent: request.AddQueryParameter("withRecentReactions", "true"); break;
+                    case OpType.counts: request.AddQueryParameter("withReactionCounts", "true"); break;
+                }
+            });
         }
 
-        public static ReactionOption Own()
+        public static ReactionOption With()
         {
-            return new ReactionOption(OpType.own);
+            return new ReactionOption();
         }
 
-        public static ReactionOption Recent()
+        public ReactionOption Own()
         {
-            return new ReactionOption(OpType.recent);
+            _ops.Add(OpType.own);
+            return this;
         }
 
-        public static ReactionOption Counts()
+        public ReactionOption Recent()
         {
-            return new ReactionOption(OpType.counts);
+            _ops.Add(OpType.recent);
+            return this;
+        }
+
+        public ReactionOption Counts()
+        {
+            _ops.Add(OpType.counts);
+            return this;
+
         }
     }
 }

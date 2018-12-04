@@ -95,10 +95,76 @@ await client.ActivityPartialUpdate("e561de8f-00f1-11e4-b400-0cc47a024be0", null,
 //by foreign id and time
 var fidTime = new ForeignIDTime("fid-1", DateTime.Parse("2000-08-19T16:32:32"));
 await client.ActivityPartialUpdate(null, fidTime, set, unset);
+
+//add a reaction to an activity
+var activityData = new Activity("bob", "cook", "burger")
+{
+	ForeignId = "post:42"
+};
+var activity = await userFeed1.AddActivity(activity);
+
+
+var r = await client.Reactions.Add("comment", activity.Id, "john");
+
+//add a reaction to a reaction
+var child = await client.Reactions.AddChild(r.ID, "upvote", activity.Id, "john");
+
+//enrich feed results
+var userData = new Dictionary<string, object>()
+{
+	{"is_admin", true},
+	{"nickname","bobby"}
+};
+var u = await client.Users.Add("timmy", userData);
+var userRef = u.Ref();
+
+var a = new Stream.Activity(uRef, "add", "post");
+var plainActivity = await userFeed1.AddActivity(a);
+
+//plainActivity.Actor is just a plain string containing the user ref
+
+var enriched = await this._user1.GetEnrichedFlatActivities();
+var actor = enriched.Results.First();
+if (actor.IsEnriched)
+{
+	//The `Enriched` propery contains the user object instead of just the ref
+	var userID = actor.Enriched.GetData<string>("id");
+	var data = actor.Enriched.GetData<Dictionary<string,object>>("data"); //this is `userData`
+}
+
+
+//enrich feed results with reactions
+
+var activityData = new Activity("bob", "cook", "burger")
+{
+	ForeignId = "post:42"
+};
+var activity = await userFeed1.AddActivity(activity);
+
+
+var com = await client.Reactions.Add("comment", activity.Id, "john");
+var like = await client.Reactions.Add("like", activity.Id, "maria");
+
+// fetch reaction counts grouped by reaction kind
+var enriched = await this._user1.GetEnrichedFlatActivities(GetOptions.Default.WithReaction(ReactionOption.With().Counts())));
+
+var enrichedActivity = enriched.Results.First();
+Console.WriteLine(enrichedActivity.ReactionCounts["like"]); //1
+Console.WriteLine(enrichedActivity.ReactionCounts["comment"]); //1
+
+// fetch reactions grouped by reaction kind
+var enriched = await this._user1.GetEnrichedFlatActivities(GetOptions.Default.WithReaction(ReactionOption.With().Own())));
+
+var enrichedActivity = enriched.Results.First();
+Console.WriteLine(enrichedActivity.OwnReactions["like"]); // is the $like reaction
+Console.WriteLine(enrichedActivity.OwnReactions["comment"]); // is the $comment reaction
+
+// all reactions enrichment can be selected
+var enriched = await this._user1.GetEnrichedFlatActivities(GetOptions.Default.WithReaction(ReactionOption.With().Counts().Own().Recent()));
 ```
 
 ### Copyright and License Information
 
-Copyright (c) 2015-2017 Shawn Beach, Stream.io Inc, and individual contributors. All rights reserved.
+Copyright (c) 2015-2018 Shawn Beach, Stream.io Inc, and individual contributors. All rights reserved.
 
 See the file "LICENSE" for information on the history of this software, terms & conditions for usage, and a DISCLAIMER OF ALL WARRANTIES.
