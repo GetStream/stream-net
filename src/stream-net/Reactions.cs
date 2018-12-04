@@ -88,44 +88,49 @@ namespace Stream
 
     public class ReactionPagination
     {
-        string _kind;
+        string _kind = null;
         string _lookup_attr;
         string _lookup_value;
 
         private ReactionPagination() { }
 
-        public ReactionPagination ByActivityID(string activityID)
+        public ReactionPagination ActivityID(string activityID)
         {
             _lookup_attr = "activity_id";
             _lookup_value = activityID;
             return this;
         }
 
-        public ReactionPagination ByReactionID(string reactionID)
+        public ReactionPagination ReactionID(string reactionID)
         {
             _lookup_attr = "reaction_id";
             _lookup_value = reactionID;
             return this;
         }
 
-        public ReactionPagination ByUserID(string userID)
+        public ReactionPagination UserID(string userID)
         {
             _lookup_attr = "user_id";
             _lookup_value = userID;
             return this;
         }
 
-        public static ReactionPagination ByKind(string kind)
+        public ReactionPagination Kind(string kind)
         {
-            return new ReactionPagination()
-            {
-                _kind = kind
-            };
+            _kind = kind;
+            return this;
+        }
+
+        public static ReactionPagination By
+        {
+            get { return new ReactionPagination(); }
         }
 
         public string GetPath()
         {
-            return $"{_lookup_attr}/{_lookup_value}/{_kind}/";
+            if (_kind != null)
+                return $"{_lookup_attr}/{_lookup_value}/{_kind}/";
+            return $"{_lookup_attr}/{_lookup_value}/";
         }
     }
 

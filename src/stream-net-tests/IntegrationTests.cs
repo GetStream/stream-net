@@ -1941,7 +1941,7 @@ namespace stream_net_tests
 
             // activity id
             var filter = ReactionFiltering.Default;
-            var pagination = ReactionPagination.ByKind("like").ByActivityID(activity.Id);
+            var pagination = ReactionPagination.By.ActivityID(activity.Id).Kind("like");
 
             var reactionsByActivity = await this._client.Reactions.Filter(filter, pagination);
             Assert.AreEqual(2, reactionsByActivity.Count());
@@ -1967,10 +1967,10 @@ namespace stream_net_tests
 
             // user id
             filter = ReactionFiltering.Default;
-            pagination = ReactionPagination.ByKind("like").ByUserID(userId);
+            pagination = ReactionPagination.By.UserID(userId);
 
             var reactionsByUser = await this._client.Reactions.Filter(filter, pagination);
-            Assert.AreEqual(1, reactionsByUser.Count());
+            Assert.AreEqual(2, reactionsByUser.Count());
 
             r = (List<Reaction>)reactionsByUser;
             actual = r.Find(x => x.ID == r1.ID);
@@ -1980,9 +1980,16 @@ namespace stream_net_tests
             Assert.AreEqual(r1.Kind, actual.Kind);
             Assert.AreEqual(r1.ActivityID, actual.ActivityID);
 
+            actual = r.Find(x => x.ID == r2.ID);
+
+            Assert.NotNull(actual);
+            Assert.AreEqual(r2.ID, actual.ID);
+            Assert.AreEqual(r2.Kind, actual.Kind);
+            Assert.AreEqual(r2.ActivityID, actual.ActivityID);
+
             // reaction id
             filter = ReactionFiltering.Default;
-            pagination = ReactionPagination.ByKind("upvote").ByReactionID(r3.ID);
+            pagination = ReactionPagination.By.Kind("upvote").ReactionID(r3.ID);
 
             var reactionsByParent = await this._client.Reactions.Filter(filter, pagination);
             Assert.AreEqual(2, reactionsByParent.Count());
