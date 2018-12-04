@@ -13,4 +13,16 @@ namespace Stream
         {
         }
     }
+
+    public class EnrichedNotificationActivity : EnrichedAggregatedActivity
+    {
+        public bool IsRead { get; set; }
+
+        public bool IsSeen { get; set; }
+
+        [JsonConstructor]
+        internal EnrichedNotificationActivity()
+        {
+        }
+    }
 }

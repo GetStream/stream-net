@@ -187,6 +187,11 @@ namespace Stream
             return BuildRestRequest(BaseUrlPath + feed.UrlPath + path, method);
         }
 
+        internal RestRequest BuildEnrichedFeedRequest(StreamFeed feed, string path, HttpMethod method)
+        {
+            return BuildRestRequest(BaseUrlPath + feed.EnrichedPath + path, method);
+        }
+
         internal RestRequest BuildActivitiesRequest(StreamFeed feed)
         {
             return BuildRestRequest(BaseUrlPath + ActivitiesUrlPath, HttpMethod.POST);
