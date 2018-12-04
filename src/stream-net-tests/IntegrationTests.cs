@@ -1587,6 +1587,54 @@ namespace stream_net_tests
         }
 
         [Test]
+        public async Task TestCollectionsCRUD()
+        {
+            var colData = new GenericData();
+            colData.SetData("field", "value");
+            colData.SetData("flag", true);
+
+            //ADD
+            CollectionObject collectionObject = await this._client.Collections.Add("col_test_crud", colData);
+
+            Assert.NotNull(collectionObject);
+            Assert.False(string.IsNullOrEmpty(collectionObject.ID));
+            Assert.AreEqual("value", collectionObject.GetData<string>("field"));
+            Assert.AreEqual(true, collectionObject.GetData<bool>("flag"));
+
+            Assert.ThrowsAsync<Stream.StreamException>(async () =>
+            {
+                var o = await this._client.Collections.Add("col_test_crud", colData, collectionObject.ID);
+            });
+
+            //GET
+            collectionObject = await this._client.Collections.Get("col_test_crud", collectionObject.ID);
+
+            Assert.NotNull(collectionObject);
+            Assert.False(string.IsNullOrEmpty(collectionObject.ID));
+            Assert.AreEqual("value", collectionObject.GetData<string>("field"));
+            Assert.AreEqual(true, collectionObject.GetData<bool>("flag"));
+
+            //UPDATE
+            var newData = new GenericData();
+            newData.SetData("new", "stuff");
+            newData.SetData("arr", new string[] { "a", "b" });
+            collectionObject = await this._client.Collections.Update("col_test_crud", collectionObject.ID, newData);
+
+            Assert.NotNull(collectionObject);
+            Assert.False(string.IsNullOrEmpty(collectionObject.ID));
+            Assert.AreEqual("stuff", collectionObject.GetData<string>("new"));
+            Assert.AreEqual(new string[] { "a", "b" }, collectionObject.GetData<string[]>("arr"));
+
+            //DELETE
+            await this._client.Collections.Delete("col_test_crud", collectionObject.ID);
+
+            Assert.ThrowsAsync<Stream.StreamException>(async () =>
+            {
+                var o = await this._client.Collections.Get("col_test_crud", collectionObject.ID);
+            });
+        }
+
+        [Test]
         public async Task TestActivityPartialUpdateByID()
         {
             var act = new Stream.Activity("upd", "test", "1")
