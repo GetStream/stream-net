@@ -31,6 +31,11 @@ namespace Stream
             this._data.SetData<T>(name, data);
         }
 
+        public string Ref(string collectionName)
+        {
+            return Collections.Ref(collectionName, this);
+        }
+
         internal JObject ToJObject()
         {
             var root = new JObject();
