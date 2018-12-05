@@ -12,6 +12,7 @@ namespace Stream
 
         FeedFilter _filter = null;
         ActivityMarker _marker = null;
+        ReactionOption _reaction = null;
 
         string _ranking = null;
         string _session = null;
@@ -37,6 +38,12 @@ namespace Stream
         public GetOptions WithMarker(ActivityMarker marker)
         {
             _marker = marker;
+            return this;
+        }
+
+        public GetOptions WithReaction(ReactionOption reactions)
+        {
+            _reaction = reactions;
             return this;
         }
 
@@ -72,6 +79,9 @@ namespace Stream
             // marker if needed
             if (_marker != null)
                 _marker.Apply(request);
+
+            if (_reaction != null)
+                _reaction.Apply(request);
         }
 
         public static GetOptions Default

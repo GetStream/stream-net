@@ -4,6 +4,7 @@ using NUnit.Framework;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Stream;
+using Newtonsoft.Json;
 using System.Threading;
 
 namespace stream_net_tests
@@ -1586,6 +1587,54 @@ namespace stream_net_tests
         }
 
         [Test]
+        public async Task TestCollectionsCRUD()
+        {
+            var colData = new GenericData();
+            colData.SetData("field", "value");
+            colData.SetData("flag", true);
+
+            //ADD
+            CollectionObject collectionObject = await this._client.Collections.Add("col_test_crud", colData);
+
+            Assert.NotNull(collectionObject);
+            Assert.False(string.IsNullOrEmpty(collectionObject.ID));
+            Assert.AreEqual("value", collectionObject.GetData<string>("field"));
+            Assert.AreEqual(true, collectionObject.GetData<bool>("flag"));
+
+            Assert.ThrowsAsync<Stream.StreamException>(async () =>
+            {
+                var o = await this._client.Collections.Add("col_test_crud", colData, collectionObject.ID);
+            });
+
+            //GET
+            collectionObject = await this._client.Collections.Get("col_test_crud", collectionObject.ID);
+
+            Assert.NotNull(collectionObject);
+            Assert.False(string.IsNullOrEmpty(collectionObject.ID));
+            Assert.AreEqual("value", collectionObject.GetData<string>("field"));
+            Assert.AreEqual(true, collectionObject.GetData<bool>("flag"));
+
+            //UPDATE
+            var newData = new GenericData();
+            newData.SetData("new", "stuff");
+            newData.SetData("arr", new string[] { "a", "b" });
+            collectionObject = await this._client.Collections.Update("col_test_crud", collectionObject.ID, newData);
+
+            Assert.NotNull(collectionObject);
+            Assert.False(string.IsNullOrEmpty(collectionObject.ID));
+            Assert.AreEqual("stuff", collectionObject.GetData<string>("new"));
+            Assert.AreEqual(new string[] { "a", "b" }, collectionObject.GetData<string[]>("arr"));
+
+            //DELETE
+            await this._client.Collections.Delete("col_test_crud", collectionObject.ID);
+
+            Assert.ThrowsAsync<Stream.StreamException>(async () =>
+            {
+                var o = await this._client.Collections.Get("col_test_crud", collectionObject.ID);
+            });
+        }
+
+        [Test]
         public async Task TestActivityPartialUpdateByID()
         {
             var act = new Stream.Activity("upd", "test", "1")
@@ -1765,6 +1814,409 @@ namespace stream_net_tests
             Assert.AreEqual(insertedActivity2.Id, updatedActivity2.Id);
             Assert.AreEqual(activity2.Actor, updatedActivity2.Actor);
             Assert.AreEqual(activity2.GetData<int[]>("custom"), updatedActivity2.GetData<int[]>("custom"));
+        }
+
+        [Test]
+        public async Task TestReactions()
+        {
+            var a = new Stream.Activity("user:1", "like", "cake")
+            {
+                ForeignId = "cake:1",
+                Time = DateTime.UtcNow,
+                Target = "johnny"
+            };
+
+            var activity = await this._user1.AddActivity(a);
+
+            var data = new Dictionary<string, object>()
+            {
+                {"field", "value"},
+                {"number", 2}
+            };
+
+            Reaction r = null;
+            // Add reaction
+            Assert.DoesNotThrowAsync(async () =>
+            {
+                r = await this._client.Reactions.Add("like", activity.Id, "bobby", data);
+            });
+
+            Assert.NotNull(r);
+            Assert.AreEqual(r.ActivityID, activity.Id);
+            Assert.AreEqual(r.Kind, "like");
+            Assert.AreEqual(r.UserID, "bobby");
+            Assert.AreEqual(r.Data, data);
+            Assert.True(r.CreatedAt.HasValue);
+            Assert.True(r.UpdatedAt.HasValue);
+            Assert.IsNotEmpty(r.ID);
+
+            // get reaction
+            Reaction r2 = null;
+            Assert.DoesNotThrowAsync(async () =>
+            {
+                r2 = await this._client.Reactions.Get(r.ID);
+            });
+
+            Assert.NotNull(r2);
+            Assert.AreEqual(r2.ActivityID, r.ActivityID);
+            Assert.AreEqual(r2.Kind, "like");
+            Assert.AreEqual(r2.UserID, "bobby");
+            Assert.AreEqual(r2.Data, r.Data);
+            Assert.AreEqual(r2.ID, r.ID);
+
+            // Update reaction
+            data["number"] = 321;
+            data["new"] = "field";
+            data.Remove("field");
+
+            var beforeTime = r.UpdatedAt.Value;
+            Assert.DoesNotThrowAsync(async () =>
+            {
+                r2 = await this._client.Reactions.Update(r.ID, data);
+            });
+            Assert.NotNull(r2);
+            Assert.False(r2.Data.ContainsKey("field"));
+            object n;
+            Assert.True(r2.Data.TryGetValue("number", out n));
+            Assert.AreEqual((Int64)n, 321);
+            Assert.True(r2.Data.ContainsKey("new"));
+
+            // Add children
+            var c1 = await this._client.Reactions.AddChild(r, "upvote", "tommy");
+            var c2 = await this._client.Reactions.AddChild(r, "downvote", "timmy");
+            var c3 = await this._client.Reactions.AddChild(r, "upvote", "jimmy");
+
+            var parent = await this._client.Reactions.Get(r.ID);
+
+            Assert.AreEqual(parent.ChildrenCounters["upvote"], 2);
+            Assert.AreEqual(parent.ChildrenCounters["downvote"], 1);
+
+            Assert.IsTrue(parent.LatestChildren["upvote"].Select(x => x.ID).Contains(c1.ID));
+            Assert.IsTrue(parent.LatestChildren["upvote"].Select(x => x.ID).Contains(c3.ID));
+            Assert.IsTrue(parent.LatestChildren["downvote"].Select(x => x.ID).Contains(c2.ID));
+
+            // Delete reaction
+
+            Assert.DoesNotThrowAsync(async () =>
+            {
+                await this._client.Reactions.Delete(r.ID);
+            });
+
+            Assert.ThrowsAsync<Stream.StreamException>(async () =>
+            {
+                var r3 = await this._client.Reactions.Get(r.ID);
+            });
+        }
+
+        [Test]
+        public async Task TestReactionPagination()
+        {
+            var a = new Stream.Activity("user:1", "like", "cake")
+            {
+                ForeignId = "cake:1",
+                Time = DateTime.UtcNow,
+                Target = "johnny"
+            };
+
+            var activity = await this._user1.AddActivity(a);
+
+            a.Time = DateTime.UtcNow;
+            a.ForeignId = "cake:123";
+            var activity2 = await this._user1.AddActivity(a);
+
+            var data = new Dictionary<string, object>()
+            {
+                {"field", "value"},
+                {"number", 2}
+            };
+
+            var userId = Guid.NewGuid().ToString();
+
+            var r1 = await this._client.Reactions.Add("like", activity.Id, userId, data);
+            var r2 = await this._client.Reactions.Add("comment", activity.Id, userId, data);
+            var r3 = await this._client.Reactions.Add("like", activity.Id, "bob", data);
+
+            var r4 = await this._client.Reactions.AddChild(r3, "upvote", "tom", data);
+            var r5 = await this._client.Reactions.AddChild(r3, "upvote", "mary", data);
+
+            // activity id
+            var filter = ReactionFiltering.Default;
+            var pagination = ReactionPagination.By.ActivityID(activity.Id).Kind("like");
+
+            var reactionsByActivity = await this._client.Reactions.Filter(filter, pagination);
+            Assert.AreEqual(2, reactionsByActivity.Count());
+
+            var r = (List<Reaction>)reactionsByActivity;
+            var actual = r.Find(x => x.ID == r1.ID);
+
+            Assert.NotNull(actual);
+            Assert.AreEqual(r1.ID, actual.ID);
+            Assert.AreEqual(r1.Kind, actual.Kind);
+            Assert.AreEqual(r1.ActivityID, actual.ActivityID);
+
+            actual = r.Find(x => x.ID == r3.ID);
+
+            Assert.NotNull(actual);
+            Assert.AreEqual(r3.ID, actual.ID);
+            Assert.AreEqual(r3.Kind, actual.Kind);
+            Assert.AreEqual(r3.ActivityID, actual.ActivityID);
+
+            //with limit
+            reactionsByActivity = await this._client.Reactions.Filter(filter.WithLimit(1), pagination);
+            Assert.AreEqual(1, reactionsByActivity.Count());
+
+            // user id
+            filter = ReactionFiltering.Default;
+            pagination = ReactionPagination.By.UserID(userId);
+
+            var reactionsByUser = await this._client.Reactions.Filter(filter, pagination);
+            Assert.AreEqual(2, reactionsByUser.Count());
+
+            r = (List<Reaction>)reactionsByUser;
+            actual = r.Find(x => x.ID == r1.ID);
+
+            Assert.NotNull(actual);
+            Assert.AreEqual(r1.ID, actual.ID);
+            Assert.AreEqual(r1.Kind, actual.Kind);
+            Assert.AreEqual(r1.ActivityID, actual.ActivityID);
+
+            actual = r.Find(x => x.ID == r2.ID);
+
+            Assert.NotNull(actual);
+            Assert.AreEqual(r2.ID, actual.ID);
+            Assert.AreEqual(r2.Kind, actual.Kind);
+            Assert.AreEqual(r2.ActivityID, actual.ActivityID);
+
+            // reaction id
+            filter = ReactionFiltering.Default;
+            pagination = ReactionPagination.By.Kind("upvote").ReactionID(r3.ID);
+
+            var reactionsByParent = await this._client.Reactions.Filter(filter, pagination);
+            Assert.AreEqual(2, reactionsByParent.Count());
+
+            r = (List<Reaction>)reactionsByParent;
+            actual = r.Find(x => x.ID == r4.ID);
+
+            Assert.NotNull(actual);
+            Assert.AreEqual(r4.ID, actual.ID);
+            Assert.AreEqual(r4.Kind, actual.Kind);
+            Assert.AreEqual(r4.ActivityID, actual.ActivityID);
+            Assert.AreEqual(r4.UserID, actual.UserID);
+
+            actual = r.Find(x => x.ID == r5.ID);
+
+            Assert.NotNull(actual);
+            Assert.AreEqual(r5.ID, actual.ID);
+            Assert.AreEqual(r5.Kind, actual.Kind);
+            Assert.AreEqual(r5.ActivityID, actual.ActivityID);
+            Assert.AreEqual(r5.UserID, actual.UserID);
+        }
+
+        [Test]
+        public async Task TestUsers()
+        {
+            //Create user
+            var userID = Guid.NewGuid().ToString();
+            var userData = new Dictionary<string, object>()
+            {
+                {"field", "value"},
+                {"is_admin", true},
+            };
+
+            User u = null;
+            Assert.DoesNotThrowAsync(async () =>
+            {
+                u = await this._client.Users.Add(userID, userData);
+            });
+
+            Assert.NotNull(u);
+            Assert.NotNull(u.CreatedAt);
+            Assert.NotNull(u.UpdatedAt);
+            Assert.AreEqual(userID, u.ID);
+            Assert.AreEqual(userData, u.Data);
+
+            Assert.ThrowsAsync<Stream.StreamException>(async () =>
+            {
+                u = await this._client.Users.Add(userID, userData);
+            });
+
+            var newUserData = new Dictionary<string, object>()
+            {
+                {"field", "othervalue"},
+            };
+            Assert.DoesNotThrowAsync(async () =>
+            {
+                u = await this._client.Users.Add(userID, newUserData, true);
+            });
+            Assert.NotNull(u);
+            Assert.NotNull(u.CreatedAt);
+            Assert.NotNull(u.UpdatedAt);
+            Assert.AreEqual(userID, u.ID);
+            Assert.AreEqual(userData, u.Data);
+
+            //Get user
+            u = await this._client.Users.Get(userID);
+            Assert.NotNull(u);
+            Assert.NotNull(u.CreatedAt);
+            Assert.NotNull(u.UpdatedAt);
+            Assert.AreEqual(userID, u.ID);
+            Assert.AreEqual(userData, u.Data);
+
+            // Update user
+            u = await this._client.Users.Update(userID, newUserData);
+            Assert.NotNull(u);
+            Assert.NotNull(u.CreatedAt);
+            Assert.NotNull(u.UpdatedAt);
+            Assert.AreEqual(userID, u.ID);
+            Assert.AreEqual(newUserData, u.Data);
+
+            //Delete user
+            await this._client.Users.Delete(userID);
+
+            Assert.ThrowsAsync<Stream.StreamException>(async () =>
+            {
+                var x = await this._client.Users.Get(userID);
+            });
+        }
+
+        [Test]
+        public async Task TestEnrich_Collection()
+        {
+            var c = new CollectionObject(Guid.NewGuid().ToString());
+            c.SetData("field", "testing_value");
+            await this._client.Collections.Upsert("items", c);
+            var cRef = Stream.Collections.Ref("items", c);
+
+            var a = new Stream.Activity("actor-1", "add", cRef);
+            await this._user1.AddActivity(a);
+
+            var plain = await this._user1.GetFlatActivities();
+            Assert.AreEqual(cRef, plain.Results.First().Object);
+
+            var enriched = await this._user1.GetEnrichedFlatActivities();
+            Assert.AreEqual(1, enriched.Results.Count());
+
+            var act = enriched.Results.First();
+            Assert.IsFalse(act.Actor.IsEnriched);
+            Assert.AreEqual("actor-1", act.Actor.Raw);
+            Assert.IsTrue(act.Object.IsEnriched);
+            Assert.AreEqual(c.ID, act.Object.Enriched.GetData<string>("id"));
+            Assert.AreEqual("testing_value", act.Object.Enriched.GetData<Dictionary<string, string>>("data")["field"]);
+        }
+
+        [Test]
+        public async Task TestEnrich_User()
+        {
+            var userData = new Dictionary<string, object>()
+            {
+                {"is_admin", true},
+                {"nickname","bobby"}
+            };
+            var u = await this._client.Users.Add(Guid.NewGuid().ToString(), userData);
+            var uRef = u.Ref();
+
+            var a = new Stream.Activity(uRef, "add", "post");
+            await this._user1.AddActivity(a);
+
+            var plain = await this._user1.GetFlatActivities();
+            Assert.AreEqual(uRef, plain.Results.First().Actor);
+
+            var enriched = await this._user1.GetEnrichedFlatActivities();
+
+            Assert.AreEqual(1, enriched.Results.Count());
+
+            var act = enriched.Results.First();
+            Assert.IsFalse(act.Object.IsEnriched);
+            Assert.AreEqual("post", act.Object.Raw);
+            Assert.IsTrue(act.Actor.IsEnriched);
+            Assert.AreEqual(u.ID, act.Actor.Enriched.GetData<string>("id"));
+            Assert.AreEqual(userData, act.Actor.Enriched.GetData<Dictionary<string, object>>("data"));
+        }
+
+        [Test]
+        public async Task TestEnrich_OwnReaction()
+        {
+            var a = new Stream.Activity("johhny", "add", "post");
+            var act = await this._user1.AddActivity(a);
+            var reaction = await this._client.Reactions.Add("like", act.Id, "johhny");
+
+            var enriched = await this._user1.GetEnrichedFlatActivities(GetOptions.Default.WithReaction(ReactionOption.With().Own()));
+
+            Assert.AreEqual(1, enriched.Results.Count());
+
+            var enrichedAct = enriched.Results.First();
+
+            Assert.True(enrichedAct.OwnReactions.ContainsKey(reaction.Kind));
+            Assert.AreEqual(reaction.ID, enrichedAct.OwnReactions[reaction.Kind].FirstOrDefault().ID);
+            Assert.AreEqual(reaction.Kind, enrichedAct.OwnReactions[reaction.Kind].FirstOrDefault().Kind);
+            Assert.AreEqual(reaction.UserID, enrichedAct.OwnReactions[reaction.Kind].FirstOrDefault().UserID);
+        }
+
+        [Test]
+        public async Task TestEnrich_LatestReactions()
+        {
+            var a = new Stream.Activity("johhny", "add", "post");
+            var act = await this._user1.AddActivity(a);
+            var reaction = await this._client.Reactions.Add("like", act.Id, "johhny");
+
+            var enriched = await this._user1.GetEnrichedFlatActivities(GetOptions.Default.WithReaction(ReactionOption.With().Recent()));
+
+            Assert.AreEqual(1, enriched.Results.Count());
+
+            var enrichedAct = enriched.Results.First();
+
+            Assert.True(enrichedAct.LatestReactions.ContainsKey(reaction.Kind));
+            Assert.AreEqual(reaction.ID, enrichedAct.LatestReactions[reaction.Kind].FirstOrDefault().ID);
+            Assert.AreEqual(reaction.Kind, enrichedAct.LatestReactions[reaction.Kind].FirstOrDefault().Kind);
+            Assert.AreEqual(reaction.UserID, enrichedAct.LatestReactions[reaction.Kind].FirstOrDefault().UserID);
+        }
+
+        [Test]
+        public async Task TestEnrich_ReactionCounts()
+        {
+            var a = new Stream.Activity("johhny", "add", "post");
+            var act = await this._user1.AddActivity(a);
+            var reactionLike = await this._client.Reactions.Add("like", act.Id, "johhny");
+            var reactionComment = await this._client.Reactions.Add("comment", act.Id, "johhny");
+            var reactionLike2 = await this._client.Reactions.Add("like", act.Id, "timmeh");
+
+            var enriched = await this._user1.GetEnrichedFlatActivities(GetOptions.Default.WithReaction(ReactionOption.With().Counts()));
+
+            Assert.AreEqual(1, enriched.Results.Count());
+
+            var enrichedAct = enriched.Results.First();
+
+            Assert.True(enrichedAct.ReactionCounts.ContainsKey(reactionLike.Kind));
+            Assert.True(enrichedAct.ReactionCounts.ContainsKey(reactionComment.Kind));
+            Assert.AreEqual(2, enrichedAct.ReactionCounts[reactionLike.Kind]);
+            Assert.AreEqual(1, enrichedAct.ReactionCounts[reactionComment.Kind]);
+        }
+
+        [Test]
+        public async Task TestEnrich()
+        {
+            var a = new Stream.Activity("johhny", "add", "post");
+            var act = await this._user1.AddActivity(a);
+            var reaction = await this._client.Reactions.Add("like", act.Id, "johhny");
+
+            var enriched = await this._user1.GetEnrichedFlatActivities(GetOptions.Default.WithReaction(ReactionOption.With().Recent().Own().Counts()));
+
+            Assert.AreEqual(1, enriched.Results.Count());
+
+            var enrichedAct = enriched.Results.First();
+
+            Assert.True(enrichedAct.LatestReactions.ContainsKey(reaction.Kind));
+            Assert.AreEqual(reaction.ID, enrichedAct.LatestReactions[reaction.Kind].FirstOrDefault().ID);
+            Assert.AreEqual(reaction.Kind, enrichedAct.LatestReactions[reaction.Kind].FirstOrDefault().Kind);
+            Assert.AreEqual(reaction.UserID, enrichedAct.LatestReactions[reaction.Kind].FirstOrDefault().UserID);
+
+            Assert.True(enrichedAct.OwnReactions.ContainsKey(reaction.Kind));
+            Assert.AreEqual(reaction.ID, enrichedAct.OwnReactions[reaction.Kind].FirstOrDefault().ID);
+            Assert.AreEqual(reaction.Kind, enrichedAct.OwnReactions[reaction.Kind].FirstOrDefault().Kind);
+            Assert.AreEqual(reaction.UserID, enrichedAct.OwnReactions[reaction.Kind].FirstOrDefault().UserID);
+
+            Assert.True(enrichedAct.ReactionCounts.ContainsKey(reaction.Kind));
+            Assert.AreEqual(1, enrichedAct.ReactionCounts[reaction.Kind]);
         }
     }
 }

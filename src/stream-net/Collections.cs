@@ -11,9 +11,10 @@ namespace Stream
     public class CollectionObject
     {
         public string ID { get; set; }
-        readonly GenericData _data = new GenericData();
+        public string UserID { get; set; }
+        internal GenericData _data = new GenericData();
 
-        internal CollectionObject() { }
+        public CollectionObject() { }
 
         public CollectionObject(string id)
         {
@@ -30,12 +31,56 @@ namespace Stream
             this._data.SetData<T>(name, data);
         }
 
+        public string Ref(string collectionName)
+        {
+            return Collections.Ref(collectionName, this);
+        }
+
         internal JObject ToJObject()
         {
             var root = new JObject();
-            root.Add(new JProperty("id", this.ID));
+            if (this.ID != null)
+            {
+                root.Add(new JProperty("id", this.ID));
+            }
+            if (this.UserID != null)
+            {
+                root.Add(new JProperty("user_id", this.UserID));
+            }
             this._data.AddToJObject(ref root);
             return root;
+        }
+
+        internal string ToJson()
+        {
+            var root = new JObject();
+            if (this.ID != null)
+            {
+                root.Add(new JProperty("id", this.ID));
+            }
+            if (this.UserID != null)
+            {
+                root.Add(new JProperty("user_id", this.UserID));
+            }
+            root.Add(new JProperty("data", this._data.ToJObject()));
+            return root.ToString();
+        }
+
+        internal static CollectionObject FromBatchJSON(JObject obj)
+        {
+            CollectionObject result = new CollectionObject();
+
+            obj.Properties().ForEach(prop =>
+            {
+                switch (prop.Name)
+                {
+                    case "id": result.ID = prop.Value.Value<string>(); break;
+                    case "user_id": result.UserID = prop.Value.Value<string>(); break;
+                    default: result._data.SetData(prop.Name, prop.Value); break;
+                }
+            });
+
+            return result;
         }
 
         internal static CollectionObject FromJSON(JObject obj)
@@ -47,7 +92,16 @@ namespace Stream
                 switch (prop.Name)
                 {
                     case "id": result.ID = prop.Value.Value<string>(); break;
-                    default: result._data.SetData(prop.Name, prop.Value); break;
+                    case "user_id": result.UserID = prop.Value.Value<string>(); break;
+                    case "data":
+                        {
+                            var dataObj = prop.Value as JObject;
+                            dataObj.Properties().ForEach(p =>
+                            {
+                                result.SetData(p.Name, p.Value);
+                            });
+                            break;
+                        }
                 }
             });
 
@@ -56,7 +110,7 @@ namespace Stream
     }
 
     public class Collections
-	{
+    {
         readonly StreamClient _client;
 
         internal Collections(StreamClient client)
@@ -75,7 +129,7 @@ namespace Stream
                 new JProperty("data", new JObject(
                     new JProperty(collectionName, data.Select(x => x.ToJObject())))));
 
-            var request = this._client.BuildJWTAppRequest("meta/", HttpMethod.POST);
+            var request = this._client.BuildJWTAppRequest("collections/", HttpMethod.POST);
             request.SetJsonBody(dataJson.ToString());
 
             var response = await this._client.MakeRequest(request);
@@ -94,7 +148,7 @@ namespace Stream
         {
             var foreignIds = ids.Select(x => string.Format("{0}:{1}", collectionName, x));
 
-            var request = this._client.BuildJWTAppRequest("meta/", HttpMethod.GET);
+            var request = this._client.BuildJWTAppRequest("collections/", HttpMethod.GET);
             request.AddQueryParameter("foreign_ids", string.Join(",", foreignIds));
 
             var response = await this._client.MakeRequest(request);
@@ -105,16 +159,67 @@ namespace Stream
             throw StreamException.FromResponse(response);
         }
 
-        public async Task Delete(string collectionName, string id)
-        {
-            await this.DeleteMany(collectionName, new string[] { id });
-        }
-
         public async Task DeleteMany(string collectionName, IEnumerable<string> ids)
         {
-            var request = this._client.BuildJWTAppRequest("meta/", HttpMethod.DELETE);
+            var request = this._client.BuildJWTAppRequest("collections/", HttpMethod.DELETE);
             request.AddQueryParameter("collection_name", collectionName);
             request.AddQueryParameter("ids", string.Join(",", ids));
+
+            var response = await this._client.MakeRequest(request);
+
+            if (response.StatusCode != System.Net.HttpStatusCode.OK)
+                throw StreamException.FromResponse(response);
+        }
+
+        public async Task<CollectionObject> Add(string collectionName, GenericData data, string ID = null, string userID = null)
+        {
+            var collectionObject = new CollectionObject()
+            {
+                ID = ID,
+                UserID = userID,
+                _data = data,
+            };
+
+            var request = this._client.BuildJWTAppRequest($"collections/{collectionName}/", HttpMethod.POST);
+            request.SetJsonBody(collectionObject.ToJson());
+
+            var response = await this._client.MakeRequest(request);
+
+            if (response.StatusCode != System.Net.HttpStatusCode.Created)
+                throw StreamException.FromResponse(response);
+
+            return CollectionObject.FromJSON(JObject.Parse(response.Content));
+        }
+
+        public async Task<CollectionObject> Get(string collectionName, string ID)
+        {
+            var request = this._client.BuildJWTAppRequest($"collections/{collectionName}/{ID}/", HttpMethod.GET);
+
+            var response = await this._client.MakeRequest(request);
+
+            if (response.StatusCode != System.Net.HttpStatusCode.OK)
+                throw StreamException.FromResponse(response);
+
+            return CollectionObject.FromJSON(JObject.Parse(response.Content));
+        }
+
+        public async Task<CollectionObject> Update(string collectionName, string ID, GenericData data)
+        {
+            var dataJson = new JObject(new JProperty("data", data.ToJObject()));
+            var request = this._client.BuildJWTAppRequest($"collections/{collectionName}/{ID}/", HttpMethod.PUT);
+            request.SetJsonBody(dataJson.ToString());
+
+            var response = await this._client.MakeRequest(request);
+
+            if (response.StatusCode != System.Net.HttpStatusCode.Created)
+                throw StreamException.FromResponse(response);
+
+            return CollectionObject.FromJSON(JObject.Parse(response.Content));
+        }
+
+        public async Task Delete(string collectionName, string ID)
+        {
+            var request = this._client.BuildJWTAppRequest($"collections/{collectionName}/{ID}/", HttpMethod.DELETE);
 
             var response = await this._client.MakeRequest(request);
 
@@ -147,7 +252,7 @@ namespace Stream
 
                 var objectData = resultObj.Property("data").Value as JObject;
 
-                var collectionObject = CollectionObject.FromJSON(objectData);
+                var collectionObject = CollectionObject.FromBatchJSON(objectData);
                 collectionObject.ID = objectID;
 
                 yield return collectionObject;

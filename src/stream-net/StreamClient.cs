@@ -128,6 +128,22 @@ namespace Stream
             }
         }
 
+        public Reactions Reactions
+        {
+            get
+            {
+                return new Reactions(this);
+            }
+        }
+
+        public Users Users
+        {
+            get
+            {
+                return new Users(this);
+            }
+        }
+
         private Uri GetBaseUrl()
         {
             string region = "";
@@ -169,6 +185,11 @@ namespace Stream
         internal RestRequest BuildFeedRequest(StreamFeed feed, string path, HttpMethod method)
         {
             return BuildRestRequest(BaseUrlPath + feed.UrlPath + path, method);
+        }
+
+        internal RestRequest BuildEnrichedFeedRequest(StreamFeed feed, string path, HttpMethod method)
+        {
+            return BuildRestRequest(BaseUrlPath + feed.EnrichedPath + path, method);
         }
 
         internal RestRequest BuildActivitiesRequest(StreamFeed feed)

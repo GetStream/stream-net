@@ -23,7 +23,7 @@ namespace Stream.Rest
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
 #endif
             var client = new HttpClient();
-            
+
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
 
@@ -62,6 +62,15 @@ namespace Stream.Rest
             }
         }
 
+        private async Task<RestResponse> ExecutePut(Uri url, RestRequest request)
+        {
+            using (var client = BuildClient(request))
+            {
+                HttpResponseMessage response = await client.PutAsync(url, new StringContent(request.JsonBody, Encoding.UTF8, "application/json"));
+                return await RestResponse.FromResponseMessage(response);
+            }
+        }
+
         private async Task<RestResponse> ExecuteDelete(Uri url, RestRequest request)
         {
             using (var client = BuildClient(request))
@@ -95,6 +104,8 @@ namespace Stream.Rest
                     return this.ExecuteDelete(url, request);
                 case HttpMethod.POST:
                     return this.ExecutePost(url, request);
+                case HttpMethod.PUT:
+                    return this.ExecutePut(url, request);
                 default:
                     return this.ExecuteGet(url, request);
             }

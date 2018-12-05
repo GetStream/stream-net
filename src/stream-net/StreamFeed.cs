@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace Stream
 {
     public class StreamFeed : IStreamFeed
-	{
+    {
         static Regex _feedRegex = new Regex(@"^\w+$", RegexOptions.Compiled);
         static Regex _userRegex = new Regex(@"^[-\w]+$", RegexOptions.Compiled);
 
@@ -33,6 +33,7 @@ namespace Stream
             _userId = userId;
             FeedTokenId = string.Format("{0}{1}", _feedSlug, _userId);
             UrlPath = string.Format("feed/{0}/{1}", _feedSlug, _userId);
+            EnrichedPath = string.Format("enrich/{0}", UrlPath);
         }
 
         internal string FeedTokenId { get; private set; }
@@ -56,6 +57,8 @@ namespace Stream
         }
 
         public string UrlPath { get; private set; }
+
+        public string EnrichedPath { get; private set; }
 
         /// <summary>
         /// Add an activity to the feed
@@ -226,6 +229,56 @@ namespace Stream
             return result;
         }
 
+        internal async Task<StreamResponse<T>> GetEnriched<T>(GetOptions options = null) where T : EnrichedActivity
+        {
+            // build request
+            options = options ?? GetOptions.Default;
+            var request = _client.BuildEnrichedFeedRequest(this, "/", HttpMethod.GET);
+            options.Apply(request);
+
+            // make request
+            var response = await _client.MakeRequest(request);
+            if (response.StatusCode != System.Net.HttpStatusCode.OK)
+                throw StreamException.FromResponse(response);
+
+            // handle response
+            var result = new StreamResponse<T>();
+            JObject obj = JObject.Parse(response.Content);
+            foreach (var prop in obj.Properties())
+            {
+                switch (prop.Name)
+                {
+                    case "results":
+                    case "activities":
+                        {
+                            // get the results
+                            var array = prop.Value as JArray;
+                            result.Results = array.Select(a => EnrichedActivity.FromJson((JObject)a) as T).ToList();
+                            break;
+                        }
+                    case "unseen":
+                        {
+                            result.Unseen = prop.Value.Value<long>();
+                            break;
+                        }
+                    case "unread":
+                        {
+                            result.Unread = prop.Value.Value<long>();
+                            break;
+                        }
+                    case "duration":
+                        {
+                            result.Duration = prop.Value.Value<String>();
+                            break;
+                        }
+                    default:
+                        break;
+                }
+            }
+
+            return result;
+        }
+
         public Task<StreamResponse<Activity>> GetFlatActivities(GetOptions options = null)
         {
             return GetWithOptions<Activity>(options);
@@ -241,37 +294,52 @@ namespace Stream
             return GetWithOptions<NotificationActivity>(options);
         }
 
+        public Task<StreamResponse<EnrichedActivity>> GetEnrichedFlatActivities(GetOptions options = null)
+        {
+            return GetEnriched<EnrichedActivity>(options);
+        }
+
+        public Task<StreamResponse<EnrichedAggregatedActivity>> GetEnrichedAggregatedActivities(GetOptions options = null)
+        {
+            return GetEnriched<EnrichedAggregatedActivity>(options);
+        }
+
+        public Task<StreamResponse<EnrichedNotificationActivity>> GetEnrichedNotificationActivities(GetOptions options = null)
+        {
+            return GetEnriched<EnrichedNotificationActivity>(options);
+        }
+
         public async Task FollowFeed(IStreamFeed feedToFollow, int activityCopyLimit = StreamClient.ActivityCopyLimitDefault)
-		{
-			ValidateFeedFollow(feedToFollow);
-			if (activityCopyLimit < 0)
-				throw new ArgumentOutOfRangeException("activityCopyLimit", "Activity copy limit must be greater than or equal to 0");
-			if (activityCopyLimit > StreamClient.ActivityCopyLimitMax)
-				throw new ArgumentOutOfRangeException("activityCopyLimit", string.Format("Activity copy limit must be less than or equal to {0}", StreamClient.ActivityCopyLimitMax));
+        {
+            ValidateFeedFollow(feedToFollow);
+            if (activityCopyLimit < 0)
+                throw new ArgumentOutOfRangeException("activityCopyLimit", "Activity copy limit must be greater than or equal to 0");
+            if (activityCopyLimit > StreamClient.ActivityCopyLimitMax)
+                throw new ArgumentOutOfRangeException("activityCopyLimit", string.Format("Activity copy limit must be less than or equal to {0}", StreamClient.ActivityCopyLimitMax));
 
-			var request = _client.BuildFeedRequest(this, "/following/", HttpMethod.POST);
+            var request = _client.BuildFeedRequest(this, "/following/", HttpMethod.POST);
 
-			request.SetJsonBody(JsonConvert.SerializeObject(new
-			{
-				target = feedToFollow.FeedId,
-				activity_copy_limit = activityCopyLimit,
-				target_token = feedToFollow.Token
-			}));
+            request.SetJsonBody(JsonConvert.SerializeObject(new
+            {
+                target = feedToFollow.FeedId,
+                activity_copy_limit = activityCopyLimit,
+                target_token = feedToFollow.Token
+            }));
 
-			var response = await _client.MakeRequest(request);
+            var response = await _client.MakeRequest(request);
 
-			if (response.StatusCode != System.Net.HttpStatusCode.Created)
-				throw StreamException.FromResponse(response);
-		}
+            if (response.StatusCode != System.Net.HttpStatusCode.Created)
+                throw StreamException.FromResponse(response);
+        }
 
-		public Task FollowFeed(string targetFeedSlug, string targetUserId, int activityCopyLimit = StreamClient.ActivityCopyLimitDefault)
+        public Task FollowFeed(string targetFeedSlug, string targetUserId, int activityCopyLimit = StreamClient.ActivityCopyLimitDefault)
         {
             return FollowFeed(this._client.Feed(targetFeedSlug, targetUserId), activityCopyLimit);
         }
 
         public async Task UnfollowFeed(IStreamFeed feedToUnfollow, bool keepHistory = false)
         {
-			ValidateFeedFollow(feedToUnfollow);
+            ValidateFeedFollow(feedToUnfollow);
 
             var request = _client.BuildFeedRequest(this, "/following/" + feedToUnfollow.FeedId + "/", HttpMethod.DELETE);
             request.AddQueryParameter("keep_history", keepHistory.ToString());
@@ -336,13 +404,13 @@ namespace Stream
             return JsonConvert.DeserializeObject<FollowersResponse>(response.Content).results;
         }
 
-		private void ValidateFeedFollow(IStreamFeed feed)
-		{
-			if (feed == null)
-				throw new ArgumentNullException("feed", "Must have a feed to follow/unfollow");
-			if (((StreamFeed)feed).FeedTokenId == this.FeedTokenId)
-				throw new ArgumentException("Cannot follow/unfollow myself");
-		}
+        private void ValidateFeedFollow(IStreamFeed feed)
+        {
+            if (feed == null)
+                throw new ArgumentNullException("feed", "Must have a feed to follow/unfollow");
+            if (((StreamFeed)feed).FeedTokenId == this.FeedTokenId)
+                throw new ArgumentException("Cannot follow/unfollow myself");
+        }
 
-	}
+    }
 }
