@@ -2169,6 +2169,31 @@ namespace stream_net_tests
             Assert.AreEqual(reaction.ID, enrichedAct.LatestReactions[reaction.Kind].FirstOrDefault().ID);
             Assert.AreEqual(reaction.Kind, enrichedAct.LatestReactions[reaction.Kind].FirstOrDefault().Kind);
             Assert.AreEqual(reaction.UserID, enrichedAct.LatestReactions[reaction.Kind].FirstOrDefault().UserID);
+
+            var comment = await this._client.Reactions.Add("comment", act.Id, "bobby");
+            await this._client.Reactions.Add("comment", act.Id, "tony");
+            await this._client.Reactions.Add("comment", act.Id, "rupert");
+
+            enriched = await this._user1.GetEnrichedFlatActivities(GetOptions.Default.WithReaction(ReactionOption.With().Recent().KindFilter("comment").KindFilter("upvote")));
+
+            Assert.AreEqual(1, enriched.Results.Count());
+
+            enrichedAct = enriched.Results.First();
+
+            Assert.False(enrichedAct.LatestReactions.ContainsKey(reaction.Kind));
+            Assert.True(enrichedAct.LatestReactions.ContainsKey(comment.Kind));
+
+            enriched = await this._user1.GetEnrichedFlatActivities(GetOptions.Default.WithReaction(ReactionOption.With().Recent().RecentLimit(1)));
+
+            Assert.AreEqual(1, enriched.Results.Count());
+
+            enrichedAct = enriched.Results.First();
+
+            Assert.True(enrichedAct.LatestReactions.ContainsKey(reaction.Kind));
+            Assert.True(enrichedAct.LatestReactions.ContainsKey(comment.Kind));
+
+            Assert.AreEqual(1, enrichedAct.LatestReactions[reaction.Kind].Count());
+            Assert.AreEqual(1, enrichedAct.LatestReactions[comment.Kind].Count());
         }
 
         [Test]

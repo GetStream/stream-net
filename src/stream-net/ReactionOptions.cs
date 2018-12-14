@@ -5,19 +5,24 @@ namespace Stream
 {
     public class ReactionOption
     {
+        int? _recentLimit;
+
         private OpType Type { get; set; }
         private enum OpType
         {
             own,
             recent,
             counts,
+            ownChildren
         }
 
         readonly List<OpType> _ops;
+        readonly List<string> _kindFilters;
 
         private ReactionOption()
         {
             _ops = new List<OpType>();
+            _kindFilters = new List<string>();
         }
 
         internal void Apply(RestRequest request)
@@ -29,8 +34,14 @@ namespace Stream
                     case OpType.own: request.AddQueryParameter("withOwnReactions", "true"); break;
                     case OpType.recent: request.AddQueryParameter("withRecentReactions", "true"); break;
                     case OpType.counts: request.AddQueryParameter("withReactionCounts", "true"); break;
+                    case OpType.ownChildren: request.AddQueryParameter("withOwnChildren", "true"); break;
                 }
             });
+            if (_recentLimit.HasValue)
+                request.AddQueryParameter("recentReactionsLimit", _recentLimit.ToString());
+
+            if (_kindFilters.Count != 0)
+                request.AddQueryParameter("reactionKindsFilter", string.Join(',', _kindFilters));
         }
 
         public static ReactionOption With()
@@ -54,7 +65,24 @@ namespace Stream
         {
             _ops.Add(OpType.counts);
             return this;
+        }
 
+        public ReactionOption OwnChildren()
+        {
+            _ops.Add(OpType.ownChildren);
+            return this;
+        }
+
+        public ReactionOption RecentLimit(int value)
+        {
+            _recentLimit = value;
+            return this;
+        }
+
+        public ReactionOption KindFilter(string value)
+        {
+            _kindFilters.Add(value);
+            return this;
         }
     }
 }
