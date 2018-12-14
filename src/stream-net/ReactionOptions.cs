@@ -41,7 +41,7 @@ namespace Stream
                 request.AddQueryParameter("recentReactionsLimit", _recentLimit.ToString());
 
             if (_kindFilters.Count != 0)
-                request.AddQueryParameter("reactionKindsFilter", string.Join(',', _kindFilters));
+                request.AddQueryParameter("reactionKindsFilter", string.Join(",", _kindFilters));
         }
 
         public static ReactionOption With()
