@@ -28,7 +28,8 @@ namespace stream_net_tests
                 "zd8cdv9rhxcpmkx9zx4jqt7q9qhawpgsfpay2gy7jaubym32crs9kaux2pm67wrx",
                 new Stream.StreamClientOptions()
                 {
-                    Location = Stream.StreamApiLocation.USEast
+                    Location = Stream.StreamApiLocation.USEast,
+                    Timeout = 5000
                 });
             _user1 = _client.Feed("user", System.Guid.NewGuid().ToString());
             _user2 = _client.Feed("user", System.Guid.NewGuid().ToString());
