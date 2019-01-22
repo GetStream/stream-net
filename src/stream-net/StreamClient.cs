@@ -66,34 +66,14 @@ namespace Stream
             if (id != null && foreignIDTime != null)
                 throw new ArgumentException("at most one of the parameters ids or foreignIdTimes must be provided", "ids, foreignIDTimes");
 
-            var request = this.BuildJWTAppRequest("activity/", HttpMethod.POST);
-
-            var requestJSON = new JObject();
-
-            if (id != null)
+            var update = new ActivityPartialUpdateRequestObject
             {
-                requestJSON.Add(new JProperty("id", id));
-            }
-            else
-            {
-                requestJSON.Add(new JProperty("foreign_id", foreignIDTime.ForeignID));
-                requestJSON.Add(new JProperty("time", foreignIDTime.Time.ToString("s", System.Globalization.CultureInfo.InvariantCulture)));
-            }
-
-            var setObj = new JObject();
-            if (set != null)
-            {
-                set.AddToJObject(ref setObj);
-            }
-            requestJSON.Add("set", setObj);
-
-            requestJSON.Add(new JProperty("unset", unset != null ? unset : new string[] { }));
-
-            request.SetJsonBody(requestJSON.ToString());
-            var response = await this.MakeRequest(request);
-
-            if (response.StatusCode != System.Net.HttpStatusCode.Created)
-                throw StreamException.FromResponse(response);
+                ID = id,
+                ForeignIDTime = foreignIDTime,
+                Set = set,
+                Unset = unset,
+            };
+            await this.Batch.ActivitiesPartialUpdate(new ActivityPartialUpdateRequestObject[] { update });
         }
 
         public string CreateUserSessionToken(string userId, IDictionary<string, object> extraData = null)

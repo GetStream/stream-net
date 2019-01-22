@@ -1746,6 +1746,101 @@ namespace stream_net_tests
         }
 
         [Test]
+        public async Task TestBatchPartialUpdate()
+        {
+            var fidTime1 = new Stream.ForeignIDTime(System.Guid.NewGuid().ToString(), DateTime.UtcNow);
+            var act1 = new Stream.Activity("upd", "test", "1")
+            {
+                ForeignId = fidTime1.ForeignID,
+                Time = fidTime1.Time
+            };
+            act1.SetData("custom_thing", "12345");
+            act1.SetData("custom_thing2", "foobar");
+            act1.SetData("custom_thing3", "some thing");
+            var fidTime2 = new Stream.ForeignIDTime(System.Guid.NewGuid().ToString(), DateTime.UtcNow.AddMinutes(-3));
+            var act2 = new Stream.Activity("upd", "test", "1")
+            {
+                ForeignId = fidTime2.ForeignID,
+                Time = fidTime2.Time
+            };
+            act2.SetData("custom_flag", "val1");
+            act2.SetData("custom_flag2", "val2");
+            act2.SetData("custom_flag3", "val3");
+
+            var fidTime3 = new Stream.ForeignIDTime(System.Guid.NewGuid().ToString(), DateTime.UtcNow.AddMinutes(-6));
+            var act3 = new Stream.Activity("upd", "test", "1")
+            {
+                ForeignId = fidTime3.ForeignID,
+                Time = fidTime3.Time
+            };
+            var customData = new Dictionary<string, string>()
+            {
+                {"name", "BOB"},
+                {"address", "90210"},
+                {"email", "bob@bobobo.com"},
+            };
+            act3.SetData("details", customData);
+
+            var response = await this._user1.AddActivities(new Stream.Activity[] { act1, act2, act3 });
+            var insertedActs = response.ToArray();
+
+            //FID TIME
+            var upd1 = new Stream.ActivityPartialUpdateRequestObject()
+            {
+                ForeignIDTime = fidTime1,
+                Unset = new string[] { "custom_thing3" }
+            };
+
+            var set = new GenericData();
+            set.SetData("details.address", "nowhere");
+            var upd2 = new Stream.ActivityPartialUpdateRequestObject()
+            {
+                ForeignIDTime = fidTime3,
+                Set = set
+            };
+
+            Assert.DoesNotThrowAsync(async () =>
+            {
+                await this._client.Batch.ActivitiesPartialUpdate(new Stream.ActivityPartialUpdateRequestObject[] { upd1, upd2 });
+            });
+
+            var updatedActs = (await this._user1.GetActivities()).ToArray();
+
+            Assert.IsNull(updatedActs[0].GetData<string>("custom_thing3"));
+            var extraData = updatedActs[2].GetData<Dictionary<string, string>>("details");
+            if (extraData == null)
+            {
+                Console.WriteLine("IT'S NULL   " + updatedActs[2].ForeignId);
+            }
+            Assert.AreEqual("nowhere", extraData["address"]);
+
+            //ID
+            set = new GenericData();
+            set.SetData("custom_flag2", "foobar");
+            upd1 = new Stream.ActivityPartialUpdateRequestObject()
+            {
+                ID = insertedActs[1].Id,
+                Set = set
+            };
+            upd2 = new Stream.ActivityPartialUpdateRequestObject()
+            {
+                ID = insertedActs[2].Id,
+                Unset = new string[] { "details.name" }
+            };
+
+            Assert.DoesNotThrowAsync(async () =>
+            {
+                await this._client.Batch.ActivitiesPartialUpdate(new Stream.ActivityPartialUpdateRequestObject[] { upd1, upd2 });
+            });
+
+            updatedActs = (await this._user1.GetActivities()).ToArray();
+
+            Assert.AreEqual("foobar", updatedActs[1].GetData<string>("custom_flag2"));
+            extraData = updatedActs[2].GetData<Dictionary<string, string>>("details");
+            Assert.False(extraData.ContainsKey("name"));
+        }
+
+        [Test]
         public async Task TestBatchUpdateActivity()
         {
             var activity = new Stream.Activity("user:1", "like", "cake")
