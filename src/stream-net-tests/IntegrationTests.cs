@@ -29,7 +29,7 @@ namespace stream_net_tests
                 new Stream.StreamClientOptions()
                 {
                     Location = Stream.StreamApiLocation.USEast,
-                    Timeout = 5000
+                    Timeout = 10000
                 });
             _user1 = _client.Feed("user", System.Guid.NewGuid().ToString());
             _user2 = _client.Feed("user", System.Guid.NewGuid().ToString());
