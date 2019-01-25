@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Stream.Rest;
 using System;
 using System.Collections.Generic;
@@ -19,8 +20,44 @@ namespace Stream
         }
     }
 
+    public class ActivityPartialUpdateRequestObject
+    {
+        public string ID { get; set; }
+
+        public ForeignIDTime ForeignIDTime { get; set; }
+
+        public GenericData Set { get; set; }
+
+        public IEnumerable<string> Unset { get; set; }
+
+        public JObject ToJObject()
+        {
+            var result = new JObject();
+
+            if (ID != null)
+            {
+                result.Add(new JProperty("id", ID));
+            }
+            else
+            {
+                result.Add(new JProperty("foreign_id", ForeignIDTime.ForeignID));
+                result.Add(new JProperty("time", ForeignIDTime.Time.ToString("s", System.Globalization.CultureInfo.InvariantCulture)));
+            }
+
+            var setObj = new JObject();
+            if (Set != null)
+            {
+                Set.AddToJObject(ref setObj);
+            }
+            result.Add("set", setObj);
+
+            result.Add(new JProperty("unset", Unset != null ? Unset : new string[] { }));
+            return result;
+        }
+    }
+
     public class BatchOperations : IBatchOperations
-	{
+    {
         readonly StreamClient _client;
 
         internal BatchOperations(StreamClient client)
@@ -106,6 +143,21 @@ namespace Stream
             var request = _client.BuildJWTAppRequest("activities/", HttpMethod.POST);
             request.SetJsonBody(Activity.ToActivitiesJson(activities, this._client));
 
+            var response = await this._client.MakeRequest(request);
+
+            if (response.StatusCode != System.Net.HttpStatusCode.Created)
+                throw StreamException.FromResponse(response);
+        }
+
+        public async Task ActivitiesPartialUpdate(IEnumerable<ActivityPartialUpdateRequestObject> updates)
+        {
+            var request = this._client.BuildJWTAppRequest("activity/", HttpMethod.POST);
+
+            var requestData = new Dictionary<string, object>(){
+                {"changes", updates.Select(x => x.ToJObject())}
+            };
+
+            request.SetJsonBody(JsonConvert.SerializeObject(requestData));
             var response = await this._client.MakeRequest(request);
 
             if (response.StatusCode != System.Net.HttpStatusCode.Created)
