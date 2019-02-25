@@ -1,5 +1,6 @@
 ﻿using Stream.Rest;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Stream
 {
@@ -10,7 +11,8 @@ namespace Stream
             id_gte,
             id_gt,
             id_lte,
-            id_lt
+            id_lt,
+            with_activity_data
         }
 
         internal class OpEntry
@@ -30,6 +32,12 @@ namespace Stream
 
         private FeedFilter()
         {
+        }
+
+        public FeedFilter WithActivityData()
+        {
+            _ops.Add(new OpEntry(OpType.with_activity_data, "true"));
+            return this;
         }
 
         public FeedFilter IdGreaterThan(string id)
@@ -62,6 +70,14 @@ namespace Stream
             {
                 request.AddQueryParameter(op.Type.ToString(), op.Value);
             });
+        }
+
+        internal bool IncludesActivityData
+        {
+            get
+            {
+                return _ops.Any(x => x.Type == OpType.with_activity_data);
+            }
         }
 
         #region starts
