@@ -228,12 +228,7 @@ namespace Stream
         }
 
         public async Task<IEnumerable<Reaction>> Filter(ReactionFiltering filtering, ReactionPagination pagination)
-        {
-            //var urlPath = pagination.GetPath();
-            //var request = this._client.BuildJWTAppRequest($"reaction/{urlPath}", HttpMethod.GET);
-            //filtering.Apply(request);
-
-            //var response = await this._client.MakeRequest(request);
+        {            
             var response = await FilterHelper(filtering, pagination);
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
