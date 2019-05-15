@@ -1747,6 +1747,72 @@ namespace stream_net_tests
         }
 
         [Test]
+        public async Task TestUpdateToTargets()
+        {
+            var fidTime = new Stream.ForeignIDTime(System.Guid.NewGuid().ToString(), DateTime.UtcNow);
+
+            var targets = new List<string>()
+            {
+                "flat:" + Guid.NewGuid().ToString(),
+                "user:" + Guid.NewGuid().ToString(),
+            };
+
+            var act = new Stream.Activity("upd", "test", "1")
+            {
+                ForeignId = fidTime.ForeignID,
+                Time = fidTime.Time,
+                To = targets
+            };
+
+            var insertedAct = await this._user1.AddActivity(act);
+            Assert.AreEqual(2, insertedAct.To.Count);
+
+            //add 1
+            var add = "user:" + Guid.NewGuid().ToString();
+            var updateResp = await this._user1.UpdateActivityToTargets(fidTime, new string[] { add });
+            Assert.AreEqual(insertedAct.Id, updateResp.Activity.Id);
+            Assert.AreEqual(1, updateResp.Added.Count);
+            Assert.AreEqual(add, updateResp.Added[0]);
+            Assert.AreEqual(3, updateResp.Activity.To.Count);
+            Assert.IsNotNull(updateResp.Activity.To.ToList().Find(t => t == add));
+
+            var updatedAct = (await this._user1.GetActivities(0, 1, FeedFilter.Where().IdLessThanEqual(insertedAct.Id))).FirstOrDefault();
+            Assert.NotNull(updatedAct);
+            Assert.AreEqual(3, updatedAct.To.Count);
+            Assert.IsNotNull(updatedAct.To.ToList().Find(t => t == add));
+
+            //remove 1
+            var remove = targets[0];
+            updateResp = await this._user1.UpdateActivityToTargets(fidTime, null, null, new string[] { remove });
+            Assert.AreEqual(insertedAct.Id, updateResp.Activity.Id);
+            Assert.AreEqual(1, updateResp.Removed.Count);
+            Assert.AreEqual(remove, updateResp.Removed[0]);
+            Assert.AreEqual(2, updateResp.Activity.To.Count);
+            Assert.IsNull(updateResp.Activity.To.ToList().Find(t => t == remove));
+
+            updatedAct = (await this._user1.GetActivities(0, 1, FeedFilter.Where().IdLessThanEqual(insertedAct.Id))).FirstOrDefault();
+            Assert.NotNull(updatedAct);
+            Assert.AreEqual(2, updatedAct.To.Count);
+            Assert.IsNull(updatedAct.To.ToList().Find(t => t == remove));
+
+            //new ones
+            var newOnes = new List<string>()
+            {
+                "flat:" + Guid.NewGuid().ToString(),
+                "user:" + Guid.NewGuid().ToString(),
+            };
+            updateResp = await this._user1.UpdateActivityToTargets(fidTime, null, newOnes);
+            Assert.AreEqual(insertedAct.Id, updateResp.Activity.Id);
+            Assert.AreEqual(2, updateResp.Activity.To.Count);
+            Assert.AreEqual(2, updateResp.Added.Count);
+            Assert.AreEqual(2, updateResp.Added.ToList().FindAll(t => newOnes.Contains(t)).Count);
+            updatedAct = (await this._user1.GetActivities(0, 1, FeedFilter.Where().IdLessThanEqual(insertedAct.Id))).FirstOrDefault();
+            Assert.NotNull(updatedAct);
+            Assert.AreEqual(2, updatedAct.To.Count);
+            Assert.AreEqual(2, updatedAct.To.ToList().FindAll(t => newOnes.Contains(t)).Count);
+        }
+
+        [Test]
         public async Task TestBatchPartialUpdate()
         {
             var fidTime1 = new Stream.ForeignIDTime(System.Guid.NewGuid().ToString(), DateTime.UtcNow);

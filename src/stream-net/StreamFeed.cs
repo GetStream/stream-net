@@ -179,6 +179,34 @@ namespace Stream
             throw StreamException.FromResponse(response);
         }
 
+        public async Task<UpdateToTargetsResponse> UpdateActivityToTargets(ForeignIDTime foreignIDTime,
+            IEnumerable<string> adds = null,
+            IEnumerable<string> newTargets = null,
+            IEnumerable<string> removed = null)
+        {
+            var payload = new Dictionary<string, object>()
+            {
+                {"foreign_id" , foreignIDTime.ForeignID},
+                {"time" , foreignIDTime.Time.ToString("s", System.Globalization.CultureInfo.InvariantCulture)}
+            };
+            if (adds != null)
+                payload["added_targets"] = adds.ToList();
+            if (newTargets != null)
+                payload["new_targets"] = newTargets.ToList();
+            if (removed != null)
+                payload["removed_targets"] = removed.ToList();
+
+            var endpoint = string.Format("feed_targets/{0}/{1}/activity_to_targets/", this._feedSlug, this._userId);
+            var request = this._client.BuildJWTAppRequest(endpoint, HttpMethod.POST);
+            request.SetJsonBody(JsonConvert.SerializeObject(payload));
+            var response = await this._client.MakeRequest(request);
+
+            if (response.StatusCode == System.Net.HttpStatusCode.Created)
+                return UpdateToTargetsResponse.FromJson(response.Content);
+
+            throw StreamException.FromResponse(response);
+        }
+
         internal async Task<StreamResponse<T>> GetWithOptions<T>(GetOptions options = null) where T : Activity
         {
             // build request

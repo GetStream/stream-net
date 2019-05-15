@@ -28,5 +28,9 @@ namespace Stream
         Task UnfollowFeed(string targetFeedSlug, string targetUserId, bool keepHistory = false);
         Task UpdateActivities(IEnumerable<Activity> activities);
         Task UpdateActivity(Activity activity);
+        Task<UpdateToTargetsResponse> UpdateActivityToTargets(ForeignIDTime foreignIDTime,
+            IEnumerable<string> adds = null,
+            IEnumerable<string> newTargets = null,
+            IEnumerable<string> removed = null);
     }
 }
