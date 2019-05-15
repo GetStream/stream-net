@@ -1,7 +1,7 @@
 stream-net
 ===========
 
-[![Build status](https://ci.appveyor.com/api/projects/status/nhnrdhf64clbcv19/branch/master?svg=true)](https://ci.appveyor.com/project/tbarbugli/stream-net/branch/master)
+[![Build status](https://ci.appveyor.com/api/projects/status/nhnrdhf64clbcv19/branch/master?svg=true)](https://ci.appveyor.com/project/tbarbugli/stream-net/branch/master) [![NuGet Badge](https://buildstats.info/nuget/stream-net)](https://www.nuget.org/packages/stream-net/)
 
 [stream-net](https://github.com/GetStream/stream-net) is a .Net client for [Stream](https://getstream.io/).
 
