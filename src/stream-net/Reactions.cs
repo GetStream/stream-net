@@ -3,12 +3,19 @@ using Newtonsoft.Json.Linq;
 using Stream.Rest;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Stream
 {
     using ReactionFilter = FeedFilter;
+
+    public class ReactionsWithActivity
+    {
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "results")]
+        public IEnumerable<Reaction> Reactions { get; internal set; }
+        
+        public EnrichedActivity Activity { get; internal set; }
+    }
 
     public class Reaction
     {
@@ -65,6 +72,13 @@ namespace Stream
             return this;
         }
 
+        internal ReactionFiltering WithActivityData()
+        {            
+            _filter = (_filter == null) ? ReactionFilter.Where().WithActivityData() : _filter.WithActivityData();
+
+            return this;
+        }
+
         internal void Apply(RestRequest request)
         {
             request.AddQueryParameter("limit", _limit.ToString());
@@ -72,6 +86,14 @@ namespace Stream
             // filter if needed
             if (_filter != null)
                 _filter.Apply(request);
+        }
+
+        internal bool IncludesActivityData
+        {
+            get
+            {
+                return _filter.IncludesActivityData;
+            }
         }
 
         public static ReactionFiltering Default
@@ -142,7 +164,21 @@ namespace Stream
         {
             [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "results")]
             public IEnumerable<Reaction> Reactions { get; internal set; }
-        }
+
+            internal static EnrichedActivity GetActivity(string json)
+            {
+                JObject obj = JObject.Parse(json);
+                foreach (var prop in obj.Properties())
+                {
+                    if (prop.Name == "activity")
+                    {
+                        return EnrichedActivity.FromJson((JObject)prop.Value);
+                    }
+                }
+
+                return null;
+            }
+        }        
 
         internal Reactions(StreamClient client)
         {
@@ -192,19 +228,45 @@ namespace Stream
         }
 
         public async Task<IEnumerable<Reaction>> Filter(ReactionFiltering filtering, ReactionPagination pagination)
-        {
-            var urlPath = pagination.GetPath();
-            var request = this._client.BuildJWTAppRequest($"reaction/{urlPath}", HttpMethod.GET);
-            filtering.Apply(request);
-
-            var response = await this._client.MakeRequest(request);
+        {            
+            var response = await FilterHelper(filtering, pagination);
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
-            {
+            {                
                 return JsonConvert.DeserializeObject<ReactionsFilterResponse>(response.Content).Reactions;
             }
 
             throw StreamException.FromResponse(response);
+        }
+
+        public async Task<ReactionsWithActivity> FilterWithActivityData(ReactionFiltering filtering, ReactionPagination pagination)
+        {            
+            var response = await FilterHelper(filtering.WithActivityData(), pagination);
+
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                var reactions = JsonConvert.DeserializeObject<ReactionsFilterResponse>(response.Content).Reactions;
+                var activity = ReactionsFilterResponse.GetActivity(response.Content);
+
+                return new ReactionsWithActivity
+                {
+                    Reactions = reactions,
+                    Activity = activity
+                };
+            }
+
+            throw StreamException.FromResponse(response);
+        }
+
+        private async Task<RestResponse> FilterHelper(ReactionFiltering filtering, ReactionPagination pagination)
+        {
+            var urlPath = pagination.GetPath();
+            var request = this._client.BuildJWTAppRequest($"reaction/{urlPath}", HttpMethod.GET);
+            filtering.Apply(request);
+          
+            var response = await this._client.MakeRequest(request);
+
+            return response;
         }
 
         public async Task<Reaction> Update(string reactionID, IDictionary<string, object> data = null, IEnumerable<string> targetFeeds = null)

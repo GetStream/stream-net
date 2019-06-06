@@ -2127,6 +2127,11 @@ namespace stream_net_tests
             reactionsByActivity = await this._client.Reactions.Filter(filter.WithLimit(1), pagination);
             Assert.AreEqual(1, reactionsByActivity.Count());
 
+            //with data
+            var reactionsByActivityWithData = await this._client.Reactions.FilterWithActivityData(filter.WithLimit(1), pagination);
+            Assert.AreEqual(1, reactionsByActivity.Count());
+            Assert.AreEqual(data, reactionsByActivity.FirstOrDefault().Data);
+
             // user id
             filter = ReactionFiltering.Default;
             pagination = ReactionPagination.By.UserID(userId);
