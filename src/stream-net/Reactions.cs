@@ -3,6 +3,7 @@ using Newtonsoft.Json.Linq;
 using Stream.Rest;
 using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using System.Threading.Tasks;
 
 namespace Stream
@@ -13,7 +14,7 @@ namespace Stream
     {
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "results")]
         public IEnumerable<Reaction> Reactions { get; internal set; }
-        
+
         public EnrichedActivity Activity { get; internal set; }
     }
 
@@ -36,6 +37,9 @@ namespace Stream
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "user_id")]
         public string UserID { get; internal set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "user"), JsonConverter(typeof(EnrichableFieldConverter))]
+        public EnrichableField User { get; internal set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "data")]
         public IDictionary<string, object> Data { get; internal set; }
@@ -73,7 +77,7 @@ namespace Stream
         }
 
         internal ReactionFiltering WithActivityData()
-        {            
+        {
             _filter = (_filter == null) ? ReactionFilter.Where().WithActivityData() : _filter.WithActivityData();
 
             return this;
@@ -178,7 +182,7 @@ namespace Stream
 
                 return null;
             }
-        }        
+        }
 
         internal Reactions(StreamClient client)
         {
@@ -228,11 +232,11 @@ namespace Stream
         }
 
         public async Task<IEnumerable<Reaction>> Filter(ReactionFiltering filtering, ReactionPagination pagination)
-        {            
+        {
             var response = await FilterHelper(filtering, pagination);
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
-            {                
+            {
                 return JsonConvert.DeserializeObject<ReactionsFilterResponse>(response.Content).Reactions;
             }
 
@@ -240,7 +244,7 @@ namespace Stream
         }
 
         public async Task<ReactionsWithActivity> FilterWithActivityData(ReactionFiltering filtering, ReactionPagination pagination)
-        {            
+        {
             var response = await FilterHelper(filtering.WithActivityData(), pagination);
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
@@ -263,7 +267,7 @@ namespace Stream
             var urlPath = pagination.GetPath();
             var request = this._client.BuildJWTAppRequest($"reaction/{urlPath}", HttpMethod.GET);
             filtering.Apply(request);
-          
+
             var response = await this._client.MakeRequest(request);
 
             return response;

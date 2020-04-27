@@ -2314,9 +2314,12 @@ namespace stream_net_tests
             var enrichedAct = enriched.Results.First();
 
             Assert.True(enrichedAct.OwnReactions.ContainsKey(reaction.Kind));
-            Assert.AreEqual(reaction.ID, enrichedAct.OwnReactions[reaction.Kind].FirstOrDefault().ID);
-            Assert.AreEqual(reaction.Kind, enrichedAct.OwnReactions[reaction.Kind].FirstOrDefault().Kind);
-            Assert.AreEqual(reaction.UserID, enrichedAct.OwnReactions[reaction.Kind].FirstOrDefault().UserID);
+            var ownReaction = enrichedAct.OwnReactions[reaction.Kind].FirstOrDefault();
+
+            Assert.AreEqual(reaction.ID, ownReaction.ID);
+            Assert.AreEqual(reaction.Kind, ownReaction.Kind);
+            Assert.AreEqual(reaction.UserID, ownReaction.UserID);
+            Assert.AreEqual(reaction.UserID, ownReaction.User.Enriched.GetData<string>("id"));
         }
 
         [Test]
@@ -2398,9 +2401,14 @@ namespace stream_net_tests
             var enrichedAct = enriched.Results.First();
 
             Assert.True(enrichedAct.LatestReactions.ContainsKey(reaction.Kind));
-            Assert.AreEqual(reaction.ID, enrichedAct.LatestReactions[reaction.Kind].FirstOrDefault().ID);
-            Assert.AreEqual(reaction.Kind, enrichedAct.LatestReactions[reaction.Kind].FirstOrDefault().Kind);
-            Assert.AreEqual(reaction.UserID, enrichedAct.LatestReactions[reaction.Kind].FirstOrDefault().UserID);
+            var latestReaction = enrichedAct.LatestReactions[reaction.Kind].FirstOrDefault();
+
+
+            Assert.AreEqual(reaction.ID, latestReaction.ID);
+            Assert.AreEqual(reaction.Kind, latestReaction.Kind);
+            Assert.AreEqual(reaction.UserID, latestReaction.UserID);
+            /*Test User Enrich*/
+            Assert.AreEqual(reaction.UserID, latestReaction.User.Enriched.GetData<string>("id"));
 
             Assert.True(enrichedAct.OwnReactions.ContainsKey(reaction.Kind));
             Assert.AreEqual(reaction.ID, enrichedAct.OwnReactions[reaction.Kind].FirstOrDefault().ID);
