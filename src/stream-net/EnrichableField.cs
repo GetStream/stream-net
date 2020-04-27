@@ -23,8 +23,7 @@ namespace Stream
         {
             get
             {
-                var tst = _data as GenericData;
-                return tst != null;
+                return _data is GenericData;
             }
             set { }
         }
@@ -56,4 +55,19 @@ namespace Stream
 
 
     };
+
+
+    public class EnrichableFieldConverter : JsonConverter
+    {
+        public override bool CanConvert(Type objectType) => false;
+        public override bool CanWrite => false;
+        public override bool CanRead => true;
+
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer) => throw new NotImplementedException();
+
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        {
+            return EnrichableField.FromJSON(JToken.Load(reader));
+        }
+    }
 }
