@@ -1,47 +1,42 @@
-﻿using NUnit.Framework;
+﻿using Microsoft.IdentityModel.Tokens.JWT;
+using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Microsoft.IdentityModel.Tokens.JWT;
-using System.Threading.Tasks;
 
-namespace GetStream_net_tests
+namespace stream_net_tests
 {
     [Parallelizable(ParallelScope.Self)]
     [TestFixture]
     public class ClientTests
     {
-        private Stream.IStreamClient _client;
+        private GetStream.IStreamClient _client;
 
         [SetUp]
         public void Setup()
         {
-            _client = new Stream.StreamClient(
+            _client = new GetStream.StreamClient(
                 "98a6bhskrrwj",
                 "t3nj7j8m6dtdbbakzbu9p7akjk5da8an5wxwyt6g73nt5hf9yujp8h4jw244r67p",
-                new Stream.StreamClientOptions()
+                new GetStream.StreamClientOptions()
                 {
-                    Location = Stream.StreamApiLocation.USEast
+                    Location = GetStream.StreamApiLocation.USEast
                 });
         }
 
         [Test]
-
         public void TestClientArgumentsValidation()
         {
             Assert.Throws<ArgumentNullException>(() =>
             {
-                var client = new Stream.StreamClient("", "asfd");
+                var client = new GetStream.StreamClient("", "asfd");
             });
             Assert.Throws<ArgumentNullException>(() =>
             {
-                var client = new Stream.StreamClient("asdf", null);
+                var client = new GetStream.StreamClient("asdf", null);
             });
         }
 
         [Test]
-
         public void TestFeedIdValidation()
         {
             Assert.Throws<ArgumentNullException>(() =>
@@ -110,7 +105,7 @@ namespace GetStream_net_tests
             });
             Assert.ThrowsAsync<ArgumentException>(async () =>
             {
-                await _client.ActivityPartialUpdate("id", new Stream.ForeignIDTime("fid", DateTime.Now));
+                await _client.ActivityPartialUpdate("id", new GetStream.ForeignIDTime("fid", DateTime.Now));
             });
         }
 

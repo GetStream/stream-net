@@ -2,7 +2,7 @@
 using NUnit.Framework;
 using GetStream;
 
-namespace GetStream_net_tests
+namespace stream_net_tests
 {
     [Parallelizable(ParallelScope.Self)]
     [TestFixture]

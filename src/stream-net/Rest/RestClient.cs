@@ -8,7 +8,7 @@ namespace GetStream.Rest
 {
     internal class RestClient
     {
-        readonly Uri _baseUrl;
+        private readonly Uri _baseUrl;
         private TimeSpan _timeout;
 
         public RestClient(Uri baseUrl, TimeSpan timeout)
@@ -102,10 +102,13 @@ namespace GetStream.Rest
             {
                 case HttpMethod.DELETE:
                     return this.ExecuteDelete(url, request);
+
                 case HttpMethod.POST:
                     return this.ExecutePost(url, request);
+
                 case HttpMethod.PUT:
                     return this.ExecutePut(url, request);
+
                 default:
                     return this.ExecuteGet(url, request);
             }

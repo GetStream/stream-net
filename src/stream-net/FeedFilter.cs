@@ -21,14 +21,14 @@ namespace GetStream
 
             internal string Value { get; set; }
 
-            internal OpEntry(OpType type, string value) 
+            internal OpEntry(OpType type, string value)
             {
                 Type = type;
                 Value = value;
             }
         }
 
-        readonly List<OpEntry> _ops = new List<OpEntry>();
+        private readonly List<OpEntry> _ops = new List<OpEntry>();
 
         private FeedFilter()
         {
@@ -87,6 +87,6 @@ namespace GetStream
             return new FeedFilter();
         }
 
-        #endregion
+        #endregion starts
     }
 }

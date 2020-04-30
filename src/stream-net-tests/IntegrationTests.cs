@@ -1,34 +1,32 @@
-﻿using System;
-using System.Linq;
+﻿using GetStream;
 using NUnit.Framework;
-using System.Threading.Tasks;
+using System;
 using System.Collections.Generic;
-using GetStream;
-using Newtonsoft.Json;
-using System.Threading;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace GetStream_net_tests
+namespace stream_net_tests
 {
     [Parallelizable(ParallelScope.None)]
     [TestFixture]
     public class IntegrationTests
     {
-        private Stream.IStreamClient _client;
-        private Stream.IStreamFeed _user1;
-        private Stream.IStreamFeed _user2;
-        private Stream.IStreamFeed _flat3;
-        private Stream.IStreamFeed _agg4;
-        private Stream.IStreamFeed _not5;
+        private GetStream.IStreamClient _client;
+        private GetStream.IStreamFeed _user1;
+        private GetStream.IStreamFeed _user2;
+        private GetStream.IStreamFeed _flat3;
+        private GetStream.IStreamFeed _agg4;
+        private GetStream.IStreamFeed _not5;
 
         [SetUp]
         public void Setup()
         {
-            _client = new Stream.StreamClient(
+            _client = new GetStream.StreamClient(
                 "ea7xzzkj6kc4",
                 "zd8cdv9rhxcpmkx9zx4jqt7q9qhawpgsfpay2gy7jaubym32crs9kaux2pm67wrx",
-                new Stream.StreamClientOptions()
+                new GetStream.StreamClientOptions()
                 {
-                    Location = Stream.StreamApiLocation.USEast,
+                    Location = GetStream.StreamApiLocation.USEast,
                     Timeout = 10000
                 });
             _user1 = _client.Feed("user", System.Guid.NewGuid().ToString());
@@ -41,10 +39,9 @@ namespace GetStream_net_tests
         [Test]
         public async Task TestAddActivity()
         {
-            var newActivity = new Stream.Activity("1", "test", "1");
+            var newActivity = new GetStream.Activity("1", "test", "1");
             var response = await this._user1.AddActivity(newActivity);
             Assert.IsNotNull(response);
-
 
             var activities = await this._user1.GetActivities(0, 1);
             Assert.IsNotNull(activities);
@@ -61,13 +58,12 @@ namespace GetStream_net_tests
         public async Task TestAddActivityWithTime()
         {
             var now = DateTime.UtcNow;
-            var newActivity = new Stream.Activity("1", "test", "1")
+            var newActivity = new GetStream.Activity("1", "test", "1")
             {
                 Time = now
             };
             var response = await this._user1.AddActivity(newActivity);
             Assert.IsNotNull(response);
-
 
             var activities = await this._user1.GetActivities(0, 1);
             Assert.IsNotNull(activities);
@@ -84,11 +80,10 @@ namespace GetStream_net_tests
         [Test]
         public async Task TestAddActivityWithArray()
         {
-            var newActivity = new Stream.Activity("1", "test", "1");
+            var newActivity = new GetStream.Activity("1", "test", "1");
             newActivity.SetData("complex", new String[] { "tommaso", "thierry", "shawn" });
             var response = await this._user1.AddActivity(newActivity);
             Assert.IsNotNull(response);
-
 
             var activities = await this._user1.GetActivities(0, 1);
             Assert.IsNotNull(activities);
@@ -108,13 +103,12 @@ namespace GetStream_net_tests
         {
             int second = 2;
             double third = 3;
-            var newActivity = new Stream.Activity("1", "test", "1");
+            var newActivity = new GetStream.Activity("1", "test", "1");
             newActivity.SetData("complex", "string");
             newActivity.SetData("second", second);
             newActivity.SetData("third", third);
             var response = await this._user1.AddActivity(newActivity);
             Assert.IsNotNull(response);
-
 
             var activities = await this._user1.GetActivities(0, 1);
             Assert.IsNotNull(activities);
@@ -135,12 +129,11 @@ namespace GetStream_net_tests
             dict["test1"] = "shawn";
             dict["test2"] = "wedge";
 
-            var newActivity = new Stream.Activity("1", "test", "1");
+            var newActivity = new GetStream.Activity("1", "test", "1");
             newActivity.SetData("complex", dict);
 
             var response = await this._user1.AddActivity(newActivity);
             Assert.IsNotNull(response);
-
 
             var activities = await this._user1.GetActivities(0, 1);
             Assert.IsNotNull(activities);
@@ -174,7 +167,7 @@ namespace GetStream_net_tests
             dict["test2"] = "wedge";
             dict["test3"] = 42;
 
-            var newActivity = new Stream.Activity("1", "test", "1");
+            var newActivity = new GetStream.Activity("1", "test", "1");
             newActivity.SetData("complex", dict);
             newActivity.SetData("second", second);
             newActivity.SetData("third", third);
@@ -187,7 +180,6 @@ namespace GetStream_net_tests
 
             var response = await this._user1.AddActivity(newActivity);
             Assert.IsNotNull(response);
-
 
             var activities = await this._user1.GetActivities(0, 1);
             Assert.IsNotNull(activities);
@@ -217,14 +209,13 @@ namespace GetStream_net_tests
         [Test]
         public async Task TestAddActivityVariablesOldWayNewWay()
         {
-            var newActivity = new Stream.Activity("1", "test", "1");
+            var newActivity = new GetStream.Activity("1", "test", "1");
             newActivity.SetData<string>("stringint", "42");
             newActivity.SetData<string>("stringdouble", "42.2");
             newActivity.SetData<string>("stringcomplex", "{ \"test1\": 1, \"test2\": \"testing\" }");
 
             var response = await this._user1.AddActivity(newActivity);
             Assert.IsNotNull(response);
-
 
             var activities = await this._user1.GetActivities(0, 1);
             Assert.IsNotNull(activities);
@@ -244,7 +235,7 @@ namespace GetStream_net_tests
         [Test]
         public async Task TestAddActivityTo()
         {
-            var newActivity = new Stream.Activity("multi1", "test", "1")
+            var newActivity = new GetStream.Activity("multi1", "test", "1")
             {
                 To = new List<String>("flat:remotefeed1".Yield())
             };
@@ -253,7 +244,6 @@ namespace GetStream_net_tests
             Assert.IsNotNull(addedActivity.To);
             Assert.AreEqual(1, addedActivity.To.SafeCount());
             Assert.AreEqual("flat:remotefeed1", addedActivity.To.First());
-
 
             var activities = await _client.Feed("flat", "remotefeed1").GetActivities(0, 1);
             Assert.IsNotNull(activities);
@@ -266,16 +256,14 @@ namespace GetStream_net_tests
         [Test]
         public async Task TestAddActivities()
         {
-            var newActivities = new Stream.Activity[] {
-                new Stream.Activity("multi1","test","1"),
-                new Stream.Activity("multi2","test","2")
+            var newActivities = new GetStream.Activity[] {
+                new GetStream.Activity("multi1","test","1"),
+                new GetStream.Activity("multi2","test","2")
             };
 
             var response = await this._user1.AddActivities(newActivities);
             Assert.IsNotNull(response);
             Assert.AreEqual(2, response.Count());
-
-
 
             var activities = await this._user1.GetActivities(0, 2);
             Assert.IsNotNull(activities);
@@ -288,7 +276,7 @@ namespace GetStream_net_tests
         [Test]
         public async Task TestUpdateActivity()
         {
-            var newActivity = new Stream.Activity("1", "test", "1")
+            var newActivity = new GetStream.Activity("1", "test", "1")
             {
                 ForeignId = "post:1",
                 Time = DateTime.UtcNow
@@ -296,7 +284,6 @@ namespace GetStream_net_tests
             newActivity.SetData<string>("myData", "1");
             var response = await this._user1.AddActivity(newActivity);
             Assert.IsNotNull(response);
-
 
             var activities = await this._user1.GetActivities(0, 1);
             Assert.IsNotNull(activities);
@@ -311,8 +298,6 @@ namespace GetStream_net_tests
             first.SetData<string>("myData", "editedMyData1");
 
             await this._user1.UpdateActivity(first);
-
-
 
             activities = await this._user1.GetActivities(0, 1);
             Assert.IsNotNull(activities);
@@ -329,13 +314,13 @@ namespace GetStream_net_tests
         [Test]
         public async Task TestUpdateActivities()
         {
-            var newActivities = new Stream.Activity[] {
-                new Stream.Activity("multi1", "test", "1")
+            var newActivities = new GetStream.Activity[] {
+                new GetStream.Activity("multi1", "test", "1")
                 {
                     ForeignId = "post:1",
                     Time = DateTime.UtcNow
                 },
-                new Stream.Activity("multi2", "test", "2")
+                new GetStream.Activity("multi2", "test", "2")
                 {
                     ForeignId = "post:2",
                     Time = DateTime.UtcNow
@@ -345,8 +330,6 @@ namespace GetStream_net_tests
             var response = await this._user1.AddActivities(newActivities);
             Assert.IsNotNull(response);
             Assert.AreEqual(2, response.Count());
-
-
 
             var activities = (await this._user1.GetActivities(0, 2)).ToArray();
             Assert.IsNotNull(activities);
@@ -364,8 +347,6 @@ namespace GetStream_net_tests
 
             await this._user1.UpdateActivities(activities);
 
-
-
             var editedActivities = (await this._user1.GetActivities(0, 2)).ToArray();
             Assert.IsNotNull(activities);
             Assert.AreEqual(2, activities.Count());
@@ -382,10 +363,9 @@ namespace GetStream_net_tests
         [Test]
         public async Task TestRemoveActivity()
         {
-            var newActivity = new Stream.Activity("1", "test", "1");
+            var newActivity = new GetStream.Activity("1", "test", "1");
             var response = await this._user1.AddActivity(newActivity);
             Assert.IsNotNull(response);
-
 
             var activities = await this._user1.GetActivities(0, 1);
             Assert.IsNotNull(activities);
@@ -396,8 +376,6 @@ namespace GetStream_net_tests
 
             await this._user1.RemoveActivity(first.Id);
 
-
-
             var nextActivities = await this._user1.GetActivities(0, 1);
             Assert.IsNotNull(nextActivities);
             Assert.IsFalse(nextActivities.Any(na => na.Id == first.Id));
@@ -407,14 +385,13 @@ namespace GetStream_net_tests
         public async Task TestRemoveActivityByForeignId()
         {
             var fid = "post:42";
-            var newActivity = new Stream.Activity("1", "test", "1")
+            var newActivity = new GetStream.Activity("1", "test", "1")
             {
                 ForeignId = fid
             };
 
             var response = await this._user1.AddActivity(newActivity);
             Assert.IsNotNull(response);
-
 
             var activities = await this._user1.GetActivities(0, 1);
             Assert.IsNotNull(activities);
@@ -424,8 +401,6 @@ namespace GetStream_net_tests
 
             await this._user1.RemoveActivity(fid, true);
 
-
-
             activities = await this._user1.GetActivities(0, 1);
             Assert.AreEqual(0, activities.Count());
         }
@@ -433,16 +408,14 @@ namespace GetStream_net_tests
         [Test]
         public async Task TestGet()
         {
-            var newActivity = new Stream.Activity("1", "test", "1");
+            var newActivity = new GetStream.Activity("1", "test", "1");
             var first = await this._user1.AddActivity(newActivity);
 
-            newActivity = new Stream.Activity("1", "test", "2");
+            newActivity = new GetStream.Activity("1", "test", "2");
             var second = await this._user1.AddActivity(newActivity);
 
-            newActivity = new Stream.Activity("1", "test", "3");
+            newActivity = new GetStream.Activity("1", "test", "3");
             var third = await this._user1.AddActivity(newActivity);
-
-
 
             var activities = await this._user1.GetActivities(0, 2);
             Assert.IsNotNull(activities);
@@ -461,16 +434,14 @@ namespace GetStream_net_tests
         [Test]
         public async Task TestGetFlatActivities()
         {
-            var newActivity = new Stream.Activity("1", "test", "1");
+            var newActivity = new GetStream.Activity("1", "test", "1");
             var first = await this._user1.AddActivity(newActivity);
 
-            newActivity = new Stream.Activity("1", "test", "2");
+            newActivity = new GetStream.Activity("1", "test", "2");
             var second = await this._user1.AddActivity(newActivity);
 
-            newActivity = new Stream.Activity("1", "test", "3");
+            newActivity = new GetStream.Activity("1", "test", "3");
             var third = await this._user1.AddActivity(newActivity);
-
-
 
             var response = await this._user1.GetFlatActivities(GetOptions.Default.WithLimit(2));
             Assert.IsNotNull(response);
@@ -504,13 +475,10 @@ namespace GetStream_net_tests
 
             if (activities.Count() == 0)
             {
-                var newActivity = new Stream.Activity("1", "test", "1");
+                var newActivity = new GetStream.Activity("1", "test", "1");
                 var response = await this._flat3.AddActivity(newActivity);
 
-
-
                 await this._user1.FollowFeed(this._flat3);
-
 
                 activities = await this._user1.GetActivities(0, 1);
                 Assert.IsNotNull(activities);
@@ -519,7 +487,6 @@ namespace GetStream_net_tests
 
                 //Unfollow, do not pass the keepHistory param, expect that it defaults to false and existing activities will be removed
                 await this._user1.UnfollowFeed(this._flat3);
-
 
                 activities = await this._user1.GetActivities(0, 1);
                 Assert.IsNotNull(activities);
@@ -530,6 +497,7 @@ namespace GetStream_net_tests
                 Assert.Fail("Initial activity count not zero.");
             }
         }
+
         [Test]
         public async Task TestFlatFollowUnfollowKeepHistoryFalse()
         {
@@ -540,13 +508,10 @@ namespace GetStream_net_tests
 
             if (activities.Count() == 0)
             {
-                var newActivity = new Stream.Activity("1", "test", "1");
+                var newActivity = new GetStream.Activity("1", "test", "1");
                 var response = await this._flat3.AddActivity(newActivity);
 
-
-
                 await this._user1.FollowFeed(this._flat3);
-
 
                 activities = await this._user1.GetActivities(0, 1);
                 Assert.IsNotNull(activities);
@@ -555,7 +520,6 @@ namespace GetStream_net_tests
 
                 //Unfollow, pass the keepHistory param = false, expect that existing activities will be removed
                 await this._user1.UnfollowFeed(this._flat3, false);
-
 
                 activities = await this._user1.GetActivities(0, 1);
                 Assert.IsNotNull(activities);
@@ -566,6 +530,7 @@ namespace GetStream_net_tests
                 Assert.Fail("Initial activity count not zero.");
             }
         }
+
         [Test]
         public async Task TestFlatFollowUnfollowKeepHistoryTrue()
         {
@@ -574,7 +539,7 @@ namespace GetStream_net_tests
 
             var activities = await this._user1.GetActivities(0, 1);
 
-            var newActivity = new Stream.Activity("1", "test", "1");
+            var newActivity = new GetStream.Activity("1", "test", "1");
             var response = await this._flat3.AddActivity(newActivity);
 
             await this._user1.FollowFeed(this._flat3);
@@ -587,12 +552,12 @@ namespace GetStream_net_tests
             //Unfollow, pass the keepHistory param = true, expect that existing activities will be retained
             await this._user1.UnfollowFeed(this._flat3, true);
 
-
             activities = await this._user1.GetActivities(0, 1);
             Assert.IsNotNull(activities);
             Assert.AreEqual(1, activities.Count());
             Assert.AreEqual(response.Id, activities.First().Id);
         }
+
         [Test]
         public async Task TestFlatFollowActivityCopyLimitDefault()
         {
@@ -603,13 +568,10 @@ namespace GetStream_net_tests
 
             if (activities.Count() == 0)
             {
-                Activity[] newActivities = { new Stream.Activity("1", "test", "1"), new Stream.Activity("1", "test", "2"), new Stream.Activity("1", "test", "3"), new Stream.Activity("1", "test", "4"), new Stream.Activity("1", "test", "5") };
+                Activity[] newActivities = { new GetStream.Activity("1", "test", "1"), new GetStream.Activity("1", "test", "2"), new GetStream.Activity("1", "test", "3"), new GetStream.Activity("1", "test", "4"), new GetStream.Activity("1", "test", "5") };
                 var response = await this._flat3.AddActivities(newActivities);
 
-
-
                 await this._user1.FollowFeed(this._flat3);
-
 
                 activities = await this._user1.GetActivities(0, 5);
                 Assert.IsNotNull(activities);
@@ -620,6 +582,7 @@ namespace GetStream_net_tests
                 Assert.Fail("Initial activity count not zero.");
             }
         }
+
         [Test]
         public async Task TestFlatFollowActivityCopyLimitNonDefault()
         {
@@ -630,13 +593,10 @@ namespace GetStream_net_tests
 
             if (activities.Count() == 0)
             {
-                Activity[] newActivities = { new Stream.Activity("1", "test", "1"), new Stream.Activity("1", "test", "2"), new Stream.Activity("1", "test", "3"), new Stream.Activity("1", "test", "4"), new Stream.Activity("1", "test", "5") };
+                Activity[] newActivities = { new GetStream.Activity("1", "test", "1"), new GetStream.Activity("1", "test", "2"), new GetStream.Activity("1", "test", "3"), new GetStream.Activity("1", "test", "4"), new GetStream.Activity("1", "test", "5") };
                 var response = await this._flat3.AddActivities(newActivities);
 
-
-
                 await this._user1.FollowFeed(this._flat3, 3);
-
 
                 activities = await this._user1.GetActivities(0, 5);
                 Assert.IsNotNull(activities);
@@ -658,13 +618,10 @@ namespace GetStream_net_tests
 
             if (activities.Count() == 0)
             {
-                var newActivity = new Stream.Activity("1", "test", "1");
+                var newActivity = new GetStream.Activity("1", "test", "1");
                 var response = await this._flat3.AddActivity(newActivity);
 
-
-
                 await this._user1.FollowFeed(_flat3);
-
 
                 activities = await this._user1.GetActivities(0, 1);
                 Assert.IsNotNull(activities);
@@ -673,7 +630,6 @@ namespace GetStream_net_tests
 
                 //Unfollow, do not pass the keepHistory param, expect that it defaults to false and existing activities will be removed
                 await this._user1.UnfollowFeed(_flat3);
-
 
                 activities = await this._user1.GetActivities(0, 1);
                 Assert.IsNotNull(activities);
@@ -684,6 +640,7 @@ namespace GetStream_net_tests
                 Assert.Fail("Initial activity count not zero.");
             }
         }
+
         [Test]
         public async Task TestFlatFollowUnfollowByFeedKeepHistoryFalse()
         {
@@ -694,13 +651,10 @@ namespace GetStream_net_tests
 
             if (activities.Count() == 0)
             {
-                var newActivity = new Stream.Activity("1", "test", "1");
+                var newActivity = new GetStream.Activity("1", "test", "1");
                 var response = await this._flat3.AddActivity(newActivity);
 
-
-
                 await this._user1.FollowFeed(_flat3);
-
 
                 activities = await this._user1.GetActivities(0, 1);
                 Assert.IsNotNull(activities);
@@ -709,7 +663,6 @@ namespace GetStream_net_tests
 
                 //Unfollow, pass the keepHistory param = false, expect that existing activities will be removed
                 await this._user1.UnfollowFeed(_flat3, false);
-
 
                 activities = await this._user1.GetActivities(0, 1);
                 Assert.IsNotNull(activities);
@@ -720,6 +673,7 @@ namespace GetStream_net_tests
                 Assert.Fail("Initial activity count not zero.");
             }
         }
+
         [Test]
         public async Task TestFlatFollowUnfollowByFeedKeepHistoryTrue()
         {
@@ -730,13 +684,10 @@ namespace GetStream_net_tests
 
             if (activities.Count() == 0)
             {
-                var newActivity = new Stream.Activity("1", "test", "1");
+                var newActivity = new GetStream.Activity("1", "test", "1");
                 var response = await this._flat3.AddActivity(newActivity);
 
-
-
                 await this._user1.FollowFeed(_flat3);
-
 
                 activities = await this._user1.GetActivities(0, 1);
                 Assert.IsNotNull(activities);
@@ -745,7 +696,6 @@ namespace GetStream_net_tests
 
                 //Unfollow, pass the keepHistory param = true, expect that existing activities will be retained
                 await this._user1.UnfollowFeed(_flat3, true);
-
 
                 activities = await this._user1.GetActivities(0, 1);
                 Assert.IsNotNull(activities);
@@ -757,6 +707,7 @@ namespace GetStream_net_tests
                 Assert.Fail("Initial activity count not zero.");
             }
         }
+
         [Test]
         public async Task TestFlatFollowByFeedActivityCopyLimitDefault()
         {
@@ -767,13 +718,10 @@ namespace GetStream_net_tests
 
             if (activities.Count() == 0)
             {
-                Activity[] newActivities = { new Stream.Activity("1", "test", "1"), new Stream.Activity("1", "test", "2"), new Stream.Activity("1", "test", "3"), new Stream.Activity("1", "test", "4"), new Stream.Activity("1", "test", "5") };
+                Activity[] newActivities = { new GetStream.Activity("1", "test", "1"), new GetStream.Activity("1", "test", "2"), new GetStream.Activity("1", "test", "3"), new GetStream.Activity("1", "test", "4"), new GetStream.Activity("1", "test", "5") };
                 var response = await this._flat3.AddActivities(newActivities);
 
-
-
                 await this._user1.FollowFeed(_flat3);
-
 
                 activities = await this._user1.GetActivities(0, 5);
                 Assert.IsNotNull(activities);
@@ -784,6 +732,7 @@ namespace GetStream_net_tests
                 Assert.Fail("Initial activity count not zero.");
             }
         }
+
         [Test]
         public async Task TestFlatFollowByFeedActivityCopyLimitNonDefault()
         {
@@ -794,13 +743,10 @@ namespace GetStream_net_tests
 
             if (activities.Count() == 0)
             {
-                Activity[] newActivities = { new Stream.Activity("1", "test", "1"), new Stream.Activity("1", "test", "2"), new Stream.Activity("1", "test", "3"), new Stream.Activity("1", "test", "4"), new Stream.Activity("1", "test", "5") };
+                Activity[] newActivities = { new GetStream.Activity("1", "test", "1"), new GetStream.Activity("1", "test", "2"), new GetStream.Activity("1", "test", "3"), new GetStream.Activity("1", "test", "4"), new GetStream.Activity("1", "test", "5") };
                 var response = await this._flat3.AddActivities(newActivities);
 
-
-
                 await this._user1.FollowFeed(_flat3, 3);
-
 
                 activities = await this._user1.GetActivities(0, 5);
                 Assert.IsNotNull(activities);
@@ -824,13 +770,10 @@ namespace GetStream_net_tests
 
             if (activities.Count() == 0)
             {
-                var newActivity = new Stream.Activity("1", "test", "1");
+                var newActivity = new GetStream.Activity("1", "test", "1");
                 var response = await secret.AddActivity(newActivity);
 
-
-
                 await this._user1.FollowFeed(secret);
-
 
                 activities = await this._user1.GetActivities(0, 1);
                 Assert.IsNotNull(activities);
@@ -839,7 +782,6 @@ namespace GetStream_net_tests
 
                 //Unfollow, do not pass the keepHistory param, expect that it defaults to false and existing activities will be removed
                 await this._user1.UnfollowFeed(secret);
-
 
                 activities = await this._user1.GetActivities(0, 1);
                 Assert.IsNotNull(activities);
@@ -850,6 +792,7 @@ namespace GetStream_net_tests
                 Assert.Fail("Initial activity count not zero.");
             }
         }
+
         [Test]
         public async Task TestFlatFollowUnfollowPrivateKeepHistoryFalse()
         {
@@ -862,13 +805,10 @@ namespace GetStream_net_tests
 
             if (activities.Count() == 0)
             {
-                var newActivity = new Stream.Activity("1", "test", "1");
+                var newActivity = new GetStream.Activity("1", "test", "1");
                 var response = await secret.AddActivity(newActivity);
 
-
-
                 await this._user1.FollowFeed(secret);
-
 
                 activities = await this._user1.GetActivities(0, 1);
                 Assert.IsNotNull(activities);
@@ -877,7 +817,6 @@ namespace GetStream_net_tests
 
                 //Unfollow, pass the keepHistory param = false, expect that existing activities will be removed
                 await this._user1.UnfollowFeed(secret, false);
-
 
                 activities = await this._user1.GetActivities(0, 1);
                 Assert.IsNotNull(activities);
@@ -888,6 +827,7 @@ namespace GetStream_net_tests
                 Assert.Fail("Initial activity count not zero.");
             }
         }
+
         [Test]
         public async Task TestFlatFollowUnfollowPrivateKeepHistoryTrue()
         {
@@ -900,13 +840,10 @@ namespace GetStream_net_tests
 
             if (activities.Count() == 0)
             {
-                var newActivity = new Stream.Activity("1", "test", "1");
+                var newActivity = new GetStream.Activity("1", "test", "1");
                 var response = await secret.AddActivity(newActivity);
 
-
-
                 await this._user1.FollowFeed(secret);
-
 
                 activities = await this._user1.GetActivities(0, 1);
                 Assert.IsNotNull(activities);
@@ -915,7 +852,6 @@ namespace GetStream_net_tests
 
                 //Unfollow, pass the keepHistory param = true, expect that existing activities will be retained
                 await this._user1.UnfollowFeed(secret, true);
-
 
                 activities = await this._user1.GetActivities(0, 1);
                 Assert.IsNotNull(activities);
@@ -927,6 +863,7 @@ namespace GetStream_net_tests
                 Assert.Fail("Initial activity count not zero.");
             }
         }
+
         [Test]
         public async Task TestFlatFollowPrivateActivityCopyLimitDefault()
         {
@@ -939,13 +876,10 @@ namespace GetStream_net_tests
 
             if (activities.Count() == 0)
             {
-                Activity[] newActivities = { new Stream.Activity("1", "test", "1"), new Stream.Activity("1", "test", "2"), new Stream.Activity("1", "test", "3"), new Stream.Activity("1", "test", "4"), new Stream.Activity("1", "test", "5") };
+                Activity[] newActivities = { new GetStream.Activity("1", "test", "1"), new GetStream.Activity("1", "test", "2"), new GetStream.Activity("1", "test", "3"), new GetStream.Activity("1", "test", "4"), new GetStream.Activity("1", "test", "5") };
                 var response = await secret.AddActivities(newActivities);
 
-
-
                 await this._user1.FollowFeed(secret);
-
 
                 activities = await this._user1.GetActivities(0, 5);
                 Assert.IsNotNull(activities);
@@ -956,6 +890,7 @@ namespace GetStream_net_tests
                 Assert.Fail("Initial activity count not zero.");
             }
         }
+
         [Test]
         public async Task TestFlatFollowPrivateActivityCopyLimitNonDefault()
         {
@@ -968,13 +903,10 @@ namespace GetStream_net_tests
 
             if (activities.Count() == 0)
             {
-                Activity[] newActivities = { new Stream.Activity("1", "test", "1"), new Stream.Activity("1", "test", "2"), new Stream.Activity("1", "test", "3"), new Stream.Activity("1", "test", "4"), new Stream.Activity("1", "test", "5") };
+                Activity[] newActivities = { new GetStream.Activity("1", "test", "1"), new GetStream.Activity("1", "test", "2"), new GetStream.Activity("1", "test", "3"), new GetStream.Activity("1", "test", "4"), new GetStream.Activity("1", "test", "5") };
                 var response = await secret.AddActivities(newActivities);
 
-
-
                 await this._user1.FollowFeed(secret, 3);
-
 
                 activities = await this._user1.GetActivities(0, 5);
                 Assert.IsNotNull(activities);
@@ -989,16 +921,14 @@ namespace GetStream_net_tests
         [Test]
         public async Task TestMarkRead()
         {
-            var newActivity = new Stream.Activity("1", "tweet", "1");
+            var newActivity = new GetStream.Activity("1", "tweet", "1");
             var first = await _not5.AddActivity(newActivity);
 
-            newActivity = new Stream.Activity("1", "run", "2");
+            newActivity = new GetStream.Activity("1", "run", "2");
             var second = await _not5.AddActivity(newActivity);
 
-            newActivity = new Stream.Activity("1", "share", "3");
+            newActivity = new GetStream.Activity("1", "share", "3");
             var third = await _not5.AddActivity(newActivity);
-
-
 
             var activities = await _not5.GetActivities(0, 2, marker: ActivityMarker.Mark().AllRead());
             Assert.IsNotNull(activities);
@@ -1011,8 +941,6 @@ namespace GetStream_net_tests
             notActivity = activities.Skip(1).First() as NotificationActivity;
             Assert.IsNotNull(notActivity);
             Assert.IsFalse(notActivity.IsRead);
-
-
 
             activities = await _not5.GetActivities(0, 2);
             Assert.IsNotNull(activities);
@@ -1030,16 +958,14 @@ namespace GetStream_net_tests
         [Test]
         public async Task TestMarkReadByIds()
         {
-            var newActivity = new Stream.Activity("1", "tweet", "1");
+            var newActivity = new GetStream.Activity("1", "tweet", "1");
             var first = await _not5.AddActivity(newActivity);
 
-            newActivity = new Stream.Activity("1", "run", "2");
+            newActivity = new GetStream.Activity("1", "run", "2");
             var second = await _not5.AddActivity(newActivity);
 
-            newActivity = new Stream.Activity("1", "share", "3");
+            newActivity = new GetStream.Activity("1", "share", "3");
             var third = await _not5.AddActivity(newActivity);
-
-
 
             var activities = await _not5.GetActivities(0, 2);
 
@@ -1058,8 +984,6 @@ namespace GetStream_net_tests
             Assert.IsFalse(notActivity.IsRead);
 
             activities = await _not5.GetActivities(0, 3, marker: marker);
-
-
 
             activities = await _not5.GetActivities(0, 3);
             Assert.IsNotNull(activities);
@@ -1081,16 +1005,14 @@ namespace GetStream_net_tests
         [Test]
         public async Task TestMarkNotificationsRead()
         {
-            var newActivity = new Stream.Activity("1", "tweet", "1");
+            var newActivity = new GetStream.Activity("1", "tweet", "1");
             var first = await _not5.AddActivity(newActivity);
 
-            newActivity = new Stream.Activity("1", "run", "2");
+            newActivity = new GetStream.Activity("1", "run", "2");
             var second = await _not5.AddActivity(newActivity);
 
-            newActivity = new Stream.Activity("1", "share", "3");
+            newActivity = new GetStream.Activity("1", "share", "3");
             var third = await _not5.AddActivity(newActivity);
-
-
 
             var response = await _not5.GetNotificationActivities(GetOptions.Default.WithLimit(2).WithMarker(ActivityMarker.Mark().AllRead()));
             Assert.IsNotNull(response);
@@ -1106,8 +1028,6 @@ namespace GetStream_net_tests
             notActivity = activities.Skip(1).First();
             Assert.IsNotNull(notActivity);
             Assert.IsFalse(notActivity.IsRead);
-
-
 
             response = await _not5.GetNotificationActivities(GetOptions.Default.WithLimit(2));
 
@@ -1147,16 +1067,12 @@ namespace GetStream_net_tests
             await feed1.UnfollowFeed(feed);
             await feed2.UnfollowFeed(feed);
 
-
-
             var response = await feed.Followers(0, 2);
             Assert.IsNotNull(response);
             Assert.AreEqual(0, response.Count());
 
             await feed1.FollowFeed(feed);
             await feed2.FollowFeed(feed);
-
-
 
             response = await feed.Followers(0, 2);
             Assert.IsNotNull(response);
@@ -1190,16 +1106,12 @@ namespace GetStream_net_tests
             await feed1.UnfollowFeed(feed);
             await feed1.UnfollowFeed(feed2);
 
-
-
             var response = await feed1.Following(0, 2);
             Assert.IsNotNull(response);
             Assert.AreEqual(0, response.Count());
 
             await feed1.FollowFeed(feed);
             await feed1.FollowFeed(feed2);
-
-
 
             response = await feed1.Following(0, 2);
             Assert.IsNotNull(response);
@@ -1220,15 +1132,12 @@ namespace GetStream_net_tests
         [Test]
         public async Task TestAggregate()
         {
-            var newActivity1 = new Stream.Activity("1", "test", "1");
-            var newActivity2 = new Stream.Activity("1", "test", "2");
+            var newActivity1 = new GetStream.Activity("1", "test", "1");
+            var newActivity2 = new GetStream.Activity("1", "test", "2");
             var response = await _user1.AddActivity(newActivity1);
             response = await _user1.AddActivity(newActivity2);
 
-
-
             await _agg4.FollowFeed(this._user1);
-
 
             var activities = await this._agg4.GetActivities(0);
             Assert.IsNotNull(activities);
@@ -1245,8 +1154,8 @@ namespace GetStream_net_tests
         [Test]
         public async Task TestGetAggregate()
         {
-            var newActivity1 = new Stream.Activity("1", "test", "1");
-            var newActivity2 = new Stream.Activity("1", "test", "2");
+            var newActivity1 = new GetStream.Activity("1", "test", "1");
+            var newActivity2 = new GetStream.Activity("1", "test", "2");
             var response = await _user1.AddActivity(newActivity1);
             response = await _user1.AddActivity(newActivity2);
 
@@ -1273,17 +1182,14 @@ namespace GetStream_net_tests
         [Test]
         public async Task TestMixedAggregate()
         {
-            var newActivity1 = new Stream.Activity("1", "test", "1");
-            var newActivity2 = new Stream.Activity("1", "test", "2");
-            var newActivity3 = new Stream.Activity("1", "other", "2");
+            var newActivity1 = new GetStream.Activity("1", "test", "1");
+            var newActivity2 = new GetStream.Activity("1", "test", "2");
+            var newActivity3 = new GetStream.Activity("1", "other", "2");
             var response = await _user1.AddActivity(newActivity1);
             response = await _user1.AddActivity(newActivity2);
             response = await _user1.AddActivity(newActivity3);
 
-
-
             await _agg4.FollowFeed(this._user1);
-
 
             var activities = await this._agg4.GetActivities(0);
             Assert.IsNotNull(activities);
@@ -1297,7 +1203,6 @@ namespace GetStream_net_tests
             await _agg4.UnfollowFeed(this._user1);
         }
 
-
         [Test]
         public async Task TestBatchFollow()
         {
@@ -1307,8 +1212,7 @@ namespace GetStream_net_tests
                 new Follow(_user2, _flat3)
             });
 
-
-            var newActivity = new Stream.Activity("1", "test", "1");
+            var newActivity = new GetStream.Activity("1", "test", "1");
             var response = await this._flat3.AddActivity(newActivity);
 
             var activities = await this._user1.GetActivities(0, 1);
@@ -1333,8 +1237,7 @@ namespace GetStream_net_tests
                 new Follow(this._user2, this._flat3)
             }, 10);
 
-
-            var newActivity = new Stream.Activity("1", "test", "1");
+            var newActivity = new GetStream.Activity("1", "test", "1");
             var response = await this._flat3.AddActivity(newActivity);
 
             var activities = await this._user1.GetActivities(0, 1);
@@ -1350,16 +1253,14 @@ namespace GetStream_net_tests
             Assert.AreEqual("test", activities.First().Verb);
         }
 
-
         [Test]
         public async Task TestAddToMany()
         {
-            var newActivity = new Stream.Activity("1", "test", "1");
+            var newActivity = new GetStream.Activity("1", "test", "1");
             await _client.Batch.AddToMany(newActivity, new[]
             {
                 _user1, _user2
             });
-
 
             var activities = await this._user1.GetActivities(0, 1);
             Assert.IsNotNull(activities);
@@ -1383,10 +1284,10 @@ namespace GetStream_net_tests
         [Test]
         public async Task TestGetActivitiesByID()
         {
-            var newActivity1 = new Stream.Activity("1", "test", "1");
-            var newActivity2 = new Stream.Activity("1", "test", "2");
-            var newActivity3 = new Stream.Activity("1", "other", "2");
-            var addedActivities = new List<Stream.Activity>();
+            var newActivity1 = new GetStream.Activity("1", "test", "1");
+            var newActivity2 = new GetStream.Activity("1", "test", "2");
+            var newActivity3 = new GetStream.Activity("1", "other", "2");
+            var addedActivities = new List<GetStream.Activity>();
 
             var response = await this._user1.AddActivity(newActivity1);
             addedActivities.Add(response);
@@ -1394,7 +1295,6 @@ namespace GetStream_net_tests
             addedActivities.Add(response);
             response = await this._flat3.AddActivity(newActivity3);
             addedActivities.Add(response);
-
 
             var activities = await this._client.Batch.GetActivities(addedActivities.Select(a => a.Id));
             Assert.IsNotNull(activities);
@@ -1413,25 +1313,25 @@ namespace GetStream_net_tests
         [Test]
         public async Task TestGetActivitiesByForeignIDAndTime()
         {
-            var newActivity1 = new Stream.Activity("1", "test", "1")
+            var newActivity1 = new GetStream.Activity("1", "test", "1")
             {
                 ForeignId = "fid-test-1",
                 Time = DateTime.Parse("2000-08-16T16:32:32")
             };
 
-            var newActivity2 = new Stream.Activity("1", "test", "2")
+            var newActivity2 = new GetStream.Activity("1", "test", "2")
             {
                 ForeignId = "fid-test-2",
                 Time = DateTime.Parse("2000-08-17T16:32:32")
             };
 
-            var newActivity3 = new Stream.Activity("1", "other", "2")
+            var newActivity3 = new GetStream.Activity("1", "other", "2")
             {
                 ForeignId = "fid-other-1",
                 Time = DateTime.Parse("2000-08-19T16:32:32")
             };
 
-            var addedActivities = new List<Stream.Activity>();
+            var addedActivities = new List<GetStream.Activity>();
 
             var response = await this._user1.AddActivity(newActivity1);
             addedActivities.Add(response);
@@ -1440,9 +1340,8 @@ namespace GetStream_net_tests
             response = await this._flat3.AddActivity(newActivity3);
             addedActivities.Add(response);
 
-
             var activities = await this._client.Batch.GetActivities(null,
-                addedActivities.Select(a => new Stream.ForeignIDTime(a.ForeignId, a.Time.Value)));
+                addedActivities.Select(a => new GetStream.ForeignIDTime(a.ForeignId, a.Time.Value)));
             Assert.IsNotNull(activities);
             Assert.AreEqual(addedActivities.Count, activities.Count());
 
@@ -1602,7 +1501,7 @@ namespace GetStream_net_tests
             Assert.AreEqual("value", collectionObject.GetData<string>("field"));
             Assert.AreEqual(true, collectionObject.GetData<bool>("flag"));
 
-            Assert.ThrowsAsync<Stream.StreamException>(async () =>
+            Assert.ThrowsAsync<GetStream.StreamException>(async () =>
             {
                 var o = await this._client.Collections.Add("col_test_crud", colData, collectionObject.ID);
             });
@@ -1629,7 +1528,7 @@ namespace GetStream_net_tests
             //DELETE
             await this._client.Collections.Delete("col_test_crud", collectionObject.ID);
 
-            Assert.ThrowsAsync<Stream.StreamException>(async () =>
+            Assert.ThrowsAsync<GetStream.StreamException>(async () =>
             {
                 var o = await this._client.Collections.Get("col_test_crud", collectionObject.ID);
             });
@@ -1638,7 +1537,7 @@ namespace GetStream_net_tests
         [Test]
         public async Task TestActivityPartialUpdateByID()
         {
-            var act = new Stream.Activity("upd", "test", "1")
+            var act = new GetStream.Activity("upd", "test", "1")
             {
                 ForeignId = System.Guid.NewGuid().ToString(),
                 Time = DateTime.UtcNow
@@ -1653,7 +1552,7 @@ namespace GetStream_net_tests
             Assert.AreEqual("foobar", insertedAct.GetData<string>("custom_thing2"));
             Assert.AreEqual("some thing", insertedAct.GetData<string>("custom_thing3"));
 
-            var set = new Stream.GenericData();
+            var set = new GetStream.GenericData();
             set.SetData("custom_thing", "abcdef");
 
             Assert.DoesNotThrowAsync(async () =>
@@ -1693,8 +1592,8 @@ namespace GetStream_net_tests
         [Test]
         public async Task TestActivityPartialUpdateByForeignIDTime()
         {
-            var fidTime = new Stream.ForeignIDTime(System.Guid.NewGuid().ToString(), DateTime.UtcNow);
-            var act = new Stream.Activity("upd", "test", "1")
+            var fidTime = new GetStream.ForeignIDTime(System.Guid.NewGuid().ToString(), DateTime.UtcNow);
+            var act = new GetStream.Activity("upd", "test", "1")
             {
                 ForeignId = fidTime.ForeignID,
                 Time = fidTime.Time
@@ -1709,7 +1608,7 @@ namespace GetStream_net_tests
             Assert.AreEqual("foobar", insertedAct.GetData<string>("custom_thing2"));
             Assert.AreEqual("some thing", insertedAct.GetData<string>("custom_thing3"));
 
-            var set = new Stream.GenericData();
+            var set = new GetStream.GenericData();
             set.SetData("custom_thing", "abcdef");
 
             Assert.DoesNotThrowAsync(async () =>
@@ -1749,7 +1648,7 @@ namespace GetStream_net_tests
         [Test]
         public async Task TestUpdateToTargets()
         {
-            var fidTime = new Stream.ForeignIDTime(System.Guid.NewGuid().ToString(), DateTime.UtcNow);
+            var fidTime = new GetStream.ForeignIDTime(System.Guid.NewGuid().ToString(), DateTime.UtcNow);
 
             var targets = new List<string>()
             {
@@ -1757,7 +1656,7 @@ namespace GetStream_net_tests
                 "user:" + Guid.NewGuid().ToString(),
             };
 
-            var act = new Stream.Activity("upd", "test", "1")
+            var act = new GetStream.Activity("upd", "test", "1")
             {
                 ForeignId = fidTime.ForeignID,
                 Time = fidTime.Time,
@@ -1815,8 +1714,8 @@ namespace GetStream_net_tests
         [Test]
         public async Task TestBatchPartialUpdate()
         {
-            var fidTime1 = new Stream.ForeignIDTime(System.Guid.NewGuid().ToString(), DateTime.UtcNow);
-            var act1 = new Stream.Activity("upd", "test", "1")
+            var fidTime1 = new GetStream.ForeignIDTime(System.Guid.NewGuid().ToString(), DateTime.UtcNow);
+            var act1 = new GetStream.Activity("upd", "test", "1")
             {
                 ForeignId = fidTime1.ForeignID,
                 Time = fidTime1.Time
@@ -1824,8 +1723,8 @@ namespace GetStream_net_tests
             act1.SetData("custom_thing", "12345");
             act1.SetData("custom_thing2", "foobar");
             act1.SetData("custom_thing3", "some thing");
-            var fidTime2 = new Stream.ForeignIDTime(System.Guid.NewGuid().ToString(), DateTime.UtcNow.AddMinutes(-3));
-            var act2 = new Stream.Activity("upd", "test", "1")
+            var fidTime2 = new GetStream.ForeignIDTime(System.Guid.NewGuid().ToString(), DateTime.UtcNow.AddMinutes(-3));
+            var act2 = new GetStream.Activity("upd", "test", "1")
             {
                 ForeignId = fidTime2.ForeignID,
                 Time = fidTime2.Time
@@ -1834,8 +1733,8 @@ namespace GetStream_net_tests
             act2.SetData("custom_flag2", "val2");
             act2.SetData("custom_flag3", "val3");
 
-            var fidTime3 = new Stream.ForeignIDTime(System.Guid.NewGuid().ToString(), DateTime.UtcNow.AddMinutes(-6));
-            var act3 = new Stream.Activity("upd", "test", "1")
+            var fidTime3 = new GetStream.ForeignIDTime(System.Guid.NewGuid().ToString(), DateTime.UtcNow.AddMinutes(-6));
+            var act3 = new GetStream.Activity("upd", "test", "1")
             {
                 ForeignId = fidTime3.ForeignID,
                 Time = fidTime3.Time
@@ -1848,11 +1747,11 @@ namespace GetStream_net_tests
             };
             act3.SetData("details", customData);
 
-            var response = await this._user1.AddActivities(new Stream.Activity[] { act1, act2, act3 });
+            var response = await this._user1.AddActivities(new GetStream.Activity[] { act1, act2, act3 });
             var insertedActs = response.ToArray();
 
             //FID TIME
-            var upd1 = new Stream.ActivityPartialUpdateRequestObject()
+            var upd1 = new GetStream.ActivityPartialUpdateRequestObject()
             {
                 ForeignIDTime = fidTime1,
                 Unset = new string[] { "custom_thing3" }
@@ -1860,7 +1759,7 @@ namespace GetStream_net_tests
 
             var set = new GenericData();
             set.SetData("details.address", "nowhere");
-            var upd2 = new Stream.ActivityPartialUpdateRequestObject()
+            var upd2 = new GetStream.ActivityPartialUpdateRequestObject()
             {
                 ForeignIDTime = fidTime3,
                 Set = set
@@ -1868,7 +1767,7 @@ namespace GetStream_net_tests
 
             Assert.DoesNotThrowAsync(async () =>
             {
-                await this._client.Batch.ActivitiesPartialUpdate(new Stream.ActivityPartialUpdateRequestObject[] { upd1, upd2 });
+                await this._client.Batch.ActivitiesPartialUpdate(new GetStream.ActivityPartialUpdateRequestObject[] { upd1, upd2 });
             });
 
             var updatedActs = (await this._user1.GetActivities()).ToArray();
@@ -1884,12 +1783,12 @@ namespace GetStream_net_tests
             //ID
             set = new GenericData();
             set.SetData("custom_flag2", "foobar");
-            upd1 = new Stream.ActivityPartialUpdateRequestObject()
+            upd1 = new GetStream.ActivityPartialUpdateRequestObject()
             {
                 ID = insertedActs[1].Id,
                 Set = set
             };
-            upd2 = new Stream.ActivityPartialUpdateRequestObject()
+            upd2 = new GetStream.ActivityPartialUpdateRequestObject()
             {
                 ID = insertedActs[2].Id,
                 Unset = new string[] { "details.name" }
@@ -1897,7 +1796,7 @@ namespace GetStream_net_tests
 
             Assert.DoesNotThrowAsync(async () =>
             {
-                await this._client.Batch.ActivitiesPartialUpdate(new Stream.ActivityPartialUpdateRequestObject[] { upd1, upd2 });
+                await this._client.Batch.ActivitiesPartialUpdate(new GetStream.ActivityPartialUpdateRequestObject[] { upd1, upd2 });
             });
 
             updatedActs = (await this._user1.GetActivities()).ToArray();
@@ -1910,7 +1809,7 @@ namespace GetStream_net_tests
         [Test]
         public async Task TestBatchUpdateActivity()
         {
-            var activity = new Stream.Activity("user:1", "like", "cake")
+            var activity = new GetStream.Activity("user:1", "like", "cake")
             {
                 ForeignId = "cake:1",
                 Time = DateTime.UtcNow,
@@ -1939,14 +1838,14 @@ namespace GetStream_net_tests
         [Test]
         public async Task TestBatchUpdateActivities()
         {
-            var activity = new Stream.Activity("user:1", "like", "cake")
+            var activity = new GetStream.Activity("user:1", "like", "cake")
             {
                 ForeignId = "cake:1",
                 Time = DateTime.UtcNow,
                 Target = "johnny"
             };
             activity.SetData("custom", "field");
-            var activity2 = new Stream.Activity("user:123", "posts", "selfie")
+            var activity2 = new GetStream.Activity("user:123", "posts", "selfie")
             {
                 ForeignId = "selfie:2",
                 Time = DateTime.UtcNow,
@@ -1962,7 +1861,7 @@ namespace GetStream_net_tests
 
             Assert.DoesNotThrowAsync(async () =>
             {
-                await this._client.Batch.UpdateActivities(new Stream.Activity[] { activity, activity2 });
+                await this._client.Batch.UpdateActivities(new GetStream.Activity[] { activity, activity2 });
             });
 
             var updatedActivity = (await this._user1.GetActivities(0, 1)).FirstOrDefault();
@@ -1981,7 +1880,7 @@ namespace GetStream_net_tests
         [Test]
         public async Task TestReactions()
         {
-            var a = new Stream.Activity("user:1", "like", "cake")
+            var a = new GetStream.Activity("user:1", "like", "cake")
             {
                 ForeignId = "cake:1",
                 Time = DateTime.UtcNow,
@@ -2064,7 +1963,7 @@ namespace GetStream_net_tests
                 await this._client.Reactions.Delete(r.ID);
             });
 
-            Assert.ThrowsAsync<Stream.StreamException>(async () =>
+            Assert.ThrowsAsync<GetStream.StreamException>(async () =>
             {
                 var r3 = await this._client.Reactions.Get(r.ID);
             });
@@ -2073,7 +1972,7 @@ namespace GetStream_net_tests
         [Test]
         public async Task TestReactionPagination()
         {
-            var a = new Stream.Activity("user:1", "like", "cake")
+            var a = new GetStream.Activity("user:1", "like", "cake")
             {
                 ForeignId = "cake:1",
                 Time = DateTime.UtcNow,
@@ -2202,7 +2101,7 @@ namespace GetStream_net_tests
             Assert.AreEqual(userID, u.ID);
             Assert.AreEqual(userData, u.Data);
 
-            Assert.ThrowsAsync<Stream.StreamException>(async () =>
+            Assert.ThrowsAsync<GetStream.StreamException>(async () =>
             {
                 u = await this._client.Users.Add(userID, userData);
             });
@@ -2240,7 +2139,7 @@ namespace GetStream_net_tests
             //Delete user
             await this._client.Users.Delete(userID);
 
-            Assert.ThrowsAsync<Stream.StreamException>(async () =>
+            Assert.ThrowsAsync<GetStream.StreamException>(async () =>
             {
                 var x = await this._client.Users.Get(userID);
             });
@@ -2252,9 +2151,9 @@ namespace GetStream_net_tests
             var c = new CollectionObject(Guid.NewGuid().ToString());
             c.SetData("field", "testing_value");
             await this._client.Collections.Upsert("items", c);
-            var cRef = Stream.Collections.Ref("items", c);
+            var cRef = GetStream.Collections.Ref("items", c);
 
-            var a = new Stream.Activity("actor-1", "add", cRef);
+            var a = new GetStream.Activity("actor-1", "add", cRef);
             await this._user1.AddActivity(a);
 
             var plain = await this._user1.GetFlatActivities();
@@ -2282,7 +2181,7 @@ namespace GetStream_net_tests
             var u = await this._client.Users.Add(Guid.NewGuid().ToString(), userData);
             var uRef = u.Ref();
 
-            var a = new Stream.Activity(uRef, "add", "post");
+            var a = new GetStream.Activity(uRef, "add", "post");
             await this._user1.AddActivity(a);
 
             var plain = await this._user1.GetFlatActivities();
@@ -2303,7 +2202,7 @@ namespace GetStream_net_tests
         [Test]
         public async Task TestEnrich_OwnReaction()
         {
-            var a = new Stream.Activity("johhny", "add", "post");
+            var a = new GetStream.Activity("johhny", "add", "post");
             var act = await this._user1.AddActivity(a);
             var reaction = await this._client.Reactions.Add("like", act.Id, "johhny");
 
@@ -2322,7 +2221,7 @@ namespace GetStream_net_tests
         [Test]
         public async Task TestEnrich_LatestReactions()
         {
-            var a = new Stream.Activity("johhny", "add", "post");
+            var a = new GetStream.Activity("johhny", "add", "post");
             var act = await this._user1.AddActivity(a);
             var reaction = await this._client.Reactions.Add("like", act.Id, "johhny");
 
@@ -2366,7 +2265,7 @@ namespace GetStream_net_tests
         [Test]
         public async Task TestEnrich_ReactionCounts()
         {
-            var a = new Stream.Activity("johhny", "add", "post");
+            var a = new GetStream.Activity("johhny", "add", "post");
             var act = await this._user1.AddActivity(a);
             var reactionLike = await this._client.Reactions.Add("like", act.Id, "johhny");
             var reactionComment = await this._client.Reactions.Add("comment", act.Id, "johhny");
@@ -2387,7 +2286,7 @@ namespace GetStream_net_tests
         [Test]
         public async Task TestEnrich()
         {
-            var a = new Stream.Activity("johhny", "add", "post");
+            var a = new GetStream.Activity("johhny", "add", "post");
             var act = await this._user1.AddActivity(a);
             var reaction = await this._client.Reactions.Add("like", act.Id, "johhny");
 

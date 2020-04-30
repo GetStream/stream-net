@@ -5,24 +5,24 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GetStream_net_tests
+namespace stream_net_tests
 {
     [Parallelizable(ParallelScope.Self)]
     [TestFixture]
     public class FeedTests
     {
-        private Stream.IStreamClient _client;
-        private Stream.IStreamFeed _feed;
+        private GetStream.IStreamClient _client;
+        private GetStream.IStreamFeed _feed;
 
         [SetUp]
         public void Setup()
         {
-            _client = new Stream.StreamClient(
+            _client = new GetStream.StreamClient(
                 "98a6bhskrrwj",
                 "t3nj7j8m6dtdbbakzbu9p7akjk5da8an5wxwyt6g73nt5hf9yujp8h4jw244r67p",
-                new Stream.StreamClientOptions()
+                new GetStream.StreamClientOptions()
                 {
-                    Location = Stream.StreamApiLocation.USEast
+                    Location = GetStream.StreamApiLocation.USEast
                 });
             _feed = _client.Feed("flat", "42");
         }
@@ -63,7 +63,7 @@ namespace GetStream_net_tests
             });
             Assert.Throws<ArgumentNullException>(() =>
             {
-                _feed.UpdateActivities(new Stream.Activity[101]).GetAwaiter().GetResult();
+                _feed.UpdateActivities(new GetStream.Activity[101]).GetAwaiter().GetResult();
             });
         }
 

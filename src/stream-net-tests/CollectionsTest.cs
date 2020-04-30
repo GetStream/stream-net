@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GetStream_net_tests
+namespace stream_net_tests
 {
     [Parallelizable(ParallelScope.None)]
     [TestFixture]
@@ -15,15 +15,15 @@ namespace GetStream_net_tests
         [Test]
         public void TestRefWithCollection()
         {
-            var collectionObj = new Stream.CollectionObject("id-col");
-            var refString = Stream.Collections.Ref("col", collectionObj);
+            var collectionObj = new GetStream.CollectionObject("id-col");
+            var refString = GetStream.Collections.Ref("col", collectionObj);
             Assert.AreEqual("SO:col:id-col", refString);
         }
 
         [Test]
         public void TestRefWithCollectionObjectID()
         {
-            var refString = Stream.Collections.Ref("col", "id-col");
+            var refString = GetStream.Collections.Ref("col", "id-col");
             Assert.AreEqual("SO:col:id-col", refString);
         }
     }
