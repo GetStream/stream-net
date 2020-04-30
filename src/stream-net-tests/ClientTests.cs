@@ -6,7 +6,7 @@ using System.Text;
 using Microsoft.IdentityModel.Tokens.JWT;
 using System.Threading.Tasks;
 
-namespace stream_net_tests
+namespace GetStream_net_tests
 {
     [Parallelizable(ParallelScope.Self)]
     [TestFixture]

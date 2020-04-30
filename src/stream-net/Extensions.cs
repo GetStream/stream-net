@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace Stream
+namespace GetStream
 {
     internal static class Extensions
     {

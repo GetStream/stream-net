@@ -1,6 +1,6 @@
-﻿using Stream.Rest;
+﻿using GetStream.Rest;
 
-namespace Stream
+namespace GetStream
 {
     public class GetOptions
     {

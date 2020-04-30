@@ -1,8 +1,8 @@
 ﻿using Newtonsoft.Json;
-using Stream.Rest;
+using GetStream.Rest;
 using System;
 
-namespace Stream
+namespace GetStream
 {
 #if !NETCORE
     [Serializable]

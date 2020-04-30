@@ -1,13 +1,12 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Stream.Rest;
+﻿using GetStream.Rest;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Stream
+namespace GetStream
 {
     public class StreamClient : IStreamClient
     {
@@ -23,10 +22,10 @@ namespace Stream
             alg = "HS256"
         };
 
-        readonly RestClient _client;
-        readonly StreamClientOptions _options;
-        readonly string _apiSecret;
-        readonly string _apiKey;
+        private readonly RestClient _client;
+        private readonly StreamClientOptions _options;
+        private readonly string _apiSecret;
+        private readonly string _apiKey;
 
         public StreamClient(string apiKey, string apiSecret, StreamClientOptions options = null)
         {
@@ -132,21 +131,27 @@ namespace Stream
                 case StreamApiLocation.USEast:
                     region = "us-east";
                     break;
+
                 case StreamApiLocation.Tokyo:
                     region = "tokyo";
                     break;
+
                 case StreamApiLocation.Dublin:
                     region = "dublin";
                     break;
+
                 case StreamApiLocation.Singapore:
                     region = "singapore";
                     break;
+
                 case StreamApiLocation.USWest:
                     region = "us-west";
                     break;
+
                 case StreamApiLocation.EUCentral:
                     region = "eu-central";
                     break;
+
                 default:
                     break;
             }

@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Stream
+namespace GetStream
 {
     public class AggregateActivity : Activity
     {

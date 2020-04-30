@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Stream
+namespace GetStream
 {
     public enum StreamApiLocation
     {

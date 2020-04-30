@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Stream.Rest
+namespace GetStream.Rest
 {
     internal class RestRequest
     {

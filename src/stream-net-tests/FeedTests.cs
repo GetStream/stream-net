@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace stream_net_tests
+namespace GetStream_net_tests
 {
     [Parallelizable(ParallelScope.Self)]
     [TestFixture]

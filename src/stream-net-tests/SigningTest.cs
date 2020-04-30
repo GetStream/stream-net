@@ -1,8 +1,8 @@
 ﻿using System;
 using NUnit.Framework;
-using Stream;
+using GetStream;
 
-namespace stream_net_tests
+namespace GetStream_net_tests
 {
     [Parallelizable(ParallelScope.Self)]
     [TestFixture]

@@ -6,7 +6,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Stream.Rest
+namespace GetStream.Rest
 {
     internal class RestResponse
     {

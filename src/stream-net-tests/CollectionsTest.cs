@@ -1,12 +1,12 @@
 using NUnit.Framework;
 using System;
-using Stream;
+using GetStream;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace stream_net_tests
+namespace GetStream_net_tests
 {
     [Parallelizable(ParallelScope.None)]
     [TestFixture]

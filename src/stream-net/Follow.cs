@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace Stream
+namespace GetStream
 {
     public class Follow
     {

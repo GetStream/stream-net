@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Stream
+namespace GetStream
 {
     public interface IStreamClient
     {

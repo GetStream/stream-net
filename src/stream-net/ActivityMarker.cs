@@ -1,8 +1,8 @@
-﻿using Stream.Rest;
+﻿using GetStream.Rest;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Stream
+namespace GetStream
 {
     public class ActivityMarker
     {

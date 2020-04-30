@@ -3,11 +3,11 @@ using System.Linq;
 using NUnit.Framework;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using Stream;
+using GetStream;
 using Newtonsoft.Json;
 using System.Threading;
 
-namespace stream_net_tests
+namespace GetStream_net_tests
 {
     [Parallelizable(ParallelScope.None)]
     [TestFixture]
