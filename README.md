@@ -165,6 +165,6 @@ var enriched = await this._user1.GetEnrichedFlatActivities(GetOptions.Default.Wi
 
 ### Copyright and License Information
 
-Copyright (c) 2015-2018 Shawn Beach, Stream.io Inc, and individual contributors. All rights reserved.
+Copyright (c) 2015-2020 Stream.io Inc, and individual contributors. All rights reserved.
 
 See the file "LICENSE" for information on the history of this software, terms & conditions for usage, and a DISCLAIMER OF ALL WARRANTIES.
