@@ -1875,10 +1875,6 @@ namespace stream_net_tests
 
             Assert.IsNull(updatedActs[0].GetData<string>("custom_thing3"));
             var extraData = updatedActs[2].GetData<Dictionary<string, string>>("details");
-            if (extraData == null)
-            {
-                Console.WriteLine("IT'S NULL   " + updatedActs[2].ForeignId);
-            }
             Assert.AreEqual("nowhere", extraData["address"]);
 
             //ID
@@ -2409,6 +2405,35 @@ namespace stream_net_tests
 
             Assert.True(enrichedAct.ReactionCounts.ContainsKey(reaction.Kind));
             Assert.AreEqual(1, enrichedAct.ReactionCounts[reaction.Kind]);
+        }
+
+        [Test]
+        [Ignore("Not always needed, set credentials to run when needed")]
+        public async Task ReadPersonalization()
+        {
+            var _p = new Stream.StreamClient(
+                "some_key",
+                "some_secret",
+                new Stream.StreamClientOptions()
+                {
+                    Location = Stream.StreamApiLocation.Dublin,
+                    PersonalizationLocation = Stream.StreamApiLocation.USEast,
+                    Timeout = 10000,
+                    PersonalizationTimeout = 10000
+                });
+
+            var response = await _p.Personalization.Get("etoro_newsfeed", new Dictionary<string, object>()
+                {
+                    {"feed_slug", "newsfeed"},
+                    {"user_id", "crembo"},
+                    {"limit", 20},
+                    {"ranking", "etoro"}
+                });
+
+            var d = new Dictionary<string, object>(response);
+            Assert.AreEqual(41021, d["app_id"]);
+            Assert.True(d.ContainsKey("duration"));
+            Assert.True(d.ContainsKey("results"));
         }
     }
 }

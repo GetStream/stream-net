@@ -13,7 +13,7 @@ namespace Stream
         internal StreamException(ExceptionState state)
             : base(message: state.Detail)
         {
-        
+
         }
 
         internal class ExceptionState
@@ -30,7 +30,7 @@ namespace Stream
 
         internal static StreamException FromResponse(RestResponse response)
         {
-            //If we get an error response from getstream.io with the following structure then use it to populate the exception details, 
+            //If we get an error response from getstream.io with the following structure then use it to populate the exception details,
             //otherwise fill in the properties from the response, the most likely case being when we get a timeout.
             //{"code": 6, "detail": "The following feeds are not configured: 'secret'", "duration": "4ms", "exception": "FeedConfigException", "status_code": 400}
 

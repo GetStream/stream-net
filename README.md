@@ -84,15 +84,15 @@ var activities = await client.Batch.GetActivities(ids)
 var foreignIDTimes = new ForeignIDTime[] {new ForeignIDTime("fid-1", DateTime.Parse("2000-08-19T16:32:32")), new Stream.ForeignIDTime("fid-2",  DateTime.Parse("2000-08-21T16:32:32"))};
 var activities = await client.Batch.GetActivities(null, foreignIDTimes)
 
-//Partially update an activity
+// Partially update an activity
 var set = new GenericData();
 set.SetData("custom_field", "new value");
 var unset = new string[]{"field to remove"};
 
-//by id
+// by id
 await client.ActivityPartialUpdate("e561de8f-00f1-11e4-b400-0cc47a024be0", null, set, unset);
 
-//by foreign id and time
+// by foreign id and time
 var fidTime = new ForeignIDTime("fid-1", DateTime.Parse("2000-08-19T16:32:32"));
 await client.ActivityPartialUpdate(null, fidTime, set, unset);
 
@@ -106,10 +106,10 @@ var activity = await userFeed1.AddActivity(activity);
 
 var r = await client.Reactions.Add("comment", activity.Id, "john");
 
-//add a reaction to a reaction
+// add a reaction to a reaction
 var child = await client.Reactions.AddChild(r.ID, "upvote", activity.Id, "john");
 
-//enrich feed results
+// enrich feed results
 var userData = new Dictionary<string, object>()
 {
 	{"is_admin", true},
@@ -121,7 +121,7 @@ var userRef = u.Ref();
 var a = new Stream.Activity(uRef, "add", "post");
 var plainActivity = await userFeed1.AddActivity(a);
 
-//plainActivity.Actor is just a plain string containing the user ref
+// plainActivity.Actor is just a plain string containing the user ref
 
 var enriched = await this._user1.GetEnrichedFlatActivities();
 var actor = enriched.Results.First();
@@ -133,7 +133,7 @@ if (actor.IsEnriched)
 }
 
 
-//enrich feed results with reactions
+// enrich feed results with reactions
 
 var activityData = new Activity("bob", "cook", "burger")
 {
@@ -161,6 +161,16 @@ Console.WriteLine(enrichedActivity.OwnReactions["comment"]); // is the $comment 
 
 // all reactions enrichment can be selected
 var enriched = await this._user1.GetEnrichedFlatActivities(GetOptions.Default.WithReaction(ReactionOption.With().Counts().Own().Recent()));
+
+// Personalization
+var input = new Dictionary<string, object>()
+{
+    {"feed_slug", "my_personalized_feed"},
+    {"user_id", "john"},
+    {"limit", 20},
+    {"ranking", "my_ranking"}
+};
+var response = await client.Personalization.Get("my_endpoint", input);
 ```
 
 ### Copyright and License Information
