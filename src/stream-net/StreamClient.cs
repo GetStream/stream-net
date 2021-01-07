@@ -171,10 +171,6 @@ namespace Stream
                     return "dublin";
                 case StreamApiLocation.Singapore:
                     return "singapore";
-                case StreamApiLocation.USWest:
-                    return "us-west";
-                case StreamApiLocation.EUCentral:
-                    return "eu-central";
                 default:
                     return "us-east";
             }

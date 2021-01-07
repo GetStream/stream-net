@@ -8,11 +8,6 @@ namespace Stream
         Dublin,
         Singapore,
         Tokyo,
-
-        [Obsolete("This api location is no longer in use and will be removed in the future")]
-        USWest,
-        [Obsolete("This api location is no longer in use and will be removed in the future")]
-        EUCentral,
     }
 
     public class StreamClientOptions
