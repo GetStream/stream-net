@@ -13,6 +13,8 @@ namespace Stream
     {
         internal const string BaseUrlFormat = "https://{0}-api.stream-io-api.com";
         internal const string BaseUrlPath = "/api/v1.0/";
+        internal const string BasePersonalizationUrlFormat = "https://{0}-personalization.stream-io-api.com";
+        internal const string BasePersonalizationUrlPath = "/personalization/v1.0/";
         internal const string ActivitiesUrlPath = "activities/";
         internal const int ActivityCopyLimitDefault = 300;
         internal const int ActivityCopyLimitMax = 1000;
@@ -38,8 +40,22 @@ namespace Stream
             _apiKey = apiKey;
             _apiSecret = apiSecret;
             _options = options ?? StreamClientOptions.Default;
-            _client = new RestClient(GetBaseUrl(), TimeSpan.FromMilliseconds(_options.Timeout));
+            _client = new RestClient(GetBaseUrl(_options.Location), TimeSpan.FromMilliseconds(_options.Timeout));
         }
+
+        private StreamClient(string apiKey, string apiSecret, RestClient client, StreamClientOptions options = null)
+        {
+            if (string.IsNullOrWhiteSpace(apiKey))
+                throw new ArgumentNullException("apiKey", "Must have an apiKey");
+            if (string.IsNullOrWhiteSpace(apiSecret))
+                throw new ArgumentNullException("apiSecret", "Must have an apiSecret");
+
+            _apiKey = apiKey;
+            _apiSecret = apiSecret;
+            _options = options ?? StreamClientOptions.Default;
+            _client = client;
+        }
+
 
         /// <summary>
         /// Get a feed
@@ -124,39 +140,50 @@ namespace Stream
             }
         }
 
-        private Uri GetBaseUrl()
+        public Personalization Personalization
         {
-            string region = "";
-            switch (_options.Location)
+            get
             {
-                case StreamApiLocation.USEast:
-                    region = "us-east";
-                    break;
-                case StreamApiLocation.Tokyo:
-                    region = "tokyo";
-                    break;
-                case StreamApiLocation.Dublin:
-                    region = "dublin";
-                    break;
-                case StreamApiLocation.Singapore:
-                    region = "singapore";
-                    break;
-                case StreamApiLocation.USWest:
-                    region = "us-west";
-                    break;
-                case StreamApiLocation.EUCentral:
-                    region = "eu-central";
-                    break;
-                default:
-                    break;
+                var _personalization = new RestClient(GetBasePersonalizationUrl(_options.PersonalizationLocation), TimeSpan.FromMilliseconds(_options.PersonalizationTimeout));
+                return new Personalization(new StreamClient(_apiKey, _apiSecret, _personalization, _options));
             }
-            return new Uri(string.Format(BaseUrlFormat, region));
         }
 
-        private RestRequest BuildRestRequest(string fullPath, HttpMethod method)
+        private Uri GetBaseUrl(StreamApiLocation location)
+        {
+            return new Uri(string.Format(BaseUrlFormat, GetRegion(_options.Location)));
+        }
+
+        private Uri GetBasePersonalizationUrl(StreamApiLocation location)
+        {
+            return new Uri(string.Format(BasePersonalizationUrlFormat, GetRegion(_options.PersonalizationLocation)));
+        }
+
+        private string GetRegion(StreamApiLocation location)
+        {
+            switch (location)
+            {
+                case StreamApiLocation.USEast:
+                    return "us-east";
+                case StreamApiLocation.Tokyo:
+                    return "tokyo";
+                case StreamApiLocation.Dublin:
+                    return "dublin";
+                case StreamApiLocation.Singapore:
+                    return "singapore";
+                case StreamApiLocation.USWest:
+                    return "us-west";
+                case StreamApiLocation.EUCentral:
+                    return "eu-central";
+                default:
+                    return "us-east";
+            }
+        }
+
+        private RestRequest BuildRestRequest(string fullPath, HttpMethod method, string userID = null)
         {
             var request = new RestRequest(fullPath, method);
-            request.AddHeader("Authorization", JWToken("*"));
+            request.AddHeader("Authorization", JWToken("*", userID));
             request.AddHeader("stream-auth-type", "jwt");
             request.AddQueryParameter("api_key", _apiKey);
             return request;
@@ -187,6 +214,11 @@ namespace Stream
             var request = new RestRequest(BaseUrlPath + path, method);
             request.AddHeader("X-Api-Key", _apiKey);
             return request;
+        }
+
+        internal RestRequest BuildPersonalizationRequest(string path, HttpMethod method)
+        {
+            return BuildRestRequest(BasePersonalizationUrlPath + path, method, "*");
         }
 
         internal void SignRequest(RestRequest request)
@@ -237,14 +269,18 @@ namespace Stream
             return Convert.ToBase64String(hmac.ComputeHash(encoding.GetBytes(feedId)));
         }
 
-        internal string JWToken(string feedId)
+        internal string JWToken(string feedId, string userID = null)
         {
-            var payload = new
+            var payload = new Dictionary<string, string>()
             {
-                resource = "*",
-                action = "*",
-                feed_id = feedId
+                {"resource", "*"},
+                {"action", "*"},
+                {"feed_id", feedId}
             };
+            if (userID != null)
+            {
+                payload["user_id"] = userID;
+            }
             return this.JWToken(payload);
         }
 

@@ -25,7 +25,15 @@ namespace Stream
         /// <remarks>Default is 3000</remarks>
         public int Timeout { get; set; }
 
+        /// <summary>
+        /// Number of milliseconds to wait on requests to personalization
+        /// </summary>
+        /// <remarks>Default is 3000</remarks>
+        public int PersonalizationTimeout { get; set; }
+
         public StreamApiLocation Location { get; set; }
+
+        public StreamApiLocation PersonalizationLocation { get; set; }
 
         public bool ExpireTokens { get; set; }
 
@@ -34,6 +42,8 @@ namespace Stream
             ExpireTokens = false;
             Location = StreamApiLocation.USEast;
             Timeout = 3000;
+            PersonalizationTimeout = 3000;
+            PersonalizationLocation = StreamApiLocation.USEast;
         }
     }
 }

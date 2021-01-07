@@ -25,7 +25,7 @@ namespace Stream.Rest
         public string Resource { get; private set; }
 
         public string JsonBody { get; private set; }
-        
+
         public void AddHeader(string name, string value)
         {
             _headers[name] = value;

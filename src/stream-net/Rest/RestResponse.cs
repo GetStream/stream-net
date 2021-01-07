@@ -24,7 +24,7 @@ namespace Stream.Rest
             {
                 StatusCode = message.StatusCode
             };
-            
+
             response.Content = await message.Content.ReadAsStringAsync();
 
             return response;
