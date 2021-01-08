@@ -20,7 +20,7 @@ namespace Stream
         public async Task<IDictionary<string, object>> Get(string endpoint, IDictionary<string, object> data)
         {
             var request = this._client.BuildPersonalizationRequest(endpoint + "/", HttpMethod.GET);
-            foreach(KeyValuePair<string, object> entry in data)
+            foreach (KeyValuePair<string, object> entry in data)
             {
                 request.AddQueryParameter(entry.Key, Convert.ToString(entry.Value));
             }
@@ -34,7 +34,7 @@ namespace Stream
 
         public async Task<IDictionary<string, object>> Post(string endpoint, IDictionary<string, object> data)
         {
-            var request = this._client.BuildJWTAppRequest(endpoint + "/", HttpMethod.POST);
+            var request = this._client.BuildPersonalizationRequest(endpoint + "/", HttpMethod.POST);
             request.SetJsonBody(JsonConvert.SerializeObject(data));
 
             var response = await this._client.MakeRequest(request);
@@ -46,8 +46,8 @@ namespace Stream
 
         public async Task Delete(string endpoint, IDictionary<string, object> data)
         {
-            var request = this._client.BuildJWTAppRequest(endpoint + "/", HttpMethod.DELETE);
-            foreach(KeyValuePair<string, object> entry in data)
+            var request = this._client.BuildPersonalizationRequest(endpoint + "/", HttpMethod.DELETE);
+            foreach (KeyValuePair<string, object> entry in data)
             {
                 request.AddQueryParameter(entry.Key, Convert.ToString(entry.Value));
             }
