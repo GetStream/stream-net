@@ -20,23 +20,19 @@ namespace Stream
         readonly string _feedSlug;
         readonly string _userId;
 
-        internal StreamFeed(StreamClient client, string feedSlug, string userId, string token)
+        internal StreamFeed(StreamClient client, string feedSlug, string userId)
         {
             if (!_feedRegex.IsMatch(feedSlug))
                 throw new ArgumentException("Feed slug can only contain alphanumeric characters or underscores");
             if (!_userRegex.IsMatch(userId))
                 throw new ArgumentException("User id can only contain alphanumeric characters, underscores or dashes");
 
-            Token = token;
             _client = client;
             _feedSlug = feedSlug;
             _userId = userId;
-            FeedTokenId = string.Format("{0}{1}", _feedSlug, _userId);
             UrlPath = string.Format("feed/{0}/{1}", _feedSlug, _userId);
-            EnrichedPath = string.Format("enrich/{0}", UrlPath);
+            EnrichedPath = "enrich/" + UrlPath;
         }
-
-        internal string FeedTokenId { get; private set; }
 
         public string FeedId
         {
@@ -46,18 +42,7 @@ namespace Stream
             }
         }
 
-        public string Token { get; private set; }
-
-        public string ReadOnlyToken
-        {
-            get
-            {
-                return _client.JWToken(FeedTokenId);
-            }
-        }
-
         public string UrlPath { get; private set; }
-
         public string EnrichedPath { get; private set; }
 
         /// <summary>
@@ -197,7 +182,7 @@ namespace Stream
                 payload["removed_targets"] = removed.ToList();
 
             var endpoint = string.Format("feed_targets/{0}/{1}/activity_to_targets/", this._feedSlug, this._userId);
-            var request = this._client.BuildJWTAppRequest(endpoint, HttpMethod.POST);
+            var request = this._client.BuildAppRequest(endpoint, HttpMethod.POST);
             request.SetJsonBody(JsonConvert.SerializeObject(payload));
             var response = await this._client.MakeRequest(request);
 
@@ -351,7 +336,6 @@ namespace Stream
             {
                 target = feedToFollow.FeedId,
                 activity_copy_limit = activityCopyLimit,
-                target_token = feedToFollow.Token
             }));
 
             var response = await _client.MakeRequest(request);
@@ -436,7 +420,7 @@ namespace Stream
         {
             if (feed == null)
                 throw new ArgumentNullException("feed", "Must have a feed to follow/unfollow");
-            if (((StreamFeed)feed).FeedTokenId == this.FeedTokenId)
+            if (((StreamFeed)feed).FeedId == this.FeedId)
                 throw new ArgumentException("Cannot follow/unfollow myself");
         }
 

@@ -76,7 +76,6 @@ namespace Stream
             request.SetJsonBody(
                 "{" + string.Format("\"activity\": {0}, \"feeds\": {1}", activity.ToJson(this._client), JsonConvert.SerializeObject(feedIds)) + "}"
             );
-            _client.SignRequest(request);
 
             var response = await _client.MakeRequest(request);
 
@@ -101,8 +100,6 @@ namespace Stream
                                                                 target = f.Target
                                                             }));
 
-            _client.SignRequest(request);
-
             var response = await _client.MakeRequest(request);
 
             if (response.StatusCode != System.Net.HttpStatusCode.Created)
@@ -116,7 +113,7 @@ namespace Stream
             if (ids != null && foreignIDTimes != null)
                 throw new ArgumentException("at most one of the parameters ids or foreignIdTimes must be provided", "ids, foreignIDTimes");
 
-            var request = _client.BuildJWTAppRequest("activities/", HttpMethod.GET);
+            var request = _client.BuildAppRequest("activities/", HttpMethod.GET);
 
             if (ids != null)
             {
@@ -140,7 +137,7 @@ namespace Stream
 
         public async Task UpdateActivities(IEnumerable<Activity> activities)
         {
-            var request = _client.BuildJWTAppRequest("activities/", HttpMethod.POST);
+            var request = _client.BuildAppRequest("activities/", HttpMethod.POST);
             request.SetJsonBody(Activity.ToActivitiesJson(activities, this._client));
 
             var response = await this._client.MakeRequest(request);
@@ -151,7 +148,7 @@ namespace Stream
 
         public async Task ActivitiesPartialUpdate(IEnumerable<ActivityPartialUpdateRequestObject> updates)
         {
-            var request = this._client.BuildJWTAppRequest("activity/", HttpMethod.POST);
+            var request = this._client.BuildAppRequest("activity/", HttpMethod.POST);
 
             var requestData = new Dictionary<string, object>(){
                 {"changes", updates.Select(x => x.ToJObject())}

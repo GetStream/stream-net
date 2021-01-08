@@ -9,6 +9,7 @@ namespace Stream
         Collections Collections { get; }
         Reactions Reactions { get; }
         Users Users { get; }
+        Personalization Personalization { get; }
 
         Task ActivityPartialUpdate(string id = null, ForeignIDTime foreignIDTime = null, GenericData set = null, IEnumerable<string> unset = null);
         IStreamFeed Feed(string feedSlug, string userId);

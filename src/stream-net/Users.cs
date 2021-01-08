@@ -44,7 +44,7 @@ namespace Stream
                 ID = userID,
                 Data = data,
             };
-            var request = this._client.BuildJWTAppRequest("user/", HttpMethod.POST);
+            var request = this._client.BuildAppRequest("user/", HttpMethod.POST);
 
             request.SetJsonBody(JsonConvert.SerializeObject(u));
             request.AddQueryParameter("get_or_create", getOrCreate.ToString());
@@ -59,7 +59,7 @@ namespace Stream
 
         public async Task<User> Get(string userID)
         {
-            var request = this._client.BuildJWTAppRequest($"user/{userID}/", HttpMethod.GET);
+            var request = this._client.BuildAppRequest($"user/{userID}/", HttpMethod.GET);
 
             var response = await this._client.MakeRequest(request);
 
@@ -75,7 +75,7 @@ namespace Stream
             {
                 Data = data,
             };
-            var request = this._client.BuildJWTAppRequest($"user/{userID}/", HttpMethod.PUT);
+            var request = this._client.BuildAppRequest($"user/{userID}/", HttpMethod.PUT);
             request.SetJsonBody(JsonConvert.SerializeObject(u));
 
             var response = await this._client.MakeRequest(request);
@@ -88,7 +88,7 @@ namespace Stream
 
         public async Task Delete(string userID)
         {
-            var request = this._client.BuildJWTAppRequest($"user/{userID}/", HttpMethod.DELETE);
+            var request = this._client.BuildAppRequest($"user/{userID}/", HttpMethod.DELETE);
 
             var response = await this._client.MakeRequest(request);
 

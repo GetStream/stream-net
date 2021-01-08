@@ -132,7 +132,7 @@ namespace Stream
             if (To.SafeCount() > 0)
             {
                 JArray toArray = new JArray();
-                (from t in To select client.SignTo(t)).ForEach((st) =>
+                To.ForEach((st) =>
                 {
                     toArray.Add(st);
                 });
