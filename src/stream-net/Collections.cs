@@ -129,7 +129,7 @@ namespace Stream
                 new JProperty("data", new JObject(
                     new JProperty(collectionName, data.Select(x => x.ToJObject())))));
 
-            var request = this._client.BuildJWTAppRequest("collections/", HttpMethod.POST);
+            var request = this._client.BuildAppRequest("collections/", HttpMethod.POST);
             request.SetJsonBody(dataJson.ToString());
 
             var response = await this._client.MakeRequest(request);
@@ -148,7 +148,7 @@ namespace Stream
         {
             var foreignIds = ids.Select(x => string.Format("{0}:{1}", collectionName, x));
 
-            var request = this._client.BuildJWTAppRequest("collections/", HttpMethod.GET);
+            var request = this._client.BuildAppRequest("collections/", HttpMethod.GET);
             request.AddQueryParameter("foreign_ids", string.Join(",", foreignIds));
 
             var response = await this._client.MakeRequest(request);
@@ -161,7 +161,7 @@ namespace Stream
 
         public async Task DeleteMany(string collectionName, IEnumerable<string> ids)
         {
-            var request = this._client.BuildJWTAppRequest("collections/", HttpMethod.DELETE);
+            var request = this._client.BuildAppRequest("collections/", HttpMethod.DELETE);
             request.AddQueryParameter("collection_name", collectionName);
             request.AddQueryParameter("ids", string.Join(",", ids));
 
@@ -180,7 +180,7 @@ namespace Stream
                 _data = data,
             };
 
-            var request = this._client.BuildJWTAppRequest($"collections/{collectionName}/", HttpMethod.POST);
+            var request = this._client.BuildAppRequest($"collections/{collectionName}/", HttpMethod.POST);
             request.SetJsonBody(collectionObject.ToJson());
 
             var response = await this._client.MakeRequest(request);
@@ -193,7 +193,7 @@ namespace Stream
 
         public async Task<CollectionObject> Get(string collectionName, string ID)
         {
-            var request = this._client.BuildJWTAppRequest($"collections/{collectionName}/{ID}/", HttpMethod.GET);
+            var request = this._client.BuildAppRequest($"collections/{collectionName}/{ID}/", HttpMethod.GET);
 
             var response = await this._client.MakeRequest(request);
 
@@ -206,7 +206,7 @@ namespace Stream
         public async Task<CollectionObject> Update(string collectionName, string ID, GenericData data)
         {
             var dataJson = new JObject(new JProperty("data", data.ToJObject()));
-            var request = this._client.BuildJWTAppRequest($"collections/{collectionName}/{ID}/", HttpMethod.PUT);
+            var request = this._client.BuildAppRequest($"collections/{collectionName}/{ID}/", HttpMethod.PUT);
             request.SetJsonBody(dataJson.ToString());
 
             var response = await this._client.MakeRequest(request);
@@ -219,7 +219,7 @@ namespace Stream
 
         public async Task Delete(string collectionName, string ID)
         {
-            var request = this._client.BuildJWTAppRequest($"collections/{collectionName}/{ID}/", HttpMethod.DELETE);
+            var request = this._client.BuildAppRequest($"collections/{collectionName}/{ID}/", HttpMethod.DELETE);
 
             var response = await this._client.MakeRequest(request);
 

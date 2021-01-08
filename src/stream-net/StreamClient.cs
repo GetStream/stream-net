@@ -71,8 +71,7 @@ namespace Stream
             if (string.IsNullOrWhiteSpace(userId))
                 throw new ArgumentNullException("userId", "Must have an userId");
 
-            string token = Sign(feedSlug + userId);
-            return new StreamFeed(this, feedSlug, userId, token);
+            return new StreamFeed(this, feedSlug, userId);
         }
 
         public async Task ActivityPartialUpdate(string id = null, ForeignIDTime foreignIDTime = null, GenericData set = null, IEnumerable<string> unset = null)
@@ -200,36 +199,14 @@ namespace Stream
             return BuildRestRequest(BaseUrlPath + ActivitiesUrlPath, HttpMethod.POST);
         }
 
-        internal RestRequest BuildJWTAppRequest(string path, HttpMethod method)
-        {
-            return BuildRestRequest(BaseUrlPath + path, method);
-        }
-
         internal RestRequest BuildAppRequest(string path, HttpMethod method)
         {
-            var request = new RestRequest(BaseUrlPath + path, method);
-            request.AddHeader("X-Api-Key", _apiKey);
-            return request;
+            return BuildRestRequest(BaseUrlPath + path, method);
         }
 
         internal RestRequest BuildPersonalizationRequest(string path, HttpMethod method)
         {
             return BuildRestRequest(BasePersonalizationUrlPath + path, method, "*");
-        }
-
-        internal void SignRequest(RestRequest request)
-        {
-            // make signature
-            var queryString = "";
-            request.QueryParameters.ForEach((p) =>
-            {
-                queryString += (queryString.Length == 0) ? "?" : "&";
-                queryString += string.Format("{0}={1}", p.Key, Uri.EscapeDataString(p.Value.ToString()));
-            });
-            var toSign = string.Format("(request-target): {0} {1}", request.Method.ToString().ToLower(), request.Resource + queryString);
-
-            var signature = string.Format("keyId=\"{0}\",algorithm=\"hmac-sha256\",headers=\"(request-target)\",signature=\"{1}\"", this._apiKey, Sign256(toSign));
-            request.AddHeader("Authorization", "Signature " + signature);
         }
 
         internal Task<RestResponse> MakeRequest(RestRequest request)
@@ -243,26 +220,6 @@ namespace Stream
                     .Replace('+', '-')
                     .Replace('/', '_')
                     .Trim('=');
-        }
-
-        internal string Sign(string feedId)
-        {
-            Encoding encoding = new ASCIIEncoding();
-#if NETCORE
-            var hashedSecret = SHA1.Create().ComputeHash(encoding.GetBytes(_apiSecret));
-#else
-            var hashedSecret = (new SHA1Managed()).ComputeHash(encoding.GetBytes(_apiSecret));
-#endif
-
-            var hmac = new HMACSHA1(hashedSecret);
-            return Base64UrlEncode(hmac.ComputeHash(encoding.GetBytes(feedId)));
-        }
-
-        internal string Sign256(string feedId)
-        {
-            Encoding encoding = new ASCIIEncoding();
-            var hmac = new HMACSHA256(encoding.GetBytes(_apiSecret));
-            return Convert.ToBase64String(hmac.ComputeHash(encoding.GetBytes(feedId)));
         }
 
         internal string JWToken(string feedId, string userID = null)
@@ -299,13 +256,6 @@ namespace Stream
                 segments.Add(Base64UrlEncode(signature));
             }
             return string.Join(".", segments.ToArray());
-        }
-
-        internal string SignTo(string to)
-        {
-            string[] bits = to.Split(':');
-            var otherFeed = this.Feed(bits[0], bits[1]);
-            return to + " " + otherFeed.Token;
         }
     }
 }

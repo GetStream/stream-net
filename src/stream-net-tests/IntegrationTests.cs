@@ -1225,10 +1225,7 @@ namespace stream_net_tests
             var response = await _user1.AddActivity(newActivity1);
             response = await _user1.AddActivity(newActivity2);
 
-
-
             await _agg4.FollowFeed(this._user1);
-
 
             var activities = await this._agg4.GetActivities(0);
             Assert.IsNotNull(activities);

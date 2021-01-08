@@ -6,9 +6,8 @@ namespace Stream
     public interface IStreamFeed
     {
         string FeedId { get; }
-        string ReadOnlyToken { get; }
-        string Token { get; }
         string UrlPath { get; }
+        string EnrichedPath { get; }
 
         Task<IEnumerable<Activity>> AddActivities(IEnumerable<Activity> activities);
         Task<Activity> AddActivity(Activity activity);

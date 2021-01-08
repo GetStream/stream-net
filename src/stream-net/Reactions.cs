@@ -13,7 +13,7 @@ namespace Stream
     {
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "results")]
         public IEnumerable<Reaction> Reactions { get; internal set; }
-        
+
         public EnrichedActivity Activity { get; internal set; }
     }
 
@@ -73,7 +73,7 @@ namespace Stream
         }
 
         internal ReactionFiltering WithActivityData()
-        {            
+        {
             _filter = (_filter == null) ? ReactionFilter.Where().WithActivityData() : _filter.WithActivityData();
 
             return this;
@@ -178,7 +178,7 @@ namespace Stream
 
                 return null;
             }
-        }        
+        }
 
         internal Reactions(StreamClient client)
         {
@@ -217,7 +217,7 @@ namespace Stream
 
         public async Task<Reaction> Get(string reactionID)
         {
-            var request = this._client.BuildJWTAppRequest($"reaction/{reactionID}/", HttpMethod.GET);
+            var request = this._client.BuildAppRequest($"reaction/{reactionID}/", HttpMethod.GET);
 
             var response = await this._client.MakeRequest(request);
 
@@ -228,11 +228,11 @@ namespace Stream
         }
 
         public async Task<IEnumerable<Reaction>> Filter(ReactionFiltering filtering, ReactionPagination pagination)
-        {            
+        {
             var response = await FilterHelper(filtering, pagination);
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
-            {                
+            {
                 return JsonConvert.DeserializeObject<ReactionsFilterResponse>(response.Content).Reactions;
             }
 
@@ -240,7 +240,7 @@ namespace Stream
         }
 
         public async Task<ReactionsWithActivity> FilterWithActivityData(ReactionFiltering filtering, ReactionPagination pagination)
-        {            
+        {
             var response = await FilterHelper(filtering.WithActivityData(), pagination);
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
@@ -261,9 +261,9 @@ namespace Stream
         private async Task<RestResponse> FilterHelper(ReactionFiltering filtering, ReactionPagination pagination)
         {
             var urlPath = pagination.GetPath();
-            var request = this._client.BuildJWTAppRequest($"reaction/{urlPath}", HttpMethod.GET);
+            var request = this._client.BuildAppRequest($"reaction/{urlPath}", HttpMethod.GET);
             filtering.Apply(request);
-          
+
             var response = await this._client.MakeRequest(request);
 
             return response;
@@ -278,7 +278,7 @@ namespace Stream
                 TargetFeeds = targetFeeds
             };
 
-            var request = this._client.BuildJWTAppRequest($"reaction/{reactionID}/", HttpMethod.PUT);
+            var request = this._client.BuildAppRequest($"reaction/{reactionID}/", HttpMethod.PUT);
             request.SetJsonBody(JsonConvert.SerializeObject(r));
 
             var response = await this._client.MakeRequest(request);
@@ -292,7 +292,7 @@ namespace Stream
 
         public async Task Delete(string reactionID)
         {
-            var request = this._client.BuildJWTAppRequest($"reaction/{reactionID}/", HttpMethod.DELETE);
+            var request = this._client.BuildAppRequest($"reaction/{reactionID}/", HttpMethod.DELETE);
 
             var response = await this._client.MakeRequest(request);
 
@@ -302,7 +302,7 @@ namespace Stream
 
         private async Task<Reaction> Add(Reaction r)
         {
-            var request = this._client.BuildJWTAppRequest("reaction/", HttpMethod.POST);
+            var request = this._client.BuildAppRequest("reaction/", HttpMethod.POST);
             request.SetJsonBody(JsonConvert.SerializeObject(r));
 
             var response = await this._client.MakeRequest(request);
