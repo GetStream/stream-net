@@ -6,7 +6,7 @@ namespace stream_net_tests
     {
         public static Credentials Instance = new Credentials();
 
-        public StreamChat.IClient Client
+        public Stream.StreamClient Client
         {
             get
             {
@@ -18,13 +18,12 @@ namespace stream_net_tests
 
         internal Credentials()
         {
-            _client = new StreamChat.Client(
+            _client = new Stream.StreamClient(
                 Environment.GetEnvironmentVariable("STREAM_API_KEY"),
                 Environment.GetEnvironmentVariable("STREAM_API_SECRET"),
                 new Stream.StreamClientOptions()
                 {
-                    Location = Stream.StreamApiLocation.USEast,
-                    Timeout = 10000
+                    Location = Stream.StreamApiLocation.USEast
                 });
         }
     }
