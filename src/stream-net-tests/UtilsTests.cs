@@ -23,7 +23,8 @@ namespace stream_net_tests
                 Environment.GetEnvironmentVariable("STREAM_API_SECRET"),
                 new Stream.StreamClientOptions()
                 {
-                    Location = Stream.StreamApiLocation.USEast
+                    Location = Stream.StreamApiLocation.USEast,
+                    Timeout = 10000
                 });
         }
     }
