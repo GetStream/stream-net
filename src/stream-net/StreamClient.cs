@@ -11,7 +11,7 @@ namespace Stream
 {
     public class StreamClient : IStreamClient
     {
-        readonly string Version = "3.0.1";
+        static readonly string Version = "3.0.2";
 
         internal const string BaseUrlFormat = "https://{0}-api.stream-io-api.com";
         internal const string BaseUrlPath = "/api/v1.0/";
@@ -182,7 +182,7 @@ namespace Stream
             var request = new RestRequest(fullPath, method);
             request.AddHeader("Authorization", JWToken("*", userID));
             request.AddHeader("Stream-Auth-Type", "jwt");
-            request.AddHeader("X-Stream-Client", "stream-csharp-"+Version);
+            request.AddHeader("X-Stream-Client", "stream-net-"+Version);
             request.AddQueryParameter("api_key", _apiKey);
             return request;
         }

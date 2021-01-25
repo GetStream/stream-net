@@ -1,3 +1,6 @@
+## 3.0.2 - 2021-01-25
+* Make version header consistent between SDKs
+
 ## 3.0.1 - 2021-01-15
 * Add version and also include in request headers
 
