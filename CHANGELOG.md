@@ -1,3 +1,9 @@
+## 3.1.0 - 2021-02-01
+* Improve underlying HTTP client usage
+  - fixes socket exhaustaion
+  - improves performance
+* Move hardcoded keys from Github
+
 ## 3.0.2 - 2021-01-25
 * Make version header consistent between SDKs
 

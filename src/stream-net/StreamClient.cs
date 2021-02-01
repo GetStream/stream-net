@@ -11,7 +11,7 @@ namespace Stream
 {
     public class StreamClient : IStreamClient
     {
-        static readonly string Version = "3.0.2";
+        static readonly string Version = "3.1.0";
 
         internal const string BaseUrlFormat = "https://{0}-api.stream-io-api.com";
         internal const string BaseUrlPath = "/api/v1.0/";
