@@ -17,13 +17,7 @@ namespace stream_net_tests
         [SetUp]
         public void Setup()
         {
-            _client = new Stream.StreamClient(
-                "98a6bhskrrwj",
-                "t3nj7j8m6dtdbbakzbu9p7akjk5da8an5wxwyt6g73nt5hf9yujp8h4jw244r67p",
-                new Stream.StreamClientOptions()
-                {
-                    Location = Stream.StreamApiLocation.USEast
-                });
+            _client = Credentials.Instance.Client;
         }
 
         [Test]

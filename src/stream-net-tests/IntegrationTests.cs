@@ -23,14 +23,7 @@ namespace stream_net_tests
         [SetUp]
         public void Setup()
         {
-            _client = new Stream.StreamClient(
-                "ea7xzzkj6kc4",
-                "zd8cdv9rhxcpmkx9zx4jqt7q9qhawpgsfpay2gy7jaubym32crs9kaux2pm67wrx",
-                new Stream.StreamClientOptions()
-                {
-                    Location = Stream.StreamApiLocation.USEast,
-                    Timeout = 10000
-                });
+            _client = Credentials.Instance.Client;
             _user1 = _client.Feed("user", System.Guid.NewGuid().ToString());
             _user2 = _client.Feed("user", System.Guid.NewGuid().ToString());
             _flat3 = _client.Feed("flat", System.Guid.NewGuid().ToString());
