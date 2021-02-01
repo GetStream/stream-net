@@ -2,13 +2,15 @@
 using System.Net;
 using System.Net.Http;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Stream.Rest
 {
     internal class RestClient
     {
-        readonly Uri _baseUrl;
+        private static readonly HttpClient _client = new HttpClient(); 
+        private readonly Uri _baseUrl;
         private TimeSpan _timeout;
 
         public RestClient(Uri baseUrl, TimeSpan timeout)
@@ -17,25 +19,26 @@ namespace Stream.Rest
             _timeout = timeout;
         }
 
-        private HttpClient BuildClient(RestRequest request)
+        private HttpRequestMessage BuildRequestMessage(System.Net.Http.HttpMethod method, Uri url, RestRequest request)
         {
 #if NET45
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
 #endif
-            var client = new HttpClient();
-
-            client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
-
-            client.Timeout = _timeout;
+            var requestMessage = new HttpRequestMessage(method, url);
+            requestMessage.Headers.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
 
             // add request headers
             request.Headers.ForEach(h =>
             {
-                client.DefaultRequestHeaders.Add(h.Key, h.Value);
+                requestMessage.Headers.Add(h.Key, h.Value);
             });
 
-            return client;
+            if (method == System.Net.Http.HttpMethod.Post || method == System.Net.Http.HttpMethod.Put)
+            {
+                requestMessage.Content = new StringContent(request.JsonBody, Encoding.UTF8, "application/json");
+            }
+
+            return requestMessage;
         }
 
         public TimeSpan Timeout
@@ -44,40 +47,34 @@ namespace Stream.Rest
             set { _timeout = value; }
         }
 
-        private async Task<RestResponse> ExecuteGet(Uri url, RestRequest request)
+        private async Task<RestResponse> ExecuteHttpRequest(System.Net.Http.HttpMethod method, Uri url, RestRequest request)
         {
-            using (var client = BuildClient(request))
+            var requestMessage = BuildRequestMessage(method, url, request);
+            using (var cts = new CancellationTokenSource(_timeout))
             {
-                HttpResponseMessage response = await client.GetAsync(url);
+                HttpResponseMessage response = await _client.SendAsync(requestMessage, cts.Token);
                 return await RestResponse.FromResponseMessage(response);
             }
+        }
+
+        private async Task<RestResponse> ExecuteGet(Uri url, RestRequest request)
+        {
+            return await ExecuteHttpRequest(System.Net.Http.HttpMethod.Get, url, request);
         }
 
         private async Task<RestResponse> ExecutePost(Uri url, RestRequest request)
         {
-            using (var client = BuildClient(request))
-            {
-                HttpResponseMessage response = await client.PostAsync(url, new StringContent(request.JsonBody, Encoding.UTF8, "application/json"));
-                return await RestResponse.FromResponseMessage(response);
-            }
+            return await ExecuteHttpRequest(System.Net.Http.HttpMethod.Post, url, request);
         }
 
         private async Task<RestResponse> ExecutePut(Uri url, RestRequest request)
         {
-            using (var client = BuildClient(request))
-            {
-                HttpResponseMessage response = await client.PutAsync(url, new StringContent(request.JsonBody, Encoding.UTF8, "application/json"));
-                return await RestResponse.FromResponseMessage(response);
-            }
+            return await ExecuteHttpRequest(System.Net.Http.HttpMethod.Put, url, request);
         }
 
         private async Task<RestResponse> ExecuteDelete(Uri url, RestRequest request)
         {
-            using (var client = BuildClient(request))
-            {
-                HttpResponseMessage response = await client.DeleteAsync(url);
-                return await RestResponse.FromResponseMessage(response);
-            }
+            return await ExecuteHttpRequest(System.Net.Http.HttpMethod.Delete, url, request);
         }
 
         private Uri BuildUri(RestRequest request)
