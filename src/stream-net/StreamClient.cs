@@ -29,31 +29,31 @@ namespace Stream
 
         readonly RestClient _client;
         readonly StreamClientOptions _options;
-        readonly string _apiSecret;
+        readonly IStreamClientToken _streamClientToken;
         readonly string _apiKey;
 
-        public StreamClient(string apiKey, string apiSecret, StreamClientOptions options = null)
+        public StreamClient(string apiKey, string apiSecretOrToken, StreamClientOptions options = null)
         {
             if (string.IsNullOrWhiteSpace(apiKey))
                 throw new ArgumentNullException("apiKey", "Must have an apiKey");
-            if (string.IsNullOrWhiteSpace(apiSecret))
-                throw new ArgumentNullException("apiSecret", "Must have an apiSecret");
+            if (string.IsNullOrWhiteSpace(apiSecretOrToken))
+                throw new ArgumentNullException("apiSecret", "Must have an apiSecret or user session token");
 
             _apiKey = apiKey;
-            _apiSecret = apiSecret;
+            _streamClientToken = StreamClientToken.For(apiSecretOrToken);
             _options = options ?? StreamClientOptions.Default;
             _client = new RestClient(GetBaseUrl(_options.Location), TimeSpan.FromMilliseconds(_options.Timeout));
         }
 
-        private StreamClient(string apiKey, string apiSecret, RestClient client, StreamClientOptions options = null)
+        private StreamClient(string apiKey, IStreamClientToken streamClientToken, RestClient client, StreamClientOptions options = null)
         {
             if (string.IsNullOrWhiteSpace(apiKey))
                 throw new ArgumentNullException("apiKey", "Must have an apiKey");
-            if (string.IsNullOrWhiteSpace(apiSecret))
-                throw new ArgumentNullException("apiSecret", "Must have an apiSecret");
+            if (streamClientToken is null)
+                throw new ArgumentNullException("streamClientToken", "Must have a streamClientToken");
 
             _apiKey = apiKey;
-            _apiSecret = apiSecret;
+            _streamClientToken = streamClientToken;
             _options = options ?? StreamClientOptions.Default;
             _client = client;
         }
@@ -95,15 +95,7 @@ namespace Stream
 
         public string CreateUserSessionToken(string userId, IDictionary<string, object> extraData = null)
         {
-            var payload = new Dictionary<string, object>
-            {
-                {"user_id", userId}
-            };
-            if (extraData != null)
-            {
-                extraData.ForEach(x => payload[x.Key] = x.Value);
-            }
-            return this.JWToken(payload);
+            return _streamClientToken.CreateUserSessionToken(userId, extraData);
         }
 
         /// <summary>
@@ -146,7 +138,7 @@ namespace Stream
             get
             {
                 var _personalization = new RestClient(GetBasePersonalizationUrl(_options.PersonalizationLocation), TimeSpan.FromMilliseconds(_options.PersonalizationTimeout));
-                return new Personalization(new StreamClient(_apiKey, _apiSecret, _personalization, _options));
+                return new Personalization(new StreamClient(_apiKey, _streamClientToken, _personalization, _options));
             }
         }
 
@@ -217,14 +209,6 @@ namespace Stream
             return _client.Execute(request);
         }
 
-        private static string Base64UrlEncode(byte[] input)
-        {
-            return Convert.ToBase64String(input)
-                    .Replace('+', '-')
-                    .Replace('/', '_')
-                    .Trim('=');
-        }
-
         internal string JWToken(string feedId, string userID = null)
         {
             var payload = new Dictionary<string, string>()
@@ -237,28 +221,7 @@ namespace Stream
             {
                 payload["user_id"] = userID;
             }
-            return this.JWToken(payload);
-        }
-
-        internal string JWToken(object payload)
-        {
-            var segments = new List<string>();
-
-            byte[] headerBytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(StreamClient.JWTHeader));
-            byte[] payloadBytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(payload));
-
-            segments.Add(Base64UrlEncode(headerBytes));
-            segments.Add(Base64UrlEncode(payloadBytes));
-
-            var stringToSign = string.Join(".", segments.ToArray());
-            var bytesToSign = Encoding.UTF8.GetBytes(stringToSign);
-
-            using (var sha = new HMACSHA256(Encoding.UTF8.GetBytes(_apiSecret)))
-            {
-                byte[] signature = sha.ComputeHash(bytesToSign);
-                segments.Add(Base64UrlEncode(signature));
-            }
-            return string.Join(".", segments.ToArray());
+            return _streamClientToken.For(payload);
         }
     }
 }
