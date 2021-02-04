@@ -29,7 +29,7 @@ namespace Stream
 
         readonly RestClient _client;
         readonly StreamClientOptions _options;
-        readonly IStreamClientToken _streamClientToken;
+        readonly IToken _streamClientToken;
         readonly string _apiKey;
 
         public StreamClient(string apiKey, string apiSecretOrToken, StreamClientOptions options = null)
@@ -40,12 +40,12 @@ namespace Stream
                 throw new ArgumentNullException("apiSecret", "Must have an apiSecret or user session token");
 
             _apiKey = apiKey;
-            _streamClientToken = StreamClientToken.For(apiSecretOrToken);
+            _streamClientToken = TokenFactory.For(apiSecretOrToken);
             _options = options ?? StreamClientOptions.Default;
             _client = new RestClient(GetBaseUrl(_options.Location), TimeSpan.FromMilliseconds(_options.Timeout));
         }
 
-        private StreamClient(string apiKey, IStreamClientToken streamClientToken, RestClient client, StreamClientOptions options = null)
+        private StreamClient(string apiKey, IToken streamClientToken, RestClient client, StreamClientOptions options = null)
         {
             if (string.IsNullOrWhiteSpace(apiKey))
                 throw new ArgumentNullException("apiKey", "Must have an apiKey");
@@ -93,9 +93,9 @@ namespace Stream
             await this.Batch.ActivitiesPartialUpdate(new ActivityPartialUpdateRequestObject[] { update });
         }
 
-        public string CreateUserSessionToken(string userId, IDictionary<string, object> extraData = null)
+        public string CreateUserToken(string userId, IDictionary<string, object> extraData = null)
         {
-            return _streamClientToken.CreateUserSessionToken(userId, extraData);
+            return _streamClientToken.CreateUserToken(userId, extraData);
         }
 
         /// <summary>
@@ -174,7 +174,7 @@ namespace Stream
             var request = new RestRequest(fullPath, method);
             request.AddHeader("Authorization", JWToken("*", userID));
             request.AddHeader("Stream-Auth-Type", "jwt");
-            request.AddHeader("X-Stream-Client", "stream-net-"+Version);
+            request.AddHeader("X-Stream-Client", "stream-net-" + Version);
             request.AddQueryParameter("api_key", _apiKey);
             return request;
         }

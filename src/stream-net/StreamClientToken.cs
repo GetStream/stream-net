@@ -6,35 +6,35 @@ using System.Text;
 
 namespace Stream
 {
-    public interface IStreamClientToken
+    public interface IToken
     {
-        string CreateUserSessionToken(string userId, IDictionary<string, object> extraData = null);
+        string CreateUserToken(string userId, IDictionary<string, object> extraData = null);
 
         string For(object payload);
     }
 
-    public static class StreamClientToken
+    public static class TokenFactory
     {
-        public static IStreamClientToken For(string apiSecretOrToken)
+        public static IToken For(string apiSecretOrToken)
         {
             return apiSecretOrToken.Contains(".")
-                ? (IStreamClientToken) new StreamApiSessionToken(apiSecretOrToken)
-                : (IStreamClientToken) new StreamApiSecret(apiSecretOrToken);
+                ? (IToken)new Token(apiSecretOrToken)
+                : (IToken)new Secret(apiSecretOrToken);
         }
     }
 
-    public class StreamApiSessionToken : IStreamClientToken
+    public class Token : IToken
     {
         private readonly string _sessionToken;
 
-        public StreamApiSessionToken(string sessionToken)
+        public Token(string sessionToken)
         {
             _sessionToken = sessionToken;
         }
 
-        public string CreateUserSessionToken(string userId, IDictionary<string, object> extraData = null)
+        public string CreateUserToken(string userId, IDictionary<string, object> extraData = null)
         {
-            throw new InvalidOperationException("Clients connecting using a user session token cannot create additional user session tokens");
+            throw new InvalidOperationException("Clients connecting using a user token cannot create additional user tokens");
         }
 
         public string For(object payload)
@@ -43,11 +43,11 @@ namespace Stream
         }
     }
 
-    public class StreamApiSecret : IStreamClientToken
+    public class Secret : IToken
     {
         private readonly string _apiSecret;
 
-        public StreamApiSecret(string apiSecret)
+        public Secret(string apiSecret)
         {
             _apiSecret = apiSecret;
         }
@@ -60,7 +60,7 @@ namespace Stream
                     .Trim('=');
         }
 
-        public string CreateUserSessionToken(string userId, IDictionary<string, object> extraData = null)
+        public string CreateUserToken(string userId, IDictionary<string, object> extraData = null)
         {
             var payload = new Dictionary<string, object>
             {
