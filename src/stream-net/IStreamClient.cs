@@ -14,6 +14,6 @@ namespace Stream
         Task ActivityPartialUpdate(string id = null, ForeignIDTime foreignIDTime = null, GenericData set = null, IEnumerable<string> unset = null);
         IStreamFeed Feed(string feedSlug, string userId);
 
-        string CreateUserSessionToken(string userId, IDictionary<string, object> extraData = null);
+        string CreateUserToken(string userId, IDictionary<string, object> extraData = null);
     }
 }
