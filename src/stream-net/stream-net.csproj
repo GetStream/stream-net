@@ -7,12 +7,11 @@
   </PropertyGroup>
   <PropertyGroup>
     <PackageId>stream-net</PackageId>
-    <Version>3.1.0</Version>
-    <PackageVersion>3.1.0</PackageVersion>
+    <Version>4.0.0</Version>
+    <PackageVersion>4.0.0</PackageVersion>
     <Authors>GetStream.io</Authors>
     <Description>Client for getstream.io. Build scalable newsfeeds and activity streams in a few hours instead of weeks.</Description>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <PackageReleaseNotes>Added another target framework. Ignoring the Follower.UpdatedAt value.</PackageReleaseNotes>
     <Copyright>Copyright 2021</Copyright>
     <PackageProjectUrl>https://github.com/GetStream/stream-net</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/GetStream/stream-net/blob/master/LICENSE</PackageLicenseUrl>

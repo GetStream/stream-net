@@ -1,3 +1,7 @@
+## 4.0.0. - 2021-02-05
+* Add support for client side token
+* Replace `CreatUserSessionToken` with `CreateUserToken`
+
 ## 3.1.0 - 2021-02-01
 * Improve underlying HTTP client usage
   - fixes socket exhaustaion
