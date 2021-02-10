@@ -3,7 +3,7 @@
     <DefineConstants>TRACE;DEBUG;NETCORE</DefineConstants>
   </PropertyGroup>
   <PropertyGroup>
-    <TargetFrameworks>net45;net461;netcoreapp1.0;netstandard1.6;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>net45;net461;netcoreapp1.0;netcoreapp2.2;netstandard1.6;netstandard2.0</TargetFrameworks>
   </PropertyGroup>
   <PropertyGroup>
     <PackageId>stream-net</PackageId>
@@ -21,7 +21,7 @@
     <DefineConstants>NET45</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
   </ItemGroup>
   <ItemGroup Condition=" '$(TargetFramework)' == 'net45'">
     <Reference Include="System" />

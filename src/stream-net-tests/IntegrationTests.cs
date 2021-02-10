@@ -2300,10 +2300,47 @@ namespace stream_net_tests
             var enrichedAct = enriched.Results.First();
 
             Assert.True(enrichedAct.OwnReactions.ContainsKey(reaction.Kind));
+            
             Assert.AreEqual(reaction.ID, enrichedAct.OwnReactions[reaction.Kind].FirstOrDefault().ID);
             Assert.AreEqual(reaction.Kind, enrichedAct.OwnReactions[reaction.Kind].FirstOrDefault().Kind);
             Assert.AreEqual(reaction.UserID, enrichedAct.OwnReactions[reaction.Kind].FirstOrDefault().UserID);
         }
+
+        [Test]
+        public async Task TestEnrich_User_InReaction()
+        {
+            var userData = new Dictionary<string, object>()
+            {
+                {"is_admin", true},
+                {"nickname","bobby"}
+            };
+            var u = await this._client.Users.Add(Guid.NewGuid().ToString(), userData);
+            var uRef = u.Ref();
+
+            var a = new Stream.Activity(uRef, "add", "post");
+            var act = await this._user1.AddActivity(a);
+
+            var reaction = await this._client.Reactions.Add("like", act.Id, u.ID);
+
+            var enriched = await this._user1.GetEnrichedFlatActivities(GetOptions.Default.WithReaction(ReactionOption.With().Own()));
+
+            Assert.AreEqual(1, enriched.Results.Count());
+
+            var enrichedAct = enriched.Results.First();
+
+            Assert.True(enrichedAct.OwnReactions.ContainsKey(reaction.Kind));
+            var ownReaction = enrichedAct.OwnReactions[reaction.Kind].FirstOrDefault();
+
+            Assert.AreEqual(reaction.ID, ownReaction.ID);
+            Assert.AreEqual(reaction.Kind, ownReaction.Kind);
+            Assert.AreEqual(reaction.UserID, ownReaction.UserID);
+            Assert.AreEqual(reaction.UserID, ownReaction.User.Enriched?.GetData<string>("id"));
+            Assert.AreEqual("bobby", ownReaction.User.Enriched?.GetData<Dictionary<string, object>>("data")["nickname"] as string);
+            Assert.AreEqual(true, (bool)ownReaction.User.Enriched?.GetData<Dictionary<string, object>>("data")["is_admin"]);
+        }
+
+
+
 
         [Test]
         public async Task TestEnrich_LatestReactions()
@@ -2384,6 +2421,7 @@ namespace stream_net_tests
             var enrichedAct = enriched.Results.First();
 
             Assert.True(enrichedAct.LatestReactions.ContainsKey(reaction.Kind));
+
             Assert.AreEqual(reaction.ID, enrichedAct.LatestReactions[reaction.Kind].FirstOrDefault().ID);
             Assert.AreEqual(reaction.Kind, enrichedAct.LatestReactions[reaction.Kind].FirstOrDefault().Kind);
             Assert.AreEqual(reaction.UserID, enrichedAct.LatestReactions[reaction.Kind].FirstOrDefault().UserID);

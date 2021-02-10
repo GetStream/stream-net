@@ -3,6 +3,7 @@ using Newtonsoft.Json.Linq;
 using Stream.Rest;
 using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using System.Threading.Tasks;
 
 namespace Stream
@@ -36,6 +37,9 @@ namespace Stream
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "user_id")]
         public string UserID { get; internal set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "user"), JsonConverter(typeof(EnrichableFieldConverter))]
+        public EnrichableField User { get; internal set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "data")]
         public IDictionary<string, object> Data { get; internal set; }
