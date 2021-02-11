@@ -1,9 +1,9 @@
-﻿<Project ToolsVersion="15.0" Sdk="Microsoft.NET.Sdk">
+﻿<Project ToolsVersion="16.5" Sdk="Microsoft.NET.Sdk">
   <PropertyGroup Label="Configuration">
     <DefineConstants>TRACE;DEBUG;NETCORE</DefineConstants>
   </PropertyGroup>
   <PropertyGroup>
-    <TargetFrameworks>net45;net461;netcoreapp1.0;netcoreapp2.2;netstandard1.6;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>net45;net461;netcoreapp1.0;netcoreapp2.2;netcoreapp3.1;netstandard1.6;netstandard2.0</TargetFrameworks>
   </PropertyGroup>
   <PropertyGroup>
     <PackageId>stream-net</PackageId>
