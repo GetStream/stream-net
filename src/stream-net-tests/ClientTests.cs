@@ -1,9 +1,9 @@
-﻿using NUnit.Framework;
+﻿using Newtonsoft.Json;
+using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Microsoft.IdentityModel.Tokens.JWT;
 using System.Threading.Tasks;
 
 namespace stream_net_tests
@@ -111,30 +111,32 @@ namespace stream_net_tests
         [Test]
         public void TestToken()
         {
-            var tokenString = _client.CreateUserToken("user");
-            var tok = new JWTSecurityToken(tokenString);
-            object actualUserID;
-            Assert.True(tok.Payload.TryGetValue("user_id", out actualUserID));
-            Assert.AreEqual("user", (string)actualUserID);
+            var result = DecodeJWT(_client.CreateUserToken("user"));
+            Assert.AreEqual("user", (string)result["user_id"]);
 
             var extra = new Dictionary<string, object>()
             {
                 {"client","dotnet"},
                 {"testing", true}
             };
-            tokenString = _client.CreateUserToken("user2", extra);
-            tok = new JWTSecurityToken(tokenString);
+            result = DecodeJWT(_client.CreateUserToken("user2", extra));
 
-            object data;
+            Assert.AreEqual("user2", (string)result["user_id"]);
+            Assert.AreEqual("dotnet", (string)result["client"]);
+            Assert.AreEqual(true, (bool)result["testing"]);
+            Assert.False(result.ContainsKey("missing"));
+        }
 
-            Assert.True(tok.Payload.TryGetValue("user_id", out data));
-            Assert.AreEqual("user2", (string)data);
-            Assert.True(tok.Payload.TryGetValue("client", out data));
-            Assert.AreEqual("dotnet", (string)data);
-            Assert.True(tok.Payload.TryGetValue("testing", out data));
-            Assert.AreEqual(true, (bool)data);
-
-            Assert.False(tok.Payload.ContainsKey("missing"));
+        private Dictionary<string, object> DecodeJWT(string token)
+        {
+            var segment = token.Split('.')[1];
+            var mod = segment.Length % 4;
+            if (mod > 0) {
+                segment += "".PadLeft(4-mod, '=');
+            }
+            var encoded = Convert.FromBase64String(segment.Replace('-', '+').Replace('_', '/'));
+            var payload = Encoding.UTF8.GetString(encoded);
+            return JsonConvert.DeserializeObject<Dictionary<string, object>>(payload);
         }
     }
 }

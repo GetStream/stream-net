@@ -19,7 +19,7 @@ namespace Stream
         internal const string BasePersonalizationUrlPath = "/personalization/v1.0/";
         internal const string ActivitiesUrlPath = "activities/";
         internal const string ImagesUrlPath = "images/";
-    
+
         internal const int ActivityCopyLimitDefault = 300;
         internal const int ActivityCopyLimitMax = 1000;
 
@@ -78,11 +78,7 @@ namespace Stream
             return new StreamFeed(this, feedSlug, userId);
         }
 
-
-
-
-
-    public async Task ActivityPartialUpdate(string id = null, ForeignIDTime foreignIDTime = null, GenericData set = null, IEnumerable<string> unset = null)
+        public async Task ActivityPartialUpdate(string id = null, ForeignIDTime foreignIDTime = null, GenericData set = null, IEnumerable<string> unset = null)
         {
             if (id == null && foreignIDTime == null)
                 throw new ArgumentException("one the parameters ids or foreignIdTimes must be provided and not null", "ids, foreignIDTimes");
@@ -148,16 +144,15 @@ namespace Stream
             }
         }
 
-    public Images Images
-    {
-      get
-      {
-        return new Images(this);
-      }
-    }
+        public Images Images
+        {
+            get
+            {
+                return new Images(this);
+            }
+        }
 
-
-    private Uri GetBaseUrl(StreamApiLocation location)
+        private Uri GetBaseUrl(StreamApiLocation location)
         {
             return new Uri(string.Format(BaseUrlFormat, GetRegion(_options.Location)));
         }
