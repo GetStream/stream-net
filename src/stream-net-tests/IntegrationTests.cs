@@ -1,11 +1,11 @@
-﻿using System;
-using System.Linq;
-using NUnit.Framework;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using Stream;
 using Newtonsoft.Json;
+using NUnit.Framework;
+using Stream;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace stream_net_tests
 {
@@ -2300,7 +2300,7 @@ namespace stream_net_tests
             var enrichedAct = enriched.Results.First();
 
             Assert.True(enrichedAct.OwnReactions.ContainsKey(reaction.Kind));
-            
+
             Assert.AreEqual(reaction.ID, enrichedAct.OwnReactions[reaction.Kind].FirstOrDefault().ID);
             Assert.AreEqual(reaction.Kind, enrichedAct.OwnReactions[reaction.Kind].FirstOrDefault().Kind);
             Assert.AreEqual(reaction.UserID, enrichedAct.OwnReactions[reaction.Kind].FirstOrDefault().UserID);

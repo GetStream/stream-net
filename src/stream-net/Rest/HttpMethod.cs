@@ -1,4 +1,4 @@
-﻿namespace Stream.Rest
+namespace Stream.Rest
 {
     public enum HttpMethod
     {
