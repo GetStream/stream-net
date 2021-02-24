@@ -1,4 +1,4 @@
-﻿using Stream.Rest;
+using Stream.Rest;
 
 namespace Stream
 {

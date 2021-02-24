@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -131,8 +131,9 @@ namespace stream_net_tests
         {
             var segment = token.Split('.')[1];
             var mod = segment.Length % 4;
-            if (mod > 0) {
-                segment += "".PadLeft(4-mod, '=');
+            if (mod > 0)
+            {
+                segment += "".PadLeft(4 - mod, '=');
             }
             var encoded = Convert.FromBase64String(segment.Replace('-', '+').Replace('_', '/'));
             var payload = Encoding.UTF8.GetString(encoded);

@@ -1,4 +1,4 @@
-﻿using Stream.Rest;
+using Stream.Rest;
 using System.Collections.Generic;
 using System.Linq;
 
