@@ -46,18 +46,19 @@ namespace Stream.Rest
 
         public void SetFileStream(System.IO.Stream stream, string contentType)
         {
-          FileStream = stream;
-          FileStreamContentType = contentType;
+            FileStream = stream;
+            FileStreamContentType = contentType;
         }
 
-        public IEnumerable<KeyValuePair<string, string>> QueryParameters {
+        public IEnumerable<KeyValuePair<string, string>> QueryParameters
+        {
             get
             {
                 return _queryParameters;
             }
         }
 
-        public IEnumerable<KeyValuePair<string,string>> Headers
+        public IEnumerable<KeyValuePair<string, string>> Headers
         {
             get
             {

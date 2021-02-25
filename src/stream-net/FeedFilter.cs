@@ -21,7 +21,7 @@ namespace Stream
 
             internal string Value { get; set; }
 
-            internal OpEntry(OpType type, string value) 
+            internal OpEntry(OpType type, string value)
             {
                 Type = type;
                 Value = value;

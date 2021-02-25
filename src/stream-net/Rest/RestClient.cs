@@ -10,7 +10,7 @@ namespace Stream.Rest
 {
     internal class RestClient
     {
-        private static readonly HttpClient _client = new HttpClient(); 
+        private static readonly HttpClient _client = new HttpClient();
         private readonly Uri _baseUrl;
         private TimeSpan _timeout;
 
@@ -37,14 +37,15 @@ namespace Stream.Rest
 
             if (request.FileStream != null)
             {
-              var content = new MultipartFormDataContent();
-              var streamContent = new StreamContent(request.FileStream);
+                var content = new MultipartFormDataContent();
+                var streamContent = new StreamContent(request.FileStream);
 
-              streamContent.Headers.Add("Content-Type", request.FileStreamContentType);
+                streamContent.Headers.Add("Content-Type", request.FileStreamContentType);
 
-              content.Add(streamContent, "file", "image.png") ;
-              requestMessage.Content = content;
-            } else if (method == System.Net.Http.HttpMethod.Post || method == System.Net.Http.HttpMethod.Put)
+                content.Add(streamContent, "file", "image.png");
+                requestMessage.Content = content;
+            }
+            else if (method == System.Net.Http.HttpMethod.Post || method == System.Net.Http.HttpMethod.Put)
             {
                 requestMessage.Content = new StringContent(request.JsonBody, Encoding.UTF8, "application/json");
             }

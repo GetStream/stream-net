@@ -10,7 +10,7 @@ namespace Stream
     {
         readonly IDictionary<string, JToken> _data = new Dictionary<string, JToken>();
 
-        public GenericData(){}
+        public GenericData() { }
 
         public T GetData<T>(string name)
         {
@@ -33,7 +33,7 @@ namespace Stream
         internal void AddToJObject(ref JObject root)
         {
             var tmp = root;
-            this._data.ForEach( x => tmp.Add(x.Key, x.Value));
+            this._data.ForEach(x => tmp.Add(x.Key, x.Value));
             root = tmp;
         }
     }

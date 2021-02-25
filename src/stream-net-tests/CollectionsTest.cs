@@ -1,6 +1,6 @@
 using NUnit.Framework;
-using System;
 using Stream;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;

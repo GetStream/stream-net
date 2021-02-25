@@ -206,7 +206,7 @@ namespace Stream
 
         internal RestRequest BuildUploadRequest(Images images)
         {
-          return BuildRestRequest(BaseUrlPath + ImagesUrlPath, HttpMethod.POST);
+            return BuildRestRequest(BaseUrlPath + ImagesUrlPath, HttpMethod.POST);
 
         }
 
