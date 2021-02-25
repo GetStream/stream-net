@@ -10,12 +10,11 @@ namespace Stream
         public Images(StreamClient client)
         {
             _client = client;
-
         }
 
         public async Task<Image> Upload(System.IO.Stream image, string contentType)
         {
-            var request = _client.BuildUploadRequest(this);
+            var request = _client.BuildUploadRequest();
 
             request.SetFileStream(image, contentType);
 

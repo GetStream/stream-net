@@ -124,9 +124,11 @@ namespace stream_net_tests
         [Test]
         public async Task TestAddActivityWithDictionary()
         {
-            var dict = new Dictionary<String, String>();
-            dict["test1"] = "shawn";
-            dict["test2"] = "wedge";
+            var dict = new Dictionary<String, String>()
+            {
+                {"test1","shawn"},
+                {"test2", "wedge"}
+            };
 
             var newActivity = new Stream.Activity("1", "test", "1");
             newActivity.SetData("complex", dict);
@@ -162,10 +164,12 @@ namespace stream_net_tests
         {
             int second = 2;
             double third = 3;
-            var dict = new Dictionary<string, object>();
-            dict["test1"] = "shawn";
-            dict["test2"] = "wedge";
-            dict["test3"] = 42;
+            var dict = new Dictionary<string, object>()
+            {
+                {"test1", "shawn"},
+                {"test2", "wedge"},
+                {"test3", 42}
+            };
 
             var newActivity = new Stream.Activity("1", "test", "1");
             newActivity.SetData("complex", dict);
