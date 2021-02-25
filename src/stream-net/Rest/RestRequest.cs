@@ -1,5 +1,4 @@
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Stream.Rest
 {
@@ -29,6 +28,8 @@ namespace Stream.Rest
         public System.IO.Stream FileStream { get; private set; }
         public string FileStreamContentType { get; private set; }
 
+        public string FileStreamName { get; private set; }
+
         public void AddHeader(string name, string value)
         {
             _headers[name] = value;
@@ -44,9 +45,10 @@ namespace Stream.Rest
             JsonBody = json;
         }
 
-        public void SetFileStream(System.IO.Stream stream, string contentType)
+        public void SetFileStream(System.IO.Stream stream, string name, string contentType)
         {
             FileStream = stream;
+            FileStreamName = name;
             FileStreamContentType = contentType;
         }
 

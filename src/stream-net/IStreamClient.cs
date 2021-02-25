@@ -11,6 +11,7 @@ namespace Stream
         Users Users { get; }
         Personalization Personalization { get; }
 
+        Files Files { get; }
         Images Images { get; }
 
         Task ActivityPartialUpdate(string id = null, ForeignIDTime foreignIDTime = null, GenericData set = null, IEnumerable<string> unset = null);

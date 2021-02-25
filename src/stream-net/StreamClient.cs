@@ -1,10 +1,6 @@
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Stream.Rest;
+﻿using Stream.Rest;
 using System;
 using System.Collections.Generic;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Stream
@@ -19,6 +15,7 @@ namespace Stream
         internal const string BasePersonalizationUrlPath = "/personalization/v1.0/";
         internal const string ActivitiesUrlPath = "activities/";
         internal const string ImagesUrlPath = "images/";
+        internal const string FilesUrlPath = "files/";
 
         internal const int ActivityCopyLimitDefault = 300;
         internal const int ActivityCopyLimitMax = 1000;
@@ -144,6 +141,14 @@ namespace Stream
             }
         }
 
+        public Files Files
+        {
+            get
+            {
+                return new Files(this);
+            }
+        }
+
         public Images Images
         {
             get
@@ -204,7 +209,12 @@ namespace Stream
             return BuildRestRequest(BaseUrlPath + ActivitiesUrlPath, HttpMethod.POST);
         }
 
-        internal RestRequest BuildUploadRequest()
+        internal RestRequest BuildFileUploadRequest()
+        {
+            return BuildRestRequest(BaseUrlPath + FilesUrlPath, HttpMethod.POST);
+        }
+
+        internal RestRequest BuildImageUploadRequest()
         {
             return BuildRestRequest(BaseUrlPath + ImagesUrlPath, HttpMethod.POST);
         }
