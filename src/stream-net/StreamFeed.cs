@@ -13,8 +13,8 @@ namespace Stream
 {
     public class StreamFeed : IStreamFeed
     {
-        static Regex _feedRegex = new Regex(@"^\w+$", RegexOptions.Compiled);
-        static Regex _userRegex = new Regex(@"^[-\w]+$", RegexOptions.Compiled);
+        static readonly Regex _feedRegex = new Regex(@"^\w+$", RegexOptions.Compiled);
+        static readonly Regex _userRegex = new Regex(@"^[-\w]+$", RegexOptions.Compiled);
 
         readonly StreamClient _client;
         readonly string _feedSlug;
@@ -111,7 +111,7 @@ namespace Stream
             if (activities.SafeCount() > 100)
                 throw new ArgumentNullException("activities", "Maximum length is 100");
 
-            var request = _client.BuildActivitiesRequest(this);
+            var request = _client.BuildActivitiesRequest();
             request.SetJsonBody(Activity.ToActivitiesJson(activities, this._client));
 
             var response = await _client.MakeRequest(request);
@@ -369,7 +369,7 @@ namespace Stream
 
         internal class FollowersResponse
         {
-            public IEnumerable<Follower> results { get; set; }
+            public IEnumerable<Follower> Results { get; set; }
         }
 
         public async Task<IEnumerable<Follower>> Followers(int offset = 0, int limit = 25, string[] filterBy = null)
@@ -391,7 +391,7 @@ namespace Stream
             if (response.StatusCode != System.Net.HttpStatusCode.OK)
                 throw StreamException.FromResponse(response);
 
-            return JsonConvert.DeserializeObject<FollowersResponse>(response.Content).results;
+            return JsonConvert.DeserializeObject<FollowersResponse>(response.Content).Results;
         }
 
         public async Task<IEnumerable<Follower>> Following(int offset = 0, int limit = 25, string[] filterBy = null)
@@ -413,7 +413,7 @@ namespace Stream
             if (response.StatusCode != System.Net.HttpStatusCode.OK)
                 throw StreamException.FromResponse(response);
 
-            return JsonConvert.DeserializeObject<FollowersResponse>(response.Content).results;
+            return JsonConvert.DeserializeObject<FollowersResponse>(response.Content).Results;
         }
 
         private void ValidateFeedFollow(IStreamFeed feed)

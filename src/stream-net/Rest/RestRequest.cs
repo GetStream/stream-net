@@ -12,8 +12,8 @@ namespace Stream.Rest
             public string Value { get; set; }
         }
 
-        private IDictionary<string, string> _headers = new Dictionary<string, string>();
-        private IDictionary<string, string> _queryParameters = new Dictionary<string, string>();
+        private readonly IDictionary<string, string> _headers = new Dictionary<string, string>();
+        private readonly IDictionary<string, string> _queryParameters = new Dictionary<string, string>();
 
         internal RestRequest(string resource, HttpMethod method)
         {

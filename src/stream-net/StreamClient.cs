@@ -44,7 +44,7 @@ namespace Stream
             _apiKey = apiKey;
             _streamClientToken = TokenFactory.For(apiSecretOrToken);
             _options = options ?? StreamClientOptions.Default;
-            _client = new RestClient(GetBaseUrl(_options.Location), TimeSpan.FromMilliseconds(_options.Timeout));
+            _client = new RestClient(GetBaseUrl(), TimeSpan.FromMilliseconds(_options.Timeout));
         }
 
         private StreamClient(string apiKey, IToken streamClientToken, RestClient client, StreamClientOptions options = null)
@@ -139,7 +139,7 @@ namespace Stream
         {
             get
             {
-                var _personalization = new RestClient(GetBasePersonalizationUrl(_options.PersonalizationLocation), TimeSpan.FromMilliseconds(_options.PersonalizationTimeout));
+                var _personalization = new RestClient(GetBasePersonalizationUrl(), TimeSpan.FromMilliseconds(_options.PersonalizationTimeout));
                 return new Personalization(new StreamClient(_apiKey, _streamClientToken, _personalization, _options));
             }
         }
@@ -152,12 +152,12 @@ namespace Stream
             }
         }
 
-        private Uri GetBaseUrl(StreamApiLocation location)
+        private Uri GetBaseUrl()
         {
             return new Uri(string.Format(BaseUrlFormat, GetRegion(_options.Location)));
         }
 
-        private Uri GetBasePersonalizationUrl(StreamApiLocation location)
+        private Uri GetBasePersonalizationUrl()
         {
             return new Uri(string.Format(BasePersonalizationUrlFormat, GetRegion(_options.PersonalizationLocation)));
         }
@@ -199,15 +199,14 @@ namespace Stream
             return BuildRestRequest(BaseUrlPath + feed.EnrichedPath + path, method);
         }
 
-        internal RestRequest BuildActivitiesRequest(StreamFeed feed)
+        internal RestRequest BuildActivitiesRequest()
         {
             return BuildRestRequest(BaseUrlPath + ActivitiesUrlPath, HttpMethod.POST);
         }
 
-        internal RestRequest BuildUploadRequest(Images images)
+        internal RestRequest BuildUploadRequest()
         {
             return BuildRestRequest(BaseUrlPath + ImagesUrlPath, HttpMethod.POST);
-
         }
 
         internal RestRequest BuildAppRequest(string path, HttpMethod method)
