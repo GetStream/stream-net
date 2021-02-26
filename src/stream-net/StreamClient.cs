@@ -1,4 +1,5 @@
-﻿using Stream.Rest;
+﻿using Newtonsoft.Json;
+using Stream.Rest;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -90,6 +91,18 @@ namespace Stream
                 Unset = unset,
             };
             await this.Batch.ActivitiesPartialUpdate(new ActivityPartialUpdateRequestObject[] { update });
+        }
+
+        public async Task<Og> Og(string url)
+        {
+            var request = this.BuildAppRequest("og/", HttpMethod.GET);
+            request.AddQueryParameter("url", url);
+
+            var response = await this.MakeRequest(request);
+            if (response.StatusCode != System.Net.HttpStatusCode.OK)
+                throw StreamException.FromResponse(response);
+
+            return JsonConvert.DeserializeObject<Og>(response.Content);
         }
 
         public string CreateUserToken(string userId, IDictionary<string, object> extraData = null)
