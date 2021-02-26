@@ -173,9 +173,12 @@ var input = new Dictionary<string, object>()
 var response = await client.Personalization.Get("my_endpoint", input);
 
 // File & Image Uplaod
-var fileUpload = client.Files.Upload(stream, name, contentType);
-var imageupload = client.Images.Upload(stream, name, contentType);
+var fileUpload = await client.Files.Upload(stream, name, contentType);
+var imageupload = await client.Images.Upload(stream, name, contentType);
 // Use fileUpload.File and imageUpload.File afterwards
+
+// Open graph
+Og og = await client.Og("https://google.com");
 ```
 
 ### Copyright and License Information

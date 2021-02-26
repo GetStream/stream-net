@@ -1,3 +1,6 @@
+## 4.2.0 - 2021-02-26
+* Add open graph scraping support
+
 ## 4.1.1 - 2021-02-26
 * Naming consistency
 
