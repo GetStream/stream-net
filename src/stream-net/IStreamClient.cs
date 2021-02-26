@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Stream
@@ -16,7 +16,7 @@ namespace Stream
 
         Task ActivityPartialUpdate(string id = null, ForeignIDTime foreignIDTime = null, GenericData set = null, IEnumerable<string> unset = null);
         IStreamFeed Feed(string feedSlug, string userId);
-
+        Task<Og> Og(string url);
         string CreateUserToken(string userId, IDictionary<string, object> extraData = null);
     }
 }

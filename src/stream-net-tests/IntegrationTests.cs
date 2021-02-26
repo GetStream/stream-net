@@ -2489,5 +2489,19 @@ namespace stream_net_tests
                 Assert.IsNotEmpty(upload.File);
             }
         }
+
+        [Test]
+        public async Task TestOG()
+        {
+            var og = await _client.Og("https://getstream.io/blog/try-out-the-stream-api-with-postman");
+
+            Assert.IsNotEmpty(og.Type);
+            Assert.IsNotEmpty(og.Title);
+            Assert.IsNotEmpty(og.Description);
+            Assert.IsNotEmpty(og.URL);
+            Assert.IsNotEmpty(og.Favicon);
+            Assert.IsNotEmpty(og.Images);
+            Assert.IsNotEmpty(og.Images[0].Image);
+        }
     }
 }
