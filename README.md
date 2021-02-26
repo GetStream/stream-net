@@ -171,6 +171,11 @@ var input = new Dictionary<string, object>()
     {"ranking", "my_ranking"}
 };
 var response = await client.Personalization.Get("my_endpoint", input);
+
+// File & Image Uplaod
+var fileUpload = client.Files.Upload(stream, name, contentType);
+var imageupload = client.Images.Upload(stream, name, contentType);
+// Use fileUpload.File and imageUpload.File afterwards
 ```
 
 ### Copyright and License Information
