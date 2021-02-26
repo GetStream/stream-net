@@ -1,4 +1,4 @@
-<Project ToolsVersion="16.5" Sdk="Microsoft.NET.Sdk">
+﻿<Project ToolsVersion="16.5" Sdk="Microsoft.NET.Sdk">
   <PropertyGroup Label="Configuration">
     <DefineConstants>TRACE;DEBUG;NETCORE</DefineConstants>
   </PropertyGroup>

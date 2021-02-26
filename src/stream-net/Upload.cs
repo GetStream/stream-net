@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Stream
 {
-    public class Image
+    public class Upload
     {
 
         [JsonProperty("file")]
@@ -18,7 +18,7 @@ namespace Stream
 
 
         [JsonConstructor]
-        internal Image()
+        internal Upload()
         {
         }
     }

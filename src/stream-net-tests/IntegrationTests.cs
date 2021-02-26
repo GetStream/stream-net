@@ -1,10 +1,9 @@
-﻿using Newtonsoft.Json;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using Stream;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace stream_net_tests
@@ -2466,6 +2465,29 @@ namespace stream_net_tests
             Assert.AreEqual(41021, d["app_id"]);
             Assert.True(d.ContainsKey("duration"));
             Assert.True(d.ContainsKey("results"));
+        }
+
+        [Test]
+        public async Task TestUpload()
+        {
+            Stream.Upload upload;
+
+            using (var fs = File.OpenRead("../../../helloworld.txt"))
+            {
+                upload = await _client.Files.Upload(fs, "helloworld.txt");
+                Assert.IsNotEmpty(upload.File);
+            }
+            using (var fs = File.OpenRead("../../../helloworld.txt"))
+            {
+                upload = await _client.Files.Upload(fs, "helloworld.txt", "text/plain");
+                Assert.IsNotEmpty(upload.File);
+            }
+
+            using (FileStream fs = File.OpenRead(@"../../../helloworld.jpg"))
+            {
+                upload = await _client.Images.Upload(fs, "helloworld.jpg", "image/jpeg");
+                Assert.IsNotEmpty(upload.File);
+            }
         }
     }
 }

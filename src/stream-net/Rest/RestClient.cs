@@ -1,7 +1,6 @@
-using System;
+﻿using System;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -34,16 +33,9 @@ namespace Stream.Rest
                 requestMessage.Headers.Add(h.Key, h.Value);
             });
 
-
             if (request.FileStream != null)
             {
-                var content = new MultipartFormDataContent();
-                var streamContent = new StreamContent(request.FileStream);
-
-                streamContent.Headers.Add("Content-Type", request.FileStreamContentType);
-
-                content.Add(streamContent, "file", "image.png");
-                requestMessage.Content = content;
+                requestMessage.Content = this.CreateFileStream(request);
             }
             else if (method == System.Net.Http.HttpMethod.Post || method == System.Net.Http.HttpMethod.Put)
             {
@@ -51,6 +43,21 @@ namespace Stream.Rest
             }
 
             return requestMessage;
+        }
+
+        private HttpContent CreateFileStream(RestRequest request)
+        {
+            var content = new MultipartFormDataContent();
+            var streamContent = new StreamContent(request.FileStream);
+
+            if (request.FileStreamContentType != null)
+            {
+                streamContent.Headers.Add("Content-Type", request.FileStreamContentType);
+            }
+
+            streamContent.Headers.Add("Content-Disposition", "form-data; name=\"file\"; filename=\"" + request.FileStreamName + "\"");
+            content.Add(streamContent);
+            return content;
         }
 
         public TimeSpan Timeout
@@ -64,7 +71,7 @@ namespace Stream.Rest
             var requestMessage = BuildRequestMessage(method, url, request);
             using (var cts = new CancellationTokenSource(_timeout))
             {
-                HttpResponseMessage response = await _client.SendAsync(requestMessage, cts.Token);
+                var response = await _client.SendAsync(requestMessage, cts.Token);
                 return await RestResponse.FromResponseMessage(response);
             }
         }

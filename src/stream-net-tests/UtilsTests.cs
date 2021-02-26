@@ -24,7 +24,7 @@ namespace stream_net_tests
                 new Stream.StreamClientOptions()
                 {
                     Location = Stream.StreamApiLocation.USEast,
-                    Timeout = 10000
+                    Timeout = 16000
                 });
         }
     }
