@@ -1,3 +1,6 @@
+## 4.1.1 - 2021-02-26
+* Naming consistency
+
 ## 4.1.0 - 2021-02-26
 * Add upload support for files and images
 * Add .net core 2.1 and 3.1 support
