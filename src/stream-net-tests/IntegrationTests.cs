@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace stream_net_tests
@@ -2502,6 +2503,26 @@ namespace stream_net_tests
             Assert.IsNotEmpty(og.Favicon);
             Assert.IsNotEmpty(og.Images);
             Assert.IsNotEmpty(og.Images[0].Image);
+        }
+
+        [Test]
+        public async Task TestFollowStats()
+        {
+            var f1 = _client.Feed("user", System.Guid.NewGuid().ToString());
+            var f2 = _client.Feed("user", System.Guid.NewGuid().ToString());
+            await f1.FollowFeed(f2);
+
+            var stats = await f1.FollowStats(null, new string[] { "timeline" });
+            Assert.AreEqual(stats.Followers.Count, 0);
+            Assert.AreEqual(stats.Followers.Feed, f1.FeedId);
+            Assert.AreEqual(stats.Following.Count, 0);
+            Assert.AreEqual(stats.Following.Feed, f1.FeedId);
+
+            stats = await f1.FollowStats(null, new string[] { "user" });
+            Assert.AreEqual(stats.Followers.Count, 0);
+            Assert.AreEqual(stats.Followers.Feed, f1.FeedId);
+            Assert.AreEqual(stats.Following.Count, 1);
+            Assert.AreEqual(stats.Following.Feed, f1.FeedId);
         }
     }
 }
