@@ -1,3 +1,7 @@
+## 4.3.0 - 2021-03-10
+* Add follow stats endpoint support
+* Add .Net 5 support
+
 ## 4.2.0 - 2021-02-26
 * Add open graph scraping support
 

@@ -76,6 +76,13 @@ userFeed1.Following(10, 20);
 // Check if $user_feed_1 follows specific feeds
 userFeed1.Following(0, 2, new String[] { "user:42", "user:43" });
 
+// Follow stats
+// Count the number of users following this feed
+// Count the number of tags are followed by this feed
+var stats = userFeed1.FollowStats(new string []{ "user" }, new string[] { "tags" })
+Console.WriteLine(stats.Followers.Count);
+Console.WriteLine(stats.Following.Count);
+
 // Retrieve activities by their ids
 var ids = new string[] { "e561de8f-00f1-11e4-b400-0cc47a024be0", "a34ndjsh-00f1-11e4-b400-0c9jdnbn0eb0" };
 var activities = await client.Batch.GetActivities(ids)
