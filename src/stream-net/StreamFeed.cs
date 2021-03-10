@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Stream.Rest;
 using System;
@@ -422,6 +422,33 @@ namespace Stream
                 throw new ArgumentNullException("feed", "Must have a feed to follow/unfollow");
             if (((StreamFeed)feed).FeedId == this.FeedId)
                 throw new ArgumentException("Cannot follow/unfollow myself");
+        }
+
+        internal class FollowStatsResponse
+        {
+            public FollowStats Results { get; set; }
+        }
+
+        public async Task<FollowStats> FollowStats(string[] followersSlugs = null, string[] followingSlugs = null)
+        {
+            var request = this._client.BuildAppRequest("stats/follow/", HttpMethod.GET);
+            request.AddQueryParameter("followers", this.FeedId);
+            request.AddQueryParameter("following", this.FeedId);
+
+            if (followersSlugs != null)
+            {
+                request.AddQueryParameter("followers_slugs", string.Join(",", followersSlugs));
+            }
+            if (followingSlugs != null)
+            {
+                request.AddQueryParameter("following_slugs", string.Join(",", followingSlugs));
+            }
+
+            var response = await _client.MakeRequest(request);
+            if (response.StatusCode != System.Net.HttpStatusCode.OK)
+                throw StreamException.FromResponse(response);
+
+            return JsonConvert.DeserializeObject<FollowStatsResponse>(response.Content).Results;
         }
 
     }
