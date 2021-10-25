@@ -204,7 +204,7 @@ namespace Stream
             return await this.Add(r);
         }
 
-        public async Task<Reaction> AddChild(Reaction parent, string kind, string userID,
+        public async Task<Reaction> AddChild(string parentID, string kind, string userID,
             IDictionary<string, object> data = null, IEnumerable<string> targetFeeds = null)
         {
             var r = new Reaction()
@@ -212,12 +212,13 @@ namespace Stream
                 Kind = kind,
                 UserID = userID,
                 Data = data,
-                ParentID = parent.ID,
+                ParentID = parentID,
                 TargetFeeds = targetFeeds
             };
 
             return await this.Add(r);
         }
+
 
         public async Task<Reaction> Get(string reactionID)
         {
