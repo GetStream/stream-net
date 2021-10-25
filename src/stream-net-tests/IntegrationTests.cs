@@ -2034,9 +2034,9 @@ namespace stream_net_tests
             Assert.True(r2.Data.ContainsKey("new"));
 
             // Add children
-            var c1 = await this._client.Reactions.AddChild(r, "upvote", "tommy");
-            var c2 = await this._client.Reactions.AddChild(r, "downvote", "timmy");
-            var c3 = await this._client.Reactions.AddChild(r, "upvote", "jimmy");
+            var c1 = await this._client.Reactions.AddChild(r.ID, "upvote", "tommy");
+            var c2 = await this._client.Reactions.AddChild(r.ID, "downvote", "timmy");
+            var c3 = await this._client.Reactions.AddChild(r.ID, "upvote", "jimmy");
 
             var parent = await this._client.Reactions.Get(r.ID);
 
@@ -2088,8 +2088,8 @@ namespace stream_net_tests
             var r2 = await this._client.Reactions.Add("comment", activity.Id, userId, data);
             var r3 = await this._client.Reactions.Add("like", activity.Id, "bob", data);
 
-            var r4 = await this._client.Reactions.AddChild(r3, "upvote", "tom", data);
-            var r5 = await this._client.Reactions.AddChild(r3, "upvote", "mary", data);
+            var r4 = await this._client.Reactions.AddChild(r3.ID, "upvote", "tom", data);
+            var r5 = await this._client.Reactions.AddChild(r3.ID, "upvote", "mary", data);
 
             // activity id
             var filter = ReactionFiltering.Default;
