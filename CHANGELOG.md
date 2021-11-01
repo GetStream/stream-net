@@ -1,3 +1,8 @@
+## 4.4.0 - 2021-11-01
+
+* Make some id of activity and id, kind, user_id and data of reaction publicly settable
+  - so that more object creation flows are supported easily
+
 ## 4.3.0 - 2021-03-10
 * Add follow stats endpoint support
 * Add .Net 5 support
