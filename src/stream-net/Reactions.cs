@@ -21,10 +21,10 @@ namespace Stream
     public class Reaction
     {
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "id")]
-        public string ID { get; internal set; }
+        public string ID { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "kind")]
-        public string Kind { get; internal set; }
+        public string Kind { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "created_at")]
         public DateTime? CreatedAt { get; internal set; }
@@ -33,22 +33,22 @@ namespace Stream
         public DateTime? UpdatedAt { get; internal set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "activity_id")]
-        public string ActivityID { get; internal set; }
+        public string ActivityID { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "user_id")]
-        public string UserID { get; internal set; }
+        public string UserID { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "user"), JsonConverter(typeof(EnrichableFieldConverter))]
         public EnrichableField User { get; internal set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "data")]
-        public IDictionary<string, object> Data { get; internal set; }
+        public IDictionary<string, object> Data { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "target_feeds")]
-        public IEnumerable<string> TargetFeeds { get; internal set; }
+        public IEnumerable<string> TargetFeeds { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "parent")]
-        public string ParentID { get; internal set; }
+        public string ParentID { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "latest_children")]
         public Dictionary<string, Reaction[]> LatestChildren { get; internal set; }

@@ -26,7 +26,7 @@ namespace Stream
 
         readonly IDictionary<string, JToken> _data = new Dictionary<string, JToken>();
 
-        public string Id { get; private set; }
+        public string Id { get; set; }
 
         public string Actor { get; set; }
 
