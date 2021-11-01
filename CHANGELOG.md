@@ -1,3 +1,7 @@
+## 4.4.1 - 2021-11-01
+
+* Fix nuget release key encryption
+
 ## 4.4.0 - 2021-11-01
 
 * Make some id of activity and id, kind, user_id and data of reaction publicly settable
