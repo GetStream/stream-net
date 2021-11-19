@@ -2477,17 +2477,23 @@ namespace stream_net_tests
             {
                 upload = await _client.Files.Upload(fs, "helloworld.txt");
                 Assert.IsNotEmpty(upload.File);
+
+                await _client.Files.Delete(upload.File);
             }
             using (var fs = File.OpenRead("../../../helloworld.txt"))
             {
                 upload = await _client.Files.Upload(fs, "helloworld.txt", "text/plain");
                 Assert.IsNotEmpty(upload.File);
+
+                await _client.Files.Delete(upload.File);
             }
 
             using (FileStream fs = File.OpenRead(@"../../../helloworld.jpg"))
             {
                 upload = await _client.Images.Upload(fs, "helloworld.jpg", "image/jpeg");
                 Assert.IsNotEmpty(upload.File);
+
+                await _client.Images.Delete(upload.File);
             }
         }
 
