@@ -1,3 +1,7 @@
+## 4.5.0 - 2021-11-19
+
+* Add file/image delete support
+
 ## 4.4.1 - 2021-11-01
 
 * Fix nuget release key encryption
