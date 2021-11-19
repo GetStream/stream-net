@@ -1,4 +1,5 @@
 using Newtonsoft.Json;
+using Stream.Rest;
 using System.Threading.Tasks;
 
 namespace Stream
@@ -25,6 +26,16 @@ namespace Stream
 
             throw StreamException.FromResponse(response);
         }
+
+        public async Task Delete(string url)
+        {
+            var request = _client.BuildAppRequest("images/", HttpMethod.DELETE);
+            request.AddQueryParameter("url", url);
+
+            var response = await _client.MakeRequest(request);
+            if (response.StatusCode != System.Net.HttpStatusCode.OK)
+                throw StreamException.FromResponse(response);
+        }
     }
 
     public class Files
@@ -47,6 +58,16 @@ namespace Stream
                 return JsonConvert.DeserializeObject<Upload>(response.Content);
 
             throw StreamException.FromResponse(response);
+        }
+
+        public async Task Delete(string url)
+        {
+            var request = _client.BuildAppRequest("files/", HttpMethod.DELETE);
+            request.AddQueryParameter("url", url);
+
+            var response = await _client.MakeRequest(request);
+            if (response.StatusCode != System.Net.HttpStatusCode.OK)
+                throw StreamException.FromResponse(response);
         }
     }
 }
