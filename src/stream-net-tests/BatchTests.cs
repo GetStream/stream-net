@@ -35,6 +35,20 @@ namespace stream_net_tests
 
         [Test]
 
+        public void TestGetEnrichedFlatActivitiesArgumentValidation()
+        {
+            Assert.ThrowsAsync<ArgumentException>(async () =>
+            {
+                var activities = await this._client.Batch.GetEnrichedFlatActivities();
+            });
+            Assert.ThrowsAsync<ArgumentException>(async () =>
+            {
+                var activities = await this._client.Batch.GetEnrichedFlatActivities(new string[1], foreignIDTimes: new Stream.ForeignIDTime[1]);
+            });
+        }
+
+        [Test]
+
         public void TestFollowManyArgumentValidation()
         {
             Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>

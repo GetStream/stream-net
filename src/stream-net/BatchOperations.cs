@@ -135,6 +135,42 @@ namespace Stream
             throw StreamException.FromResponse(response);
         }
 
+        public async Task<IEnumerable<EnrichedActivity>> GetEnrichedFlatActivities(IEnumerable<string> ids = null, ReactionOption reactions = null, IEnumerable<ForeignIDTime> foreignIDTimes = null)
+        {
+            if (ids == null && foreignIDTimes == null)
+                throw new ArgumentException("one of the parameters ids or foreignIdTimes must be provided and not null", "ids, foreignIDTimes");
+            if (ids != null && foreignIDTimes != null)
+                throw new ArgumentException("at most one of the parameters ids or foreignIdTimes must be provided", "ids, foreignIDTimes");
+
+            var request = _client.BuildAppRequest("enrich/activities/", HttpMethod.GET);
+            if (ids != null)
+            {
+                request.AddQueryParameter("ids", string.Join(",", ids));
+            }
+
+            if (foreignIDTimes != null)
+            {
+                request.AddQueryParameter("foreign_ids", string.Join(",", foreignIDTimes.Select(f => f.ForeignID)));
+                request.AddQueryParameter("timestamps", string.Join(",", foreignIDTimes.Select(f =>
+                        f.Time.ToString("s", System.Globalization.CultureInfo.InvariantCulture))));
+            }
+
+            if (reactions != null)
+            {
+                reactions.Apply(request);
+            }
+
+            var response = await _client.MakeRequest(request);
+
+            if (response.StatusCode != System.Net.HttpStatusCode.OK)
+                throw StreamException.FromResponse(response);
+
+            JObject obj = JObject.Parse(response.Content);
+            var array = obj.Value<JArray>("results");
+            var activities = array.Select(a => EnrichedActivity.FromJson((JObject)a)).ToList();
+            return activities;
+        }
+
         public async Task UpdateActivities(IEnumerable<Activity> activities)
         {
             var request = _client.BuildAppRequest("activities/", HttpMethod.POST);
@@ -165,6 +201,5 @@ namespace Stream
         {
             await UpdateActivities(new Activity[] { activity });
         }
-
     }
 }

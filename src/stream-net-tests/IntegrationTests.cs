@@ -1453,6 +1453,86 @@ namespace stream_net_tests
         }
 
         [Test]
+        public async Task TestGetEnrichedFlatActivitiesByID()
+        {
+            var userId = System.Guid.NewGuid().ToString();
+            const string userName = "user name";
+            var user = await _client.Users.Add(userId, new Dictionary<string, object> { ["name"] = userName });
+            var newActivity1 = new Stream.Activity(user.Ref(), "test", "1");
+            var newActivity2 = new Stream.Activity(user.Ref(), "test", "2");
+            var newActivity3 = new Stream.Activity(user.Ref(), "other", "2");
+            var addedActivities = new List<Stream.Activity>();
+
+            var response = await this._user1.AddActivity(newActivity1);
+            addedActivities.Add(response);
+            response = await this._user2.AddActivity(newActivity2);
+            addedActivities.Add(response);
+            response = await this._flat3.AddActivity(newActivity3);
+            addedActivities.Add(response);
+
+            var activities = await this._client.Batch.GetEnrichedFlatActivities(addedActivities.Select(a => a.Id));
+            Assert.IsNotNull(activities);
+            Assert.AreEqual(addedActivities.Count, activities.Count());
+
+            activities.ForEach(a =>
+            {
+                var found = addedActivities.Find(x => x.Id == a.Id);
+                Assert.NotNull(found);
+
+                Assert.IsTrue(a.Actor.IsEnriched);
+                Assert.AreEqual(userId, a.Actor.Enriched.GetData<string>("id"));
+                var userData = a.Actor.Enriched.GetData<Dictionary<string, object>>("data");
+                Assert.IsNotNull(userData);
+                Assert.IsTrue(userData.ContainsKey("name"));
+                Assert.AreEqual(userName, userData["name"]);
+
+                Assert.IsFalse(a.Object.IsEnriched);
+                Assert.AreEqual(found.Object, a.Object.Raw);
+
+                Assert.IsFalse(a.Verb.IsEnriched);
+                Assert.AreEqual(found.Verb, a.Verb.Raw);
+            });
+        }
+
+        [Test]
+        public async Task TestGetEnrichedFlatActivitiesByIDWithReactions()
+        {
+            var userId = System.Guid.NewGuid().ToString();
+            var user = await _client.Users.Add(userId);
+            var newActivity = new Stream.Activity(user.Ref(), "test", "1");
+            newActivity = await this._user1.AddActivity(newActivity);
+
+            await _client.Reactions.Add("upvote", newActivity.Id, user.ID, new Dictionary<string, object> { ["reactionProp"] = "reactionPropValue" });
+
+            var activities = await this._client.Batch.GetEnrichedFlatActivities(
+                new[] { newActivity.Id },
+                reactions: ReactionOption.With().Counts().Recent());
+
+            Assert.IsNotNull(activities);
+            Assert.AreEqual(1, activities.Count());
+
+            var enrichedActivity = activities.Single();
+            Assert.NotNull(enrichedActivity);
+
+            Assert.IsTrue(enrichedActivity.Actor.IsEnriched);
+            Assert.AreEqual(userId, enrichedActivity.Actor.Enriched.GetData<string>("id"));
+
+            Assert.IsNotNull(enrichedActivity.ReactionCounts);
+            Assert.AreEqual(1, enrichedActivity.ReactionCounts.Count);
+            Assert.AreEqual("upvote", enrichedActivity.ReactionCounts.Keys.Single());
+            Assert.AreEqual(1, enrichedActivity.ReactionCounts["upvote"]);
+
+            Assert.IsNotNull(enrichedActivity.LatestReactions);
+            Assert.AreEqual(1, enrichedActivity.LatestReactions.Count);
+            Assert.AreEqual("upvote", enrichedActivity.LatestReactions.Keys.Single());
+            Assert.AreEqual(1, enrichedActivity.LatestReactions["upvote"].Count());
+
+            var enrichedReaction = enrichedActivity.LatestReactions["upvote"].Single();
+            Assert.IsNotNull(enrichedReaction.Data);
+            Assert.AreEqual("reactionPropValue", enrichedReaction.Data["reactionProp"]);
+        }
+
+        [Test]
         public void TestCollectionsUpsert()
         {
             var data = new CollectionObject(System.Guid.NewGuid().ToString());
@@ -2342,9 +2422,6 @@ namespace stream_net_tests
             Assert.AreEqual("bobby", ownReaction.User.Enriched?.GetData<Dictionary<string, object>>("data")["nickname"] as string);
             Assert.AreEqual(true, (bool)ownReaction.User.Enriched?.GetData<Dictionary<string, object>>("data")["is_admin"]);
         }
-
-
-
 
         [Test]
         public async Task TestEnrich_LatestReactions()
