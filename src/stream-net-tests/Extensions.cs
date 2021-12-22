@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace stream_net_tests
+namespace StreamNetTests
 {
     internal static class Extensions
     {

@@ -1,6 +1,6 @@
 using System;
 
-namespace stream_net_tests
+namespace StreamNetTests
 {
     public class Credentials
     {

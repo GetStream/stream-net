@@ -21,7 +21,7 @@ namespace Stream.Rest
 
         private HttpRequestMessage BuildRequestMessage(System.Net.Http.HttpMethod method, Uri url, RestRequest request)
         {
-#if NET45
+#if OLD_TLS_HANDLING
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
 #endif
             var requestMessage = new HttpRequestMessage(method, url);
