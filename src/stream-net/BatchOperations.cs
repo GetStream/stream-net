@@ -135,30 +135,41 @@ namespace Stream
             throw StreamException.FromResponse(response);
         }
 
-        public async Task<IEnumerable<EnrichedActivity>> GetEnrichedFlatActivities(IEnumerable<string> ids = null, ReactionOption reactions = null, IEnumerable<ForeignIDTime> foreignIDTimes = null)
+        public async Task<IEnumerable<EnrichedActivity>> GetEnrichedActivities(IEnumerable<string> ids, GetOptions options = null)
         {
-            if (ids == null && foreignIDTimes == null)
-                throw new ArgumentException("one of the parameters ids or foreignIdTimes must be provided and not null", "ids, foreignIDTimes");
-            if (ids != null && foreignIDTimes != null)
-                throw new ArgumentException("at most one of the parameters ids or foreignIdTimes must be provided", "ids, foreignIDTimes");
+            if (ids == null || ids.Count() == 0)
+                throw new ArgumentException("Activity ids must be provided.", nameof(ids));
 
+            return await GetEnrichedActivities(ids, null, options);
+        }
+
+
+        public async Task<IEnumerable<EnrichedActivity>> GetEnrichedActivities(IEnumerable<ForeignIDTime> foreignIDTimes, GetOptions options = null)
+        {
+            if (foreignIDTimes == null || foreignIDTimes.Count() == 0)
+                throw new ArgumentException("ForeignIDTimes must be provided.", nameof(foreignIDTimes));
+
+            return await GetEnrichedActivities(null, foreignIDTimes, options);
+        }
+
+
+        private async Task<IEnumerable<EnrichedActivity>> GetEnrichedActivities(IEnumerable<string> ids = null, IEnumerable<ForeignIDTime> foreignIDTimes = null, GetOptions options = null)
+        {
             var request = _client.BuildAppRequest("enrich/activities/", HttpMethod.GET);
-            if (ids != null)
+
+            if (ids != null && ids.Any())
             {
                 request.AddQueryParameter("ids", string.Join(",", ids));
             }
 
-            if (foreignIDTimes != null)
+            if (foreignIDTimes != null && foreignIDTimes.Any())
             {
                 request.AddQueryParameter("foreign_ids", string.Join(",", foreignIDTimes.Select(f => f.ForeignID)));
                 request.AddQueryParameter("timestamps", string.Join(",", foreignIDTimes.Select(f =>
                         f.Time.ToString("s", System.Globalization.CultureInfo.InvariantCulture))));
             }
 
-            if (reactions != null)
-            {
-                reactions.Apply(request);
-            }
+            options?.Apply(request);
 
             var response = await _client.MakeRequest(request);
 

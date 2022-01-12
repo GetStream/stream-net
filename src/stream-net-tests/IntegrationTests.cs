@@ -1470,7 +1470,7 @@ namespace StreamNetTests
             response = await this._flat3.AddActivity(newActivity3);
             addedActivities.Add(response);
 
-            var activities = await this._client.Batch.GetEnrichedFlatActivities(addedActivities.Select(a => a.Id));
+            var activities = await this._client.Batch.GetEnrichedActivities(addedActivities.Select(a => a.Id));
             Assert.IsNotNull(activities);
             Assert.AreEqual(addedActivities.Count, activities.Count());
 
@@ -1504,9 +1504,9 @@ namespace StreamNetTests
 
             await _client.Reactions.Add("upvote", newActivity.Id, user.ID, new Dictionary<string, object> { ["reactionProp"] = "reactionPropValue" });
 
-            var activities = await this._client.Batch.GetEnrichedFlatActivities(
+            var activities = await this._client.Batch.GetEnrichedActivities(
                 new[] { newActivity.Id },
-                reactions: ReactionOption.With().Counts().Recent());
+                new GetOptions().WithReaction(ReactionOption.With().Counts().Recent()));
 
             Assert.IsNotNull(activities);
             Assert.AreEqual(1, activities.Count());
