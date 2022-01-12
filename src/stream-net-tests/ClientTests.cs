@@ -2,11 +2,9 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace stream_net_tests
+namespace StreamNetTests
 {
     [Parallelizable(ParallelScope.Self)]
     [TestFixture]
@@ -69,29 +67,29 @@ namespace stream_net_tests
         {
             var user1 = _client.Feed("user", "11");
 
-            Assert.Throws<ArgumentNullException>(() =>
+            Assert.ThrowsAsync<ArgumentNullException>(async () =>
             {
-                user1.FollowFeed(null, null).GetAwaiter().GetResult();
+                await user1.FollowFeed(null, null);
             });
-            Assert.Throws<ArgumentNullException>(() =>
+            Assert.ThrowsAsync<ArgumentNullException>(async () =>
             {
-                user1.FollowFeed("flat", "").GetAwaiter().GetResult();
+                await user1.FollowFeed("flat", "");
             });
-            Assert.Throws<ArgumentNullException>(() =>
+            Assert.ThrowsAsync<ArgumentNullException>(async () =>
             {
-                user1.FollowFeed("", "1").GetAwaiter().GetResult();
+                await user1.FollowFeed("", "1");
             });
-            Assert.Throws<ArgumentException>(() =>
+            Assert.ThrowsAsync<ArgumentException>(async () =>
             {
-                user1.FollowFeed("flat:1", "2").GetAwaiter().GetResult();
+                await user1.FollowFeed("flat:1", "2");
             });
-            Assert.Throws<ArgumentException>(() =>
+            Assert.ThrowsAsync<ArgumentException>(async () =>
             {
-                user1.FollowFeed("flat 1", "2").GetAwaiter().GetResult();
+                await user1.FollowFeed("flat 1", "2");
             });
-            Assert.Throws<ArgumentException>(() =>
+            Assert.ThrowsAsync<ArgumentException>(async () =>
             {
-                user1.FollowFeed("flat1", "2:3").GetAwaiter().GetResult();
+                await user1.FollowFeed("flat1", "2:3");
             });
         }
 

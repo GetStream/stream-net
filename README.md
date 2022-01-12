@@ -1,7 +1,7 @@
 stream-net
 ===========
 
-[![Build status](https://ci.appveyor.com/api/projects/status/nhnrdhf64clbcv19/branch/master?svg=true)](https://ci.appveyor.com/project/tbarbugli/stream-net/branch/master) [![NuGet Badge](https://buildstats.info/nuget/stream-net)](https://www.nuget.org/packages/stream-net/)
+[![Build status](https://github.com/GetStream/stream-net/actions/workflows/ci.yaml/badge.svg)](https://github.com/GetStream/stream-net/actions/workflows/ci.yaml) [![NuGet Badge](https://buildstats.info/nuget/stream-net)](https://www.nuget.org/packages/stream-net/)
 
 [stream-net](https://github.com/GetStream/stream-net) is a .Net client for [Stream](https://getstream.io/).
 
@@ -191,6 +191,12 @@ Og og = await client.Og("https://google.com");
 ### Copyright and License Information
 
 Project is licensed under the [BSD 3-Clause](LICENSE).
+
+## Contributing
+
+We welcome code changes that improve this library or fix a problem, please make sure to follow all best practices and add tests if applicable before submitting a Pull Request on Github. We are very happy to merge your code in the official repository. Make sure to sign our [Contributor License Agreement (CLA)](https://docs.google.com/forms/d/e/1FAIpQLScFKsKkAJI7mhCr7K9rEIOpqIDThrWxuvxnwUq2XkHyG154vQ/viewform) first. See our license file for more details.
+
+Head over to [CONTRIBUTING.md](./CONTRIBUTING.md) for some development tips.
 
 ## We are hiring!
 

@@ -1,11 +1,7 @@
 using NUnit.Framework;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace stream_net_tests
+namespace StreamNetTests
 {
     [Parallelizable(ParallelScope.Self)]
     [TestFixture]
@@ -24,66 +20,66 @@ namespace stream_net_tests
         [Test]
         public void TestAddActivityArguments()
         {
-            Assert.Throws<ArgumentNullException>(() =>
+            Assert.ThrowsAsync<ArgumentNullException>(async () =>
             {
-                _feed.AddActivity(null).GetAwaiter().GetResult();
+                await _feed.AddActivity(null);
             });
         }
 
         [Test]
         public void TestAddActivitiesArguments()
         {
-            Assert.Throws<ArgumentNullException>(() =>
+            Assert.ThrowsAsync<ArgumentNullException>(async () =>
             {
-                _feed.AddActivities(null).GetAwaiter().GetResult();
+                await _feed.AddActivities(null);
             });
         }
 
         [Test]
         public void TestUpdateActivityArguments()
         {
-            Assert.Throws<ArgumentNullException>(() =>
+            Assert.ThrowsAsync<ArgumentNullException>(async () =>
             {
-                _feed.UpdateActivity(null).GetAwaiter().GetResult();
+                await _feed.UpdateActivity(null);
             });
         }
 
         [Test]
         public void TestUpdateActivitiesArguments()
         {
-            Assert.Throws<ArgumentNullException>(() =>
+            Assert.ThrowsAsync<ArgumentNullException>(async () =>
             {
-                _feed.UpdateActivities(null).GetAwaiter().GetResult();
+                await _feed.UpdateActivities(null);
             });
-            Assert.Throws<ArgumentNullException>(() =>
+            Assert.ThrowsAsync<ArgumentNullException>(async () =>
             {
-                _feed.UpdateActivities(new Stream.Activity[101]).GetAwaiter().GetResult();
+                await _feed.UpdateActivities(new Stream.Activity[101]);
             });
         }
 
         [Test]
         public void TestGetActivitiesArguments()
         {
-            Assert.Throws<ArgumentOutOfRangeException>(() =>
+            Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
             {
-                _feed.GetActivities(-1).GetAwaiter().GetResult();
+                await _feed.GetActivities(-1);
             });
-            Assert.Throws<ArgumentOutOfRangeException>(() =>
+            Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
             {
-                _feed.GetActivities(0, -2).GetAwaiter().GetResult();
+                await _feed.GetActivities(0, -2);
             });
         }
 
         [Test]
         public void TestFollowFeedArguments()
         {
-            Assert.Throws<ArgumentNullException>(() =>
+            Assert.ThrowsAsync<ArgumentNullException>(async () =>
             {
-                _feed.FollowFeed(null).GetAwaiter().GetResult();
+                await _feed.FollowFeed(null);
             });
-            Assert.Throws<ArgumentException>(() =>
+            Assert.ThrowsAsync<ArgumentException>(async () =>
             {
-                _feed.FollowFeed(_feed).GetAwaiter().GetResult();
+                await _feed.FollowFeed(_feed);
             });
             Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
             {
@@ -110,39 +106,39 @@ namespace stream_net_tests
         [Test]
         public void TestUnfollowFeedArguments()
         {
-            Assert.Throws<ArgumentNullException>(() =>
+            Assert.ThrowsAsync<ArgumentNullException>(async () =>
             {
-                _feed.UnfollowFeed(null).GetAwaiter().GetResult();
+                await _feed.UnfollowFeed(null);
             });
-            Assert.Throws<ArgumentException>(() =>
+            Assert.ThrowsAsync<ArgumentException>(async () =>
             {
-                _feed.UnfollowFeed(_feed).GetAwaiter().GetResult();
+                await _feed.UnfollowFeed(_feed);
             });
         }
 
         [Test]
         public void TestFollowersArguments()
         {
-            Assert.Throws<ArgumentOutOfRangeException>(() =>
+            Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
             {
-                _feed.Followers(-1).GetAwaiter().GetResult();
+                await _feed.Followers(-1);
             });
-            Assert.Throws<ArgumentOutOfRangeException>(() =>
+            Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
             {
-                _feed.Followers(0, -2).GetAwaiter().GetResult();
+                await _feed.Followers(0, -2);
             });
         }
 
         [Test]
         public void TestFollowingArguments()
         {
-            Assert.Throws<ArgumentOutOfRangeException>(() =>
+            Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
             {
-                _feed.Following(-1).GetAwaiter().GetResult();
+                await _feed.Following(-1);
             });
-            Assert.Throws<ArgumentOutOfRangeException>(() =>
+            Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
             {
-                _feed.Following(0, -2).GetAwaiter().GetResult();
+                await _feed.Following(0, -2);
             });
         }
     }

@@ -2,13 +2,14 @@
 using Stream.Rest;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Stream
 {
     public class StreamClient : IStreamClient
     {
-        static readonly string Version = "4.5.0";
+        private readonly string Version;
 
         internal const string BaseUrlFormat = "https://{0}-api.stream-io-api.com";
         internal const string BaseUrlPath = "/api/v1.0/";
@@ -43,6 +44,8 @@ namespace Stream
             _streamClientToken = TokenFactory.For(apiSecretOrToken);
             _options = options ?? StreamClientOptions.Default;
             _client = new RestClient(GetBaseUrl(), TimeSpan.FromMilliseconds(_options.Timeout));
+            var assemblyVersion = typeof(StreamClient).GetTypeInfo().Assembly.GetName().Version;
+            Version = string.Join(".", assemblyVersion.Major, assemblyVersion.Minor, assemblyVersion.Build);
         }
 
         private StreamClient(string apiKey, IToken streamClientToken, RestClient client, StreamClientOptions options = null)
