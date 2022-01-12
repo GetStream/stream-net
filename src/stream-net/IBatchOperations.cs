@@ -9,6 +9,7 @@ namespace Stream
         Task AddToMany(Activity activity, IEnumerable<string> feedIds);
         Task FollowMany(IEnumerable<Follow> follows, int activityCopyLimit = 300);
         Task<IEnumerable<Activity>> GetActivities(IEnumerable<string> ids = null, IEnumerable<ForeignIDTime> foreignIDTimes = null);
+        Task<IEnumerable<EnrichedActivity>> GetEnrichedFlatActivities(IEnumerable<string> ids = null, ReactionOption reactions = null, IEnumerable<ForeignIDTime> foreignIDTimes = null);
         Task UpdateActivities(IEnumerable<Activity> activities);
         Task UpdateActivity(Activity activity);
         Task ActivitiesPartialUpdate(IEnumerable<ActivityPartialUpdateRequestObject> updates);
