@@ -30,16 +30,15 @@ namespace StreamNetTests
         }
 
         [Test]
-
-        public void TestGetEnrichedFlatActivitiesArgumentValidation()
+        public void TestGetEnrichedActivitiesArgumentValidation()
         {
             Assert.ThrowsAsync<ArgumentException>(async () =>
             {
-                var activities = await this._client.Batch.GetEnrichedFlatActivities();
+                var activities = await this._client.Batch.GetEnrichedActivities(ids: null);
             });
             Assert.ThrowsAsync<ArgumentException>(async () =>
             {
-                var activities = await this._client.Batch.GetEnrichedFlatActivities(new string[1], foreignIDTimes: new Stream.ForeignIDTime[1]);
+                var activities = await this._client.Batch.GetEnrichedActivities(foreignIDTimes: null);
             });
         }
 
