@@ -1,3 +1,15 @@
+# Changelog
+
+All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+## [4.6.0](https://github.com/GetStream/stream-net/compare/4.5.0...4.6.0) (2022-01-13)
+
+
+### Features
+
+* add possibility to query enriched activities by ids ([#58](https://github.com/GetStream/stream-net/issues/58)) ([612fa63](https://github.com/GetStream/stream-net/commit/612fa6377885368f1bd98322ed53bcb0736e8313))
+* small enhancement ([#60](https://github.com/GetStream/stream-net/issues/60)) ([7da61ee](https://github.com/GetStream/stream-net/commit/7da61ee2819f7007d18443489d99e61d5658c9a0))
+
 ## 4.5.0 - 2021-11-19
 
 * Add file/image delete support
