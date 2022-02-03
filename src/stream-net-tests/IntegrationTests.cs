@@ -4,8 +4,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+using Newtonsoft.Json.Linq;
 
 namespace StreamNetTests
 {
@@ -79,6 +81,10 @@ namespace StreamNetTests
         {
             var newActivity = new Stream.Activity("1", "test", "1");
             newActivity.SetData("complex", new String[] { "tommaso", "thierry", "shawn" });
+            newActivity.SetData("special_json", new { StuffOneTwo = "thing" }, new JsonSerializer
+            {
+                ContractResolver = new DefaultContractResolver { NamingStrategy = new KebabCaseNamingStrategy() }
+            });
             var response = await this._user1.AddActivity(newActivity);
             Assert.IsNotNull(response);
 
@@ -94,6 +100,8 @@ namespace StreamNetTests
             Assert.IsNotNull(complex);
             Assert.AreEqual(3, complex.Length);
             Assert.AreEqual("shawn", complex[2]);
+
+            Assert.AreEqual("thing", first.GetData<JObject>("special_json")["stuff-one-two"].Value<string>());
         }
 
         [Test]

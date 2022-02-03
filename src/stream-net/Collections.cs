@@ -31,6 +31,11 @@ namespace Stream
             this._data.SetData<T>(name, data);
         }
 
+        public void SetData<T>(string name, T data, JsonSerializer serializer)
+        {
+            this._data.SetData<T>(name, data, serializer);
+        }
+
         public string Ref(string collectionName)
         {
             return Collections.Ref(collectionName, this);

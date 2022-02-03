@@ -83,9 +83,14 @@ namespace Stream
             return default(T);
         }
 
-        public void SetData<T>(string name, T data)
+        public void SetData<T>(string name, T data) => SetData(name, data, null);
+
+        public void SetData<T>(string name, T data, JsonSerializer serializer)
         {
-            _data[name] = JValue.FromObject(data);
+            if (serializer != null)
+                _data[name] = JValue.FromObject(data, serializer);
+            else
+                _data[name] = JValue.FromObject(data);
         }
 
         [JsonConstructor]
