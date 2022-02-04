@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.7.0](https://github.com/GetStream/stream-net/compare/4.6.0...4.7.0) (2022-02-04)
+
+
+### Features
+
+* add custom serializer support and .net6 support ([#63](https://github.com/GetStream/stream-net/issues/63)) ([5c30e5e](https://github.com/GetStream/stream-net/commit/5c30e5e03348ac52d3e82ac18b1daa73482cc172))
+
 ## [4.6.0](https://github.com/GetStream/stream-net/compare/4.5.0...4.6.0) (2022-01-13)
 
 
