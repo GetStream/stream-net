@@ -125,7 +125,7 @@ var userData = new Dictionary<string, object>()
 var u = await client.Users.Add("timmy", userData);
 var userRef = u.Ref();
 
-var a = new Stream.Activity(uRef, "add", "post");
+var a = new Activity(uRef, "add", "post");
 var plainActivity = await userFeed1.AddActivity(a);
 
 // plainActivity.Actor is just a plain string containing the user ref

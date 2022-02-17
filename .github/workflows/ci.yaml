@@ -32,14 +32,14 @@ jobs:
         id: cache
         with:
           path: ~/.nuget/packages
-          key: ${{ runner.os }}-nuget-${{ hashFiles('src/**/*.csproj') }}
+          key: ${{ runner.os }}-nuget-${{ hashFiles('./**/*.csproj') }}
 
       - name: Install dependencies
         if: steps.cache.outputs.cache-hit != 'true'
-        run: dotnet restore ./src
+        run: dotnet restore
 
       - name: Run tests
-        run: dotnet test ./src/stream-net-tests
+        run: dotnet test
         env:
           STREAM_API_SECRET: ${{ secrets.STREAM_API_SECRET }}
           STREAM_API_KEY: ${{ secrets.STREAM_API_KEY }}
