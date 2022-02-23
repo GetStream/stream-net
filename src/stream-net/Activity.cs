@@ -85,6 +85,8 @@ namespace Stream
 
         public void SetData<T>(string name, T data) => SetData(name, data, null);
 
+        public void SetData(IEnumerable<KeyValuePair<string, object>> data) => data.ForEach(x => SetData(x.Key, x.Value, null));
+
         public void SetData<T>(string name, T data, JsonSerializer serializer)
         {
             if (serializer != null)

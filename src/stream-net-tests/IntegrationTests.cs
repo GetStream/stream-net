@@ -1575,18 +1575,18 @@ namespace StreamNetTests
             id2 = System.Guid.NewGuid().ToString();
             var data1 = new CollectionObject(id1);
             data1.SetData("hobbies", new List<string> { "eating", "coding" });
+            data1.SetData(new Dictionary<string, object> { ["name"] = "John" });
             var data2 = new CollectionObject(id2);
             data2.SetData("vacation", new List<string> { "Spain", "Iceland" });
 
-            var data = new List<CollectionObject> { data1, data2 };
-
-            await this._client.Collections.UpsertMany("people", data);
+            await this._client.Collections.UpsertMany("people", new[] { data1, data2 });
 
             var result = await this._client.Collections.Select("people", id1);
 
             Assert.NotNull(result);
             Assert.AreEqual(data1.ID, result.ID);
             Assert.AreEqual(data1.GetData<List<string>>("hobbies"), result.GetData<List<string>>("hobbies"));
+            Assert.AreEqual(data1.GetData<string>("name"), result.GetData<string>("name"));
         }
 
         [Test]
