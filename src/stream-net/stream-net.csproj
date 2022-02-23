@@ -7,7 +7,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <PackageId>stream-net</PackageId>
-    <Version>4.7.0</Version>
+    <Version>4.8.0</Version>
     <Authors>GetStream.io</Authors>
     <Description>Client for getstream.io. Build scalable newsfeeds and activity streams in a few hours instead of weeks.</Description>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
