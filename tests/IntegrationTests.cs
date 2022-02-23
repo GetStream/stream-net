@@ -1484,18 +1484,9 @@ namespace StreamNetTests
                 var found = addedActivities.Find(x => x.Id == a.Id);
                 Assert.NotNull(found);
 
-                // Assert.IsTrue(a.Actor.IsEnriched);
-                // Assert.AreEqual(userId, a.Actor.Enriched.GetData<string>("id"));
-                // var userData = a.Actor.Enriched.GetData<Dictionary<string, object>>("data");
-                // Assert.IsNotNull(userData);
-                // Assert.IsTrue(userData.ContainsKey("name"));
-                // Assert.AreEqual(userName, userData["name"]);
-
-                // Assert.IsFalse(a.Object.IsEnriched);
-                // Assert.AreEqual(found.Object, a.Object.Raw);
-
-                // Assert.IsFalse(a.Verb.IsEnriched);
-                // Assert.AreEqual(found.Verb, a.Verb.Raw);
+                Assert.AreEqual(userId, a.Actor.Id);
+                var userData = a.Actor.GetData<Dictionary<string, object>>("data");
+                Assert.AreEqual(userName, userData["name"]);
             });
         }
 
@@ -1517,10 +1508,7 @@ namespace StreamNetTests
             Assert.AreEqual(1, activities.Count());
 
             var enrichedActivity = activities.Single();
-            Assert.NotNull(enrichedActivity);
-
-            // Assert.IsTrue(enrichedActivity.Actor.IsEnriched);
-            // Assert.AreEqual(userId, enrichedActivity.Actor.Enriched.GetData<string>("id"));
+            Assert.AreEqual(userId, enrichedActivity.Actor.Id);
 
             Assert.IsNotNull(enrichedActivity.ReactionCounts);
             Assert.AreEqual(1, enrichedActivity.ReactionCounts.Count);
@@ -2376,11 +2364,8 @@ namespace StreamNetTests
             Assert.AreEqual(1, enriched.Results.Count());
 
             var act = enriched.Results.First();
-            // Assert.IsFalse(act.Object.IsEnriched);
-            // Assert.AreEqual("post", act.Object.Raw);
-            // Assert.IsTrue(act.Actor.IsEnriched);
-            // Assert.AreEqual(u.ID, act.Actor.Enriched.GetData<string>("id"));
-            // Assert.AreEqual(userData, act.Actor.Enriched.GetData<Dictionary<string, object>>("data"));
+            Assert.AreEqual(u.Id, act.Actor.GetData<string>("id"));
+            Assert.AreEqual(userData, act.Actor.GetData<Dictionary<string, object>>("data"));
         }
 
         [Test]
