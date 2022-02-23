@@ -21,25 +21,15 @@ namespace Stream
             ID = id;
         }
 
-        public T GetData<T>(string name)
-        {
-            return this._data.GetData<T>(name);
-        }
+        public T GetData<T>(string name) => _data.GetData<T>(name);
 
-        public void SetData<T>(string name, T data)
-        {
-            this._data.SetData<T>(name, data);
-        }
+        public void SetData<T>(string name, T data) => _data.SetData<T>(name, data);
 
-        public void SetData<T>(string name, T data, JsonSerializer serializer)
-        {
-            this._data.SetData<T>(name, data, serializer);
-        }
+        public void SetData(IEnumerable<KeyValuePair<string, object>> data) => data.ForEach(x => SetData(x.Key, x.Value, null));
 
-        public string Ref(string collectionName)
-        {
-            return Collections.Ref(collectionName, this);
-        }
+        public void SetData<T>(string name, T data, JsonSerializer serializer) => _data.SetData<T>(name, data, serializer);
+
+        public string Ref(string collectionName) => Collections.Ref(collectionName, this);
 
         internal JObject ToJObject()
         {
