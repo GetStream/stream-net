@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.8.0](https://github.com/GetStream/stream-net/compare/4.7.0...4.8.0) (2022-02-23)
+
+
+### Features
+
+* add overload for setdata ([#68](https://github.com/GetStream/stream-net/issues/68)) ([4e6a867](https://github.com/GetStream/stream-net/commit/4e6a867f13f4ed1d80a477de2b52063008a61ca9))
+
 ## [4.7.0](https://github.com/GetStream/stream-net/compare/4.6.0...4.7.0) (2022-02-04)
 
 
