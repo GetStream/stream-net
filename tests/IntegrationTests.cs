@@ -2364,7 +2364,7 @@ namespace StreamNetTests
             Assert.AreEqual(1, enriched.Results.Count());
 
             var act = enriched.Results.First();
-            Assert.AreEqual(u.Id, act.Actor.GetData<string>("id"));
+            Assert.AreEqual(u.Id, act.Actor.Id);
             Assert.AreEqual(userData, act.Actor.GetData<Dictionary<string, object>>("data"));
         }
 
