@@ -8,7 +8,7 @@ namespace Stream.Models
         private const int DefaultLimit = 20;
         private int _offset = DefaultOffset;
         private int _limit = DefaultLimit;
-        private FeedFilter _filter = null;
+        private FeedFilter _filter;
         private ActivityMarker _marker = null;
         private ReactionOption _reaction = null;
         private string _ranking = null;

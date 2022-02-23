@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Stream
 {
-    /// <summary>Client to interract with personalization.</summary>
+    /// <summary>Client to interact with personalization.</summary>
     /// <remarks>https://getstream.io/activity-feeds/docs/dotnet-csharp/personalization_introduction/?language=csharp</remarks>
     public interface IPersonalization
     {

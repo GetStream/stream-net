@@ -81,10 +81,14 @@ namespace StreamNetTests
         public async Task TestAddActivityWithArray()
         {
             var newActivity = new Activity("1", "test", "1");
-            newActivity.SetData("complex", new String[] { "tommaso", "thierry", "shawn" });
+            newActivity.SetData("complex", new[] { "tommaso", "thierry", "shawn" });
             newActivity.SetData("special_json", new { StuffOneTwo = "thing" }, new JsonSerializer
             {
                 ContractResolver = new DefaultContractResolver { NamingStrategy = new KebabCaseNamingStrategy() }
+            });
+            newActivity.SetData(new Dictionary<string, object>
+            {
+                { "dictkey", "dictvalue" }
             });
             var response = await this._user1.AddActivityAsync(newActivity);
             Assert.IsNotNull(response);
@@ -103,6 +107,8 @@ namespace StreamNetTests
             Assert.AreEqual("shawn", complex[2]);
 
             Assert.AreEqual("thing", first.GetData<JObject>("special_json")["stuff-one-two"].Value<string>());
+
+            Assert.AreEqual("dictvalue", first.GetData<string>("dictkey"));
         }
 
         [Test]
@@ -257,7 +263,7 @@ namespace StreamNetTests
             var addedActivity = await this._user1.AddActivityAsync(newActivity);
             Assert.IsNotNull(addedActivity);
             Assert.IsNotNull(addedActivity.To);
-            Assert.AreEqual(1, addedActivity.To.SafeCount());
+            Assert.AreEqual(1, addedActivity.To.CountOrFallback());
             Assert.AreEqual("flat:remotefeed1", addedActivity.To.First());
 
 
@@ -1389,7 +1395,7 @@ namespace StreamNetTests
             addedActivities.Add(response);
 
 
-            var activities = (await _client.Batch.GetActivitiesAsync(addedActivities.Select(a => a.Id))).Results;
+            var activities = (await _client.Batch.GetActivitiesByIdAsync(addedActivities.Select(a => a.Id))).Results;
             Assert.IsNotNull(activities);
             Assert.AreEqual(addedActivities.Count, activities.Count());
 
@@ -1434,7 +1440,7 @@ namespace StreamNetTests
             addedActivities.Add(response);
 
 
-            var activities = (await _client.Batch.GetActivitiesAsync(null,
+            var activities = (await _client.Batch.GetActivitiesByForeignIdAsync(
                 addedActivities.Select(a => new ForeignIdTime(a.ForeignId, a.Time.Value)))).Results;
             Assert.IsNotNull(activities);
             Assert.AreEqual(addedActivities.Count, activities.Count());
@@ -1456,7 +1462,7 @@ namespace StreamNetTests
         {
             var userId = System.Guid.NewGuid().ToString();
             const string userName = "user name";
-            var user = await _client.Users.Add(userId, new Dictionary<string, object> { ["name"] = userName });
+            var user = await _client.Users.AddAsync(userId, new Dictionary<string, object> { ["name"] = userName });
             var newActivity1 = new Activity(user.Ref(), "test", "1");
             var newActivity2 = new Activity(user.Ref(), "test", "2");
             var newActivity3 = new Activity(user.Ref(), "other", "2");
@@ -1497,7 +1503,7 @@ namespace StreamNetTests
         public async Task TestGetEnrichedFlatActivitiesByIDWithReactions()
         {
             var userId = System.Guid.NewGuid().ToString();
-            var user = await _client.Users.Add(userId);
+            var user = await _client.Users.AddAsync(userId);
             var newActivity = new Activity(user.Ref(), "test", "1");
             newActivity = await this._user1.AddActivityAsync(newActivity);
 
@@ -1599,7 +1605,7 @@ namespace StreamNetTests
             var results = (await _client.Collections.SelectMany("people", new[] { id1, id2 })).Response.Data;
 
             Assert.NotNull(results);
-            Assert.AreEqual(data.Count, results.SafeCount());
+            Assert.AreEqual(data.Count, results.CountOrFallback());
             results.ForEach(r =>
             {
                 var found = data.First(x => x.Id == r.Id);
@@ -1630,7 +1636,7 @@ namespace StreamNetTests
             var results = (await _client.Collections.SelectMany("people", new string[] { id1, id2 })).Response.Data;
 
             Assert.NotNull(results);
-            Assert.AreEqual(1, results.SafeCount());
+            Assert.AreEqual(1, results.CountOrFallback());
             var result = results.First();
             Assert.AreEqual(id1, result.Id);
             Assert.AreEqual(data1.GetData<List<string>>("hobbies"), result.Data.GetData<List<string>>("hobbies"));
@@ -1658,7 +1664,7 @@ namespace StreamNetTests
             var results = (await _client.Collections.SelectMany("people", new string[] { id1, id2 })).Response.Data;
 
             Assert.NotNull(results);
-            Assert.AreEqual(0, results.SafeCount());
+            Assert.AreEqual(0, results.CountOrFallback());
         }
 
         [Test]
@@ -1735,7 +1741,7 @@ namespace StreamNetTests
                 await _client.ActivityPartialUpdateAsync(insertedAct.Id, null, set);
             });
 
-            var updatedAct = (await _client.Batch.GetActivitiesAsync(new[] { insertedAct.Id })).Results.FirstOrDefault();
+            var updatedAct = (await _client.Batch.GetActivitiesByIdAsync(new[] { insertedAct.Id })).Results.FirstOrDefault();
             Assert.NotNull(updatedAct);
             Assert.AreEqual("abcdef", updatedAct.GetData<string>("custom_thing"));
 
@@ -1746,7 +1752,7 @@ namespace StreamNetTests
                 await _client.ActivityPartialUpdateAsync(insertedAct.Id, null, null, unset);
             });
 
-            updatedAct = (await _client.Batch.GetActivitiesAsync(new string[] { insertedAct.Id })).Results.FirstOrDefault();
+            updatedAct = (await _client.Batch.GetActivitiesByIdAsync(new string[] { insertedAct.Id })).Results.FirstOrDefault();
             Assert.NotNull(updatedAct);
             Assert.IsNull(updatedAct.GetData<string>("custom_thing2"));
 
@@ -1758,7 +1764,7 @@ namespace StreamNetTests
                 await _client.ActivityPartialUpdateAsync(insertedAct.Id, null, set, unset);
             });
 
-            updatedAct = (await _client.Batch.GetActivitiesAsync(new string[] { insertedAct.Id })).Results.FirstOrDefault();
+            updatedAct = (await _client.Batch.GetActivitiesByIdAsync(new string[] { insertedAct.Id })).Results.FirstOrDefault();
             Assert.NotNull(updatedAct);
             Assert.IsNull(updatedAct.GetData<string>("custom_thing3"));
             Assert.AreEqual("zyx", updatedAct.GetData<string>("custom_thing"));
@@ -1793,7 +1799,7 @@ namespace StreamNetTests
                 await _client.ActivityPartialUpdateAsync(null, fidTime, set);
             });
 
-            var updatedAct = (await _client.Batch.GetActivitiesAsync(new string[] { insertedAct.Id })).Results.FirstOrDefault();
+            var updatedAct = (await _client.Batch.GetActivitiesByIdAsync(new string[] { insertedAct.Id })).Results.FirstOrDefault();
             Assert.NotNull(updatedAct);
             Assert.AreEqual("abcdef", updatedAct.GetData<string>("custom_thing"));
 
@@ -1804,7 +1810,7 @@ namespace StreamNetTests
                 await _client.ActivityPartialUpdateAsync(null, fidTime, null, unset);
             });
 
-            updatedAct = (await _client.Batch.GetActivitiesAsync(new string[] { insertedAct.Id })).Results.FirstOrDefault();
+            updatedAct = (await _client.Batch.GetActivitiesByIdAsync(new string[] { insertedAct.Id })).Results.FirstOrDefault();
             Assert.NotNull(updatedAct);
             Assert.IsNull(updatedAct.GetData<string>("custom_thing2"));
 
@@ -1816,7 +1822,7 @@ namespace StreamNetTests
                 await _client.ActivityPartialUpdateAsync(null, fidTime, set, unset);
             });
 
-            updatedAct = (await _client.Batch.GetActivitiesAsync(new string[] { insertedAct.Id })).Results.FirstOrDefault();
+            updatedAct = (await _client.Batch.GetActivitiesByIdAsync(new string[] { insertedAct.Id })).Results.FirstOrDefault();
             Assert.NotNull(updatedAct);
             Assert.IsNull(updatedAct.GetData<string>("custom_thing3"));
             Assert.AreEqual("zyx", updatedAct.GetData<string>("custom_thing"));
@@ -2121,9 +2127,9 @@ namespace StreamNetTests
             Assert.True(r2.Data.ContainsKey("new"));
 
             // Add children
-            var c1 = await _client.Reactions.AddChild(r, "upvote", "tommy");
-            var c2 = await _client.Reactions.AddChild(r, "downvote", "timmy");
-            var c3 = await _client.Reactions.AddChild(r, "upvote", "jimmy");
+            var c1 = await _client.Reactions.AddChildAsync(r, "upvote", "tommy");
+            var c2 = await _client.Reactions.AddChildAsync(r, "downvote", "timmy");
+            var c3 = await _client.Reactions.AddChildAsync(r, "upvote", "jimmy");
 
             var parent = await _client.Reactions.GetAsync(r.Id);
 
@@ -2175,8 +2181,8 @@ namespace StreamNetTests
             var r2 = await _client.Reactions.AddAsync("comment", activity.Id, userId, data);
             var r3 = await _client.Reactions.AddAsync("like", activity.Id, "bob", data);
 
-            var r4 = await _client.Reactions.AddChild(r3, "upvote", "tom", data);
-            var r5 = await _client.Reactions.AddChild(r3, "upvote", "mary", data);
+            var r4 = await _client.Reactions.AddChildAsync(r3, "upvote", "tom", data);
+            var r5 = await _client.Reactions.AddChildAsync(r3, "upvote", "mary", data);
 
             // activity id
             var filter = ReactionFiltering.Default;
@@ -2270,7 +2276,7 @@ namespace StreamNetTests
             User u = null;
             Assert.DoesNotThrowAsync(async () =>
             {
-                u = await _client.Users.Add(userId, userData);
+                u = await _client.Users.AddAsync(userId, userData);
             });
 
             Assert.NotNull(u);
@@ -2281,7 +2287,7 @@ namespace StreamNetTests
 
             Assert.ThrowsAsync<Stream.StreamException>(async () =>
             {
-                u = await _client.Users.Add(userId, userData);
+                u = await _client.Users.AddAsync(userId, userData);
             });
 
             var newUserData = new Dictionary<string, object>()
@@ -2290,7 +2296,7 @@ namespace StreamNetTests
             };
             Assert.DoesNotThrowAsync(async () =>
             {
-                u = await _client.Users.Add(userId, newUserData, true);
+                u = await _client.Users.AddAsync(userId, newUserData, true);
             });
             Assert.NotNull(u);
             Assert.NotNull(u.CreatedAt);
@@ -2299,7 +2305,7 @@ namespace StreamNetTests
             Assert.AreEqual(userData, u.Data);
 
             //Get user
-            u = await _client.Users.Get(userId);
+            u = await _client.Users.GetAsync(userId);
             Assert.NotNull(u);
             Assert.NotNull(u.CreatedAt);
             Assert.NotNull(u.UpdatedAt);
@@ -2307,7 +2313,7 @@ namespace StreamNetTests
             Assert.AreEqual(userData, u.Data);
 
             // Update user
-            u = await _client.Users.Update(userId, newUserData);
+            u = await _client.Users.UpdateAsync(userId, newUserData);
             Assert.NotNull(u);
             Assert.NotNull(u.CreatedAt);
             Assert.NotNull(u.UpdatedAt);
@@ -2315,11 +2321,11 @@ namespace StreamNetTests
             Assert.AreEqual(newUserData, u.Data);
 
             //Delete user
-            await _client.Users.Delete(userId);
+            await _client.Users.DeleteAsync(userId);
 
             Assert.ThrowsAsync<Stream.StreamException>(async () =>
             {
-                var x = await _client.Users.Get(userId);
+                var x = await _client.Users.GetAsync(userId);
             });
         }
 
@@ -2356,7 +2362,7 @@ namespace StreamNetTests
                 {"is_admin", true},
                 {"nickname","bobby"}
             };
-            var u = await _client.Users.Add(Guid.NewGuid().ToString(), userData);
+            var u = await _client.Users.AddAsync(Guid.NewGuid().ToString(), userData);
             var uRef = u.Ref();
 
             var a = new Activity(uRef, "add", "post");
@@ -2405,7 +2411,7 @@ namespace StreamNetTests
                 {"is_admin", true},
                 {"nickname","bobby"}
             };
-            var u = await _client.Users.Add(Guid.NewGuid().ToString(), userData);
+            var u = await _client.Users.AddAsync(Guid.NewGuid().ToString(), userData);
             var uRef = u.Ref();
 
             var a = new Activity(uRef, "add", "post");

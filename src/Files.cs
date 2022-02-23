@@ -34,6 +34,7 @@ namespace Stream
             request.AddQueryParameter("url", url);
 
             var response = await _client.MakeRequestAsync(request);
+
             if (response.StatusCode != HttpStatusCode.OK)
                 throw StreamException.FromResponse(response);
         }

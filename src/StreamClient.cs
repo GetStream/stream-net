@@ -12,7 +12,7 @@ namespace Stream
 {
     /// <summary>
     /// A factory-like class that can be used for basic operations and
-    /// for instantiating clients that can be used to interract with the API.
+    /// for instantiating clients that can be used to interact with the API.
     /// <para>This and all returned clients can be used as a singleton as they do not store state.</para>
     /// </summary>
     public class StreamClient : IStreamClient
@@ -62,7 +62,7 @@ namespace Stream
             var url = new Uri(string.Format(BaseUrlFormat, GetRegion(_options.Location)), UriKind.Absolute);
             _client = new RestClient(url, TimeSpan.FromMilliseconds(_options.Timeout));
             var assemblyVersion = typeof(StreamClient).GetTypeInfo().Assembly.GetName().Version;
-            Version = string.Join(".", assemblyVersion.Major, assemblyVersion.Minor, assemblyVersion.Build);
+            Version = assemblyVersion.ToString(3);
 
             Batch = new BatchOperations(this);
             Collections = new Collections(this);

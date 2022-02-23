@@ -15,7 +15,7 @@ namespace Stream
             _client = client;
         }
 
-        public async Task<User> Add(string userId, IDictionary<string, object> data = null, bool getOrCreate = false)
+        public async Task<User> AddAsync(string userId, IDictionary<string, object> data = null, bool getOrCreate = false)
         {
             var u = new User
             {
@@ -35,7 +35,7 @@ namespace Stream
             throw StreamException.FromResponse(response);
         }
 
-        public async Task<User> Get(string userId)
+        public async Task<User> GetAsync(string userId)
         {
             var request = _client.BuildAppRequest($"user/{userId}/", HttpMethod.Get);
 
@@ -47,7 +47,7 @@ namespace Stream
             throw StreamException.FromResponse(response);
         }
 
-        public async Task<User> Update(string userId, IDictionary<string, object> data)
+        public async Task<User> UpdateAsync(string userId, IDictionary<string, object> data)
         {
             var u = new User
             {
@@ -64,7 +64,7 @@ namespace Stream
             throw StreamException.FromResponse(response);
         }
 
-        public async Task Delete(string userId)
+        public async Task DeleteAsync(string userId)
         {
             var request = _client.BuildAppRequest($"user/{userId}/", HttpMethod.Delete);
 

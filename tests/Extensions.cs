@@ -6,27 +6,14 @@ namespace StreamNetTests
 {
     internal static class Extensions
     {
-        internal static IEnumerable<T> OrEmpty<T>(this IEnumerable<T> input)
-        {
-            if (input == null) return Enumerable.Empty<T>();
-            return input;
-        }
-
         internal static IEnumerable<T> Yield<T>(this T one)
         {
             yield return one;
         }
 
-        internal static void ForEach<T>(this IEnumerable<T> items, Action<T> action)
+        internal static int CountOrFallback<T>(this IEnumerable<T> list, int fallbackValue = 0)
         {
-            if ((items == null) || (action == null)) return; // do nothing
-            foreach (var item in items)
-                action(item);
-        }
-
-        internal static int SafeCount<T>(this IEnumerable<T> list, int nullCountAs = 0)
-        {
-            if (list == null) return nullCountAs;
+            if (list == null) return fallbackValue;
             return list.Count();
         }
     }

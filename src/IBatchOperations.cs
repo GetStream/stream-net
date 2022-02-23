@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 namespace Stream
 {
     /// <summary>
-    /// Client to interract with batch operations.
+    /// Client to interact with batch operations.
     /// </summary>
     /// <remarks>https://getstream.io/activity-feeds/docs/dotnet-csharp/add_many_activities/?language=csharp</remarks>
     public interface IBatchOperations
@@ -22,9 +22,13 @@ namespace Stream
         /// <remarks>https://getstream.io/activity-feeds/docs/dotnet-csharp/add_many_activities/?language=csharp</remarks>
         Task<ResponseBase> FollowManyAsync(IEnumerable<Follow> follows, int activityCopyLimit = 300);
 
-        /// <summary>Get multiple activities.</summary>
+        /// <summary>Get multiple activities by activity ids.</summary>
         /// <remarks>https://getstream.io/activity-feeds/docs/dotnet-csharp/add_many_activities/?language=csharp</remarks>
-        Task<GenericGetResponse<Activity>> GetActivitiesAsync(IEnumerable<string> ids = null, IEnumerable<ForeignIdTime> foreignIdTimes = null);
+        Task<GenericGetResponse<Activity>> GetActivitiesByIdAsync(IEnumerable<string> ids);
+
+        /// <summary>Get multiple activities by foreign ids.</summary>
+        /// <remarks>https://getstream.io/activity-feeds/docs/dotnet-csharp/add_many_activities/?language=csharp</remarks>
+        Task<GenericGetResponse<Activity>> GetActivitiesByForeignIdAsync(IEnumerable<ForeignIdTime> ids);
 
         /// <summary>Get multiple enriched activities.</summary>
         /// <remarks>https://getstream.io/activity-feeds/docs/dotnet-csharp/add_many_activities/?language=csharp</remarks>

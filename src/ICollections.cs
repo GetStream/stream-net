@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 namespace Stream
 {
     /// <summary>
-    /// <para>Client to interract with collections.</para>
+    /// <para>Client to interact with collections.</para>
     /// Collections enable you to store information to Stream. This allows you to use it inside your feeds,
     /// and to provide additional data for the personalized endpoints. Examples include products and articles,
     /// but any unstructured object (e.g. JSON) is a good match for collections.

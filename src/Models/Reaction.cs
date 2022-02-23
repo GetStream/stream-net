@@ -28,18 +28,13 @@ namespace Stream.Models
         public Dictionary<string, int> ChildrenCounters { get; set; }
     }
 
-    public class ReactionsWithActivity
+    public class ReactionsWithActivity : GenericGetResponse<Reaction>
     {
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "results")]
-        public IEnumerable<Reaction> Reactions { get; set; }
-
         public EnrichedActivity Activity { get; set; }
     }
 
-    internal class ReactionsFilterResponse
+    internal class ReactionsFilterResponse : GenericGetResponse<Reaction>
     {
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "results")]
-        public IEnumerable<Reaction> Reactions { get; set; }
     }
 
     public class ReactionFiltering
@@ -80,27 +75,27 @@ namespace Stream.Models
     public class ReactionPagination
     {
         private string _kind;
-        private string _lookup_attr;
-        private string _lookup_value;
+        private string _lookupAttr;
+        private string _lookupValue;
 
         public ReactionPagination ActivityId(string activityId)
         {
-            _lookup_attr = "activity_id";
-            _lookup_value = activityId;
+            _lookupAttr = "activity_id";
+            _lookupValue = activityId;
             return this;
         }
 
         public ReactionPagination ReactionId(string reactionId)
         {
-            _lookup_attr = "reaction_id";
-            _lookup_value = reactionId;
+            _lookupAttr = "reaction_id";
+            _lookupValue = reactionId;
             return this;
         }
 
         public ReactionPagination UserId(string userId)
         {
-            _lookup_attr = "user_id";
-            _lookup_value = userId;
+            _lookupAttr = "user_id";
+            _lookupValue = userId;
             return this;
         }
 
@@ -113,6 +108,6 @@ namespace Stream.Models
         public static ReactionPagination By { get => new ReactionPagination(); }
 
         public string GetPath()
-            => _kind == null ? $"{_lookup_attr}/{_lookup_value}/" : $"{_lookup_attr}/{_lookup_value}/{_kind}/";
+            => _kind == null ? $"{_lookupAttr}/{_lookupValue}/" : $"{_lookupAttr}/{_lookupValue}/{_kind}/";
     }
 }

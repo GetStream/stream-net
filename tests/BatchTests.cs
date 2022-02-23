@@ -17,20 +17,6 @@ namespace StreamNetTests
         }
 
         [Test]
-
-        public void TestGetActivitiesArgumentValidation()
-        {
-            Assert.ThrowsAsync<ArgumentException>(async () =>
-            {
-                var activities = await _client.Batch.GetActivitiesAsync();
-            });
-            Assert.ThrowsAsync<ArgumentException>(async () =>
-            {
-                var activities = await _client.Batch.GetActivitiesAsync(new string[1], new ForeignIdTime[1]);
-            });
-        }
-
-        [Test]
         public void TestGetEnrichedActivitiesArgumentValidation()
         {
             Assert.ThrowsAsync<ArgumentException>(async () =>

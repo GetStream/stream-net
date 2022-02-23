@@ -1,5 +1,3 @@
-using Newtonsoft.Json;
-
 namespace Stream.Models
 {
     public class Follow

@@ -15,10 +15,10 @@ namespace Stream.Utils
                 action(item);
         }
 
-        internal static int SafeCount<T>(this IEnumerable<T> list, int nullCountAs = 0)
+        internal static int CountOrFallback<T>(this IEnumerable<T> list, int fallbackValue = 0)
         {
             if (list == null)
-                return nullCountAs;
+                return fallbackValue;
 
             return list.Count();
         }

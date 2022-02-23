@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace Stream
 {
-    /// <summary>Client to interract with images.</summary>
+    /// <summary>Client to interact with images.</summary>
     /// <remarks>https://getstream.io/activity-feeds/docs/dotnet-csharp/files_introduction/?language=csharp</remarks>
     public interface IImages
     {

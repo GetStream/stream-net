@@ -10,7 +10,7 @@ namespace Stream
     {
         private readonly StreamClient _client;
 
-        public Images(StreamClient client)
+        internal Images(StreamClient client)
         {
             _client = client;
         }

@@ -75,7 +75,7 @@ namespace Stream
         public async Task<CollectionObject> AddAsync(string collectionName, Dictionary<string, object> data, string id = null, string userId = null)
         {
             var collectionObject = new CollectionObject(id) { UserId = userId };
-            data?.ForEach(x => collectionObject.Data.SetData(x.Key, x.Value));
+            data.ForEach(x => collectionObject.Data.SetData(x.Key, x.Value));
 
             var request = _client.BuildAppRequest($"collections/{collectionName}/", HttpMethod.Post);
             request.SetJsonBody(StreamJsonConverter.SerializeObject(collectionObject));

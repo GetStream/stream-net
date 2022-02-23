@@ -257,7 +257,7 @@ namespace Stream
             request.AddQueryParameter("offset", offset.ToString());
             request.AddQueryParameter("limit", limit.ToString());
 
-            if (filterBy.SafeCount() > 0)
+            if (filterBy.CountOrFallback() > 0)
                 request.AddQueryParameter("filter", string.Join(",", filterBy));
 
             var response = await _client.MakeRequestAsync(request);
@@ -279,7 +279,7 @@ namespace Stream
             request.AddQueryParameter("offset", offset.ToString());
             request.AddQueryParameter("limit", limit.ToString());
 
-            if (filterBy.SafeCount() > 0)
+            if (filterBy.CountOrFallback() > 0)
                 request.AddQueryParameter("filter", string.Join(",", filterBy));
 
             var response = await _client.MakeRequestAsync(request);

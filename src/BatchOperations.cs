@@ -39,19 +39,14 @@ namespace Stream
         public async Task<ResponseBase> FollowManyAsync(IEnumerable<Follow> follows, int activityCopyLimit = StreamClient.ActivityCopyLimitDefault)
         {
             if (activityCopyLimit < 0)
-                throw new ArgumentOutOfRangeException(nameof(activityCopyLimit), "Activity copy limit must be greater than or equal to 0");
+                throw new ArgumentOutOfRangeException(nameof(activityCopyLimit), $"{nameof(activityCopyLimit)} must be >= 0");
             if (activityCopyLimit > StreamClient.ActivityCopyLimitMax)
-                throw new ArgumentOutOfRangeException(nameof(activityCopyLimit), string.Format("Activity copy limit must be less than or equal to {0}", StreamClient.ActivityCopyLimitMax));
+                throw new ArgumentOutOfRangeException(nameof(activityCopyLimit), $"{nameof(activityCopyLimit)} must be less than or equal to {StreamClient.ActivityCopyLimitMax}");
 
             var request = _client.BuildAppRequest("follow_many/", HttpMethod.Post);
 
             request.AddQueryParameter("activity_copy_limit", activityCopyLimit.ToString());
-            request.SetJsonBody(StreamJsonConverter.SerializeObject(from f in follows
-                                                                    select new
-                                                                    {
-                                                                        source = f.Source,
-                                                                        target = f.Target,
-                                                                    }));
+            request.SetJsonBody(StreamJsonConverter.SerializeObject(follows));
 
             var response = await _client.MakeRequestAsync(request);
 
@@ -61,13 +56,14 @@ namespace Stream
             throw StreamException.FromResponse(response);
         }
 
-        public async Task<GenericGetResponse<Activity>> GetActivitiesAsync(IEnumerable<string> ids = null, IEnumerable<ForeignIdTime> foreignIdTimes = null)
-        {
-            if (ids == null && foreignIdTimes == null)
-                throw new ArgumentException("one of the parameters ids or foreignIdTimes must be provided and not null", $"{nameof(ids)}, {nameof(foreignIdTimes)}");
-            if (ids != null && foreignIdTimes != null)
-                throw new ArgumentException("at most one of the parameters ids or foreignIdTimes must be provided", $"{nameof(ids)}, {nameof(foreignIdTimes)}");
+        public async Task<GenericGetResponse<Activity>> GetActivitiesByIdAsync(IEnumerable<string> ids)
+            => await GetActivitiesAsync(ids, null);
 
+        public async Task<GenericGetResponse<Activity>> GetActivitiesByForeignIdAsync(IEnumerable<ForeignIdTime> ids)
+            => await GetActivitiesAsync(null, ids);
+
+        private async Task<GenericGetResponse<Activity>> GetActivitiesAsync(IEnumerable<string> ids = null, IEnumerable<ForeignIdTime> foreignIdTimes = null)
+        {
             var request = _client.BuildAppRequest("activities/", HttpMethod.Get);
 
             if (ids != null)
@@ -92,16 +88,16 @@ namespace Stream
 
         public async Task<GenericGetResponse<EnrichedActivity>> GetEnrichedActivitiesAsync(IEnumerable<string> ids, GetOptions options = null)
         {
-            if (ids == null || ids.Count() == 0)
-                throw new ArgumentException("Activity ids must be provided.", nameof(ids));
+            if (ids == null || !ids.Any())
+                throw new ArgumentException($"Activity {nameof(ids)} must be provided.", nameof(ids));
 
             return await GetEnrichedActivitiesAsync(ids, null, options);
         }
 
         public async Task<GenericGetResponse<EnrichedActivity>> GetEnrichedActivitiesAsync(IEnumerable<ForeignIdTime> foreignIdTimes, GetOptions options = null)
         {
-            if (foreignIdTimes == null || foreignIdTimes.Count() == 0)
-                throw new ArgumentException("ForeignIdTimes must be provided.", nameof(foreignIdTimes));
+            if (foreignIdTimes == null || !foreignIdTimes.Any())
+                throw new ArgumentException($"{nameof(foreignIdTimes)} must be provided.", nameof(foreignIdTimes));
 
             return await GetEnrichedActivitiesAsync(null, foreignIdTimes, options);
         }

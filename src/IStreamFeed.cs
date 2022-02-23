@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 namespace Stream
 {
     /// <summary>
-    /// <para>Client to interract with a specific feed.</para>
+    /// <para>Client to interact with a specific feed.</para>
     /// A Feed is like a Stack (FILO) of activities. Activities can be pushed directly to a Feed. They can
     /// also be propagated from feeds that they follow (see: “Follow Relationships” and “Fan-out”).
     /// A single application may have multiple feeds. For example, you might have a user's feed (what they posted),

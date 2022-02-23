@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace Stream
 {
-    /// <summary>Client to interract with files.</summary>
+    /// <summary>Client to interact with files.</summary>
     /// <remarks>https://getstream.io/activity-feeds/docs/dotnet-csharp/files_introduction/?language=csharp</remarks>
     public interface IFiles
     {

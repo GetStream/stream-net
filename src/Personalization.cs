@@ -3,6 +3,7 @@ using Stream.Models;
 using Stream.Utils;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -26,7 +27,7 @@ namespace Stream
             }
 
             var response = await _client.MakeRequestAsync(request);
-            if ((int)response.StatusCode < 300)
+            if (response.StatusCode == HttpStatusCode.OK)
                 return StreamJsonConverter.DeserializeObject<Dictionary<string, object>>(response.Content);
 
             throw StreamException.FromResponse(response);
@@ -38,7 +39,7 @@ namespace Stream
             request.SetJsonBody(StreamJsonConverter.SerializeObject(data));
 
             var response = await _client.MakeRequestAsync(request);
-            if ((int)response.StatusCode < 300)
+            if (response.StatusCode == HttpStatusCode.OK)
                 return StreamJsonConverter.DeserializeObject<Dictionary<string, object>>(response.Content);
 
             throw StreamException.FromResponse(response);

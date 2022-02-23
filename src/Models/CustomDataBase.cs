@@ -45,6 +45,9 @@ namespace Stream.Models
         /// <summary>Sets a custom data value.</summary>
         public void SetData<T>(string name, T data) => SetData(name, data, null);
 
+        /// <summary>Sets multiple custom data.</summary>
+        public void SetData(IEnumerable<KeyValuePair<string, object>> data) => data.ForEach(x => SetData(x.Key, x.Value, null));
+
         /// <summary>
         /// Sets a custom data value. If <paramref name="serializer"/> is not null, it will be used to serialize the value.
         /// </summary>

@@ -33,7 +33,7 @@ namespace Stream
             return await AddAsync(r);
         }
 
-        public async Task<Reaction> AddChild(Reaction parent, string kind, string userId,
+        public async Task<Reaction> AddChildAsync(Reaction parent, string kind, string userId,
             IDictionary<string, object> data = null, IEnumerable<string> targetFeeds = null)
         {
             var r = new Reaction()
@@ -66,7 +66,7 @@ namespace Stream
 
             if (response.StatusCode == HttpStatusCode.OK)
             {
-                return StreamJsonConverter.DeserializeObject<ReactionsFilterResponse>(response.Content).Reactions;
+                return StreamJsonConverter.DeserializeObject<ReactionsFilterResponse>(response.Content).Results;
             }
 
             throw StreamException.FromResponse(response);
@@ -79,12 +79,12 @@ namespace Stream
             if (response.StatusCode == HttpStatusCode.OK)
             {
                 var token = JToken.Parse(response.Content);
-                var reactions = token.ToObject<ReactionsFilterResponse>().Reactions;
+                var reactions = token.ToObject<ReactionsFilterResponse>().Results;
                 var activity = token["activity"].ToObject<EnrichedActivity>();
 
                 return new ReactionsWithActivity
                 {
-                    Reactions = reactions,
+                    Results = reactions,
                     Activity = activity,
                 };
             }
