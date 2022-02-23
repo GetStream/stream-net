@@ -43,7 +43,7 @@ namespace Stream
 
         public async Task<GetCollectionResponseObject> SelectAsync(string collectionName, string id)
         {
-            var result = await SelectMany(collectionName, new string[] { id });
+            var result = await SelectMany(collectionName, new[] { id });
             return result.Response.Data.FirstOrDefault();
         }
 

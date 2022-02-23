@@ -8,20 +8,10 @@ using System.Text;
 
 namespace StreamNetTests
 {
-    [Parallelizable(ParallelScope.Self)]
     [TestFixture]
-    public class ClientTests
+    public class ClientTests : TestBase
     {
-        private IStreamClient _client;
-
-        [SetUp]
-        public void Setup()
-        {
-            _client = Credentials.Instance.Client;
-        }
-
         [Test]
-
         public void TestClientArgumentsValidation()
         {
             Assert.Throws<ArgumentNullException>(() =>
@@ -35,39 +25,38 @@ namespace StreamNetTests
         }
 
         [Test]
-
         public void TestFeedIdValidation()
         {
             Assert.Throws<ArgumentNullException>(() =>
             {
-                var feed = _client.Feed(null, null);
+                var feed = Client.Feed(null, null);
             });
             Assert.Throws<ArgumentNullException>(() =>
             {
-                var feed = _client.Feed("flat", string.Empty);
+                var feed = Client.Feed("flat", string.Empty);
             });
             Assert.Throws<ArgumentNullException>(() =>
             {
-                var feed = _client.Feed(string.Empty, "1");
+                var feed = Client.Feed(string.Empty, "1");
             });
             Assert.Throws<ArgumentException>(() =>
             {
-                var feed = _client.Feed("flat:1", "2");
+                var feed = Client.Feed("flat:1", "2");
             });
             Assert.Throws<ArgumentException>(() =>
             {
-                var feed = _client.Feed("flat 1", "2");
+                var feed = Client.Feed("flat 1", "2");
             });
             Assert.Throws<ArgumentException>(() =>
             {
-                var feed = _client.Feed("flat1", "2:3");
+                var feed = Client.Feed("flat1", "2:3");
             });
         }
 
         [Test]
         public void TestFollowFeedIdValidation()
         {
-            var user1 = _client.Feed("user", "11");
+            var user1 = Client.Feed("user", "11");
 
             Assert.ThrowsAsync<ArgumentNullException>(async () =>
             {
@@ -100,18 +89,18 @@ namespace StreamNetTests
         {
             Assert.ThrowsAsync<ArgumentException>(async () =>
             {
-                await _client.ActivityPartialUpdateAsync();
+                await Client.ActivityPartialUpdateAsync();
             });
             Assert.ThrowsAsync<ArgumentException>(async () =>
             {
-                await _client.ActivityPartialUpdateAsync("id", new ForeignIdTime("fid", DateTime.Now));
+                await Client.ActivityPartialUpdateAsync("id", new ForeignIdTime("fid", DateTime.Now));
             });
         }
 
         [Test]
         public void TestToken()
         {
-            var result = DecodeJWT(_client.CreateUserToken("user"));
+            var result = DecodeJwt(Client.CreateUserToken("user"));
             Assert.AreEqual("user", (string)result["user_id"]);
 
             var extra = new Dictionary<string, object>()
@@ -119,7 +108,7 @@ namespace StreamNetTests
                 { "client", "dotnet" },
                 { "testing", true },
             };
-            result = DecodeJWT(_client.CreateUserToken("user2", extra));
+            result = DecodeJwt(Client.CreateUserToken("user2", extra));
 
             Assert.AreEqual("user2", (string)result["user_id"]);
             Assert.AreEqual("dotnet", (string)result["client"]);
@@ -127,7 +116,7 @@ namespace StreamNetTests
             Assert.False(result.ContainsKey("missing"));
         }
 
-        private Dictionary<string, object> DecodeJWT(string token)
+        private Dictionary<string, object> DecodeJwt(string token)
         {
             var segment = token.Split('.')[1];
             var mod = segment.Length % 4;

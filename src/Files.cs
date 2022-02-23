@@ -15,7 +15,10 @@ namespace Stream
             _client = client;
         }
 
-        public async Task<Upload> UploadAsync(System.IO.Stream file, string name, string contentType = null)
+        public async Task<Upload> UploadAsync(System.IO.Stream file, string name)
+            => await UploadAsync(file, name, null);
+
+        public async Task<Upload> UploadAsync(System.IO.Stream file, string name, string contentType)
         {
             var request = _client.BuildFileUploadRequest();
             request.SetFileStream(file, name, contentType);

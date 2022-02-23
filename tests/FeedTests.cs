@@ -5,16 +5,14 @@ using System;
 namespace StreamNetTests
 {
     [TestFixture]
-    public class FeedTests
+    public class FeedTests : TestBase
     {
-        private IStreamClient _client;
         private IStreamFeed _feed;
 
         [SetUp]
-        public void Setup()
+        public void SetupFeed()
         {
-            _client = Credentials.Instance.Client;
-            _feed = _client.Feed("flat", "42");
+            _feed = Client.Feed("flat", "42");
         }
 
         [Test]
@@ -30,22 +28,22 @@ namespace StreamNetTests
             });
             Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
             {
-                var feed = _client.Feed("flat", Guid.NewGuid().ToString());
+                var feed = Client.Feed("flat", Guid.NewGuid().ToString());
                 await _feed.FollowFeedAsync(feed, -1);
             });
             Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
             {
-                var feed = _client.Feed("flat", Guid.NewGuid().ToString());
+                var feed = Client.Feed("flat", Guid.NewGuid().ToString());
                 await _feed.FollowFeedAsync(feed, 1001);
             });
             Assert.DoesNotThrowAsync(async () =>
             {
-                var feed = _client.Feed("flat", Guid.NewGuid().ToString());
+                var feed = Client.Feed("flat", Guid.NewGuid().ToString());
                 await _feed.FollowFeedAsync(feed, 0);
             });
             Assert.DoesNotThrowAsync(async () =>
             {
-                var feed = _client.Feed("flat", Guid.NewGuid().ToString());
+                var feed = Client.Feed("flat", Guid.NewGuid().ToString());
                 await _feed.FollowFeedAsync(feed, 1000);
             });
         }
