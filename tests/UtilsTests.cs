@@ -13,11 +13,11 @@ namespace StreamNetTests
                 new StreamClientOptions
                 {
                     Location = StreamApiLocation.USEast,
-                    Timeout = 16000
+                    Timeout = 16000,
                 });
         }
 
-        public static Credentials Instance = new Credentials();
+        public static Credentials Instance { get; } = new Credentials();
         public StreamClient Client { get; }
     }
 }

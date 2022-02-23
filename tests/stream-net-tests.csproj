@@ -10,10 +10,14 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
     <PackageReference Include="NUnit" Version="3.13.2" />
     <PackageReference Include="NUnit3TestAdapter" Version="4.2.1" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.376" PrivateAssets="All"/>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\src\stream-net.csproj">
       <Name>stream-net</Name>
     </ProjectReference>
   </ItemGroup>
+    <PropertyGroup>
+    <CodeAnalysisRuleSet>../.stylecop.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
 </Project>

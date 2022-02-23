@@ -26,7 +26,7 @@ namespace StreamNetTests
         {
             Assert.Throws<ArgumentNullException>(() =>
             {
-                var client = new StreamClient("", "asfd");
+                var client = new StreamClient(string.Empty, "asfd");
             });
             Assert.Throws<ArgumentNullException>(() =>
             {
@@ -44,11 +44,11 @@ namespace StreamNetTests
             });
             Assert.Throws<ArgumentNullException>(() =>
             {
-                var feed = _client.Feed("flat", "");
+                var feed = _client.Feed("flat", string.Empty);
             });
             Assert.Throws<ArgumentNullException>(() =>
             {
-                var feed = _client.Feed("", "1");
+                var feed = _client.Feed(string.Empty, "1");
             });
             Assert.Throws<ArgumentException>(() =>
             {
@@ -75,11 +75,11 @@ namespace StreamNetTests
             });
             Assert.ThrowsAsync<ArgumentNullException>(async () =>
             {
-                await user1.FollowFeedAsync("flat", "");
+                await user1.FollowFeedAsync("flat", string.Empty);
             });
             Assert.ThrowsAsync<ArgumentNullException>(async () =>
             {
-                await user1.FollowFeedAsync("", "1");
+                await user1.FollowFeedAsync(string.Empty, "1");
             });
             Assert.ThrowsAsync<ArgumentException>(async () =>
             {
@@ -116,8 +116,8 @@ namespace StreamNetTests
 
             var extra = new Dictionary<string, object>()
             {
-                {"client","dotnet"},
-                {"testing", true}
+                { "client", "dotnet" },
+                { "testing", true },
             };
             result = DecodeJWT(_client.CreateUserToken("user2", extra));
 
@@ -131,10 +131,12 @@ namespace StreamNetTests
         {
             var segment = token.Split('.')[1];
             var mod = segment.Length % 4;
+
             if (mod > 0)
             {
-                segment += "".PadLeft(4 - mod, '=');
+                segment += string.Empty.PadLeft(4 - mod, '=');
             }
+
             var encoded = Convert.FromBase64String(segment.Replace('-', '+').Replace('_', '/'));
             var payload = Encoding.UTF8.GetString(encoded);
             return StreamJsonConverter.DeserializeObject<Dictionary<string, object>>(payload);
