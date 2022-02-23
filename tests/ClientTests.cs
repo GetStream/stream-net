@@ -1,4 +1,3 @@
-using Newtonsoft.Json;
 using NUnit.Framework;
 using Stream;
 using Stream.Models;
@@ -13,7 +12,7 @@ namespace StreamNetTests
     [TestFixture]
     public class ClientTests
     {
-        private Stream.IStreamClient _client;
+        private IStreamClient _client;
 
         [SetUp]
         public void Setup()
@@ -27,11 +26,11 @@ namespace StreamNetTests
         {
             Assert.Throws<ArgumentNullException>(() =>
             {
-                var client = new Stream.StreamClient("", "asfd");
+                var client = new StreamClient("", "asfd");
             });
             Assert.Throws<ArgumentNullException>(() =>
             {
-                var client = new Stream.StreamClient("asdf", null);
+                var client = new StreamClient("asdf", null);
             });
         }
 

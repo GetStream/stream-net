@@ -8,7 +8,7 @@ namespace StreamNetTests
     [TestFixture]
     public class BatchTests
     {
-        private Stream.IStreamClient _client;
+        private IStreamClient _client;
 
         [SetUp]
         public void Setup()

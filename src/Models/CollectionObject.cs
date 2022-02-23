@@ -17,9 +17,9 @@ namespace Stream.Models
         public string Ref(string collectionName) => $"SO:{collectionName}:{Id}";
 
         /// <summary>Sets a custom data value.</summary>
-        public void SetData(string name, object data) => Data.SetData(name, data);
+        public void SetData<T>(string name, T data) => Data.SetData(name, data, null);
 
-        /// <summary>Sets a custom data value.</summary>
+        /// <summary>Sets multiple custom data.</summary>
         public void SetData(IEnumerable<KeyValuePair<string, object>> data) => data.ForEach(x => SetData(x.Key, x.Value, null));
 
         /// <summary>

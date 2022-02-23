@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using Stream;
 using System;
 
 namespace StreamNetTests
@@ -6,8 +7,8 @@ namespace StreamNetTests
     [TestFixture]
     public class FeedTests
     {
-        private Stream.IStreamClient _client;
-        private Stream.IStreamFeed _feed;
+        private IStreamClient _client;
+        private IStreamFeed _feed;
 
         [SetUp]
         public void Setup()

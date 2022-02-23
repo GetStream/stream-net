@@ -16,12 +16,12 @@ namespace StreamNetTests
     [TestFixture]
     public class IntegrationTests
     {
-        private Stream.IStreamClient _client;
-        private Stream.IStreamFeed _user1;
-        private Stream.IStreamFeed _user2;
-        private Stream.IStreamFeed _flat3;
-        private Stream.IStreamFeed _agg4;
-        private Stream.IStreamFeed _not5;
+        private IStreamClient _client;
+        private IStreamFeed _user1;
+        private IStreamFeed _user2;
+        private IStreamFeed _flat3;
+        private IStreamFeed _agg4;
+        private IStreamFeed _not5;
 
         [SetUp]
         public void Setup()
@@ -1670,7 +1670,7 @@ namespace StreamNetTests
             Assert.AreEqual("value", collectionObject.GetData<string>("field"));
             Assert.AreEqual(true, collectionObject.GetData<bool>("flag"));
 
-            Assert.ThrowsAsync<Stream.StreamException>(async () =>
+            Assert.ThrowsAsync<StreamException>(async () =>
             {
                 var o = await _client.Collections.AddAsync("col_test_crud", colData, collectionObject.Id);
             });
@@ -1697,7 +1697,7 @@ namespace StreamNetTests
             //DELETE
             await _client.Collections.DeleteAsync("col_test_crud", collectionObject.Id);
 
-            Assert.ThrowsAsync<Stream.StreamException>(async () =>
+            Assert.ThrowsAsync<StreamException>(async () =>
             {
                 var o = await _client.Collections.GetAsync("col_test_crud", collectionObject.Id);
             });
@@ -2135,7 +2135,7 @@ namespace StreamNetTests
                 await _client.Reactions.DeleteAsync(r.Id);
             });
 
-            Assert.ThrowsAsync<Stream.StreamException>(async () =>
+            Assert.ThrowsAsync<StreamException>(async () =>
             {
                 var r3 = await _client.Reactions.GetAsync(r.Id);
             });
@@ -2273,7 +2273,7 @@ namespace StreamNetTests
             Assert.AreEqual(userId, u.Id);
             Assert.AreEqual(userData, u.Data);
 
-            Assert.ThrowsAsync<Stream.StreamException>(async () =>
+            Assert.ThrowsAsync<StreamException>(async () =>
             {
                 u = await _client.Users.AddAsync(userId, userData);
             });
@@ -2311,7 +2311,7 @@ namespace StreamNetTests
             //Delete user
             await _client.Users.DeleteAsync(userId);
 
-            Assert.ThrowsAsync<Stream.StreamException>(async () =>
+            Assert.ThrowsAsync<StreamException>(async () =>
             {
                 var x = await _client.Users.GetAsync(userId);
             });
@@ -2518,13 +2518,13 @@ namespace StreamNetTests
         [Ignore("Not always needed, set credentials to run when needed")]
         public async Task ReadPersonalization()
         {
-            var _p = new Stream.StreamClient(
+            var _p = new StreamClient(
                 "some_key",
                 "some_secret",
-                new Stream.StreamClientOptions()
+                new StreamClientOptions
                 {
-                    Location = Stream.StreamApiLocation.Dublin,
-                    PersonalizationLocation = Stream.StreamApiLocation.USEast,
+                    Location = StreamApiLocation.Dublin,
+                    PersonalizationLocation = StreamApiLocation.USEast,
                     Timeout = 10000,
                     PersonalizationTimeout = 10000
                 });
