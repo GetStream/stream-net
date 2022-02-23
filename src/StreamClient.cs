@@ -11,8 +11,7 @@ using System.Threading.Tasks;
 namespace Stream
 {
     /// <summary>
-    /// A factory-like class that can be used for basic operations and
-    /// for instantiating clients that can be used to interact with the API.
+    /// Can be used for basic operations and for instantiating clients that can be used to interact with the API.
     /// <para>This and all returned clients can be used as a singleton as they do not store state.</para>
     /// </summary>
     public class StreamClient : IStreamClient
@@ -93,9 +92,9 @@ namespace Stream
         public IStreamFeed Feed(string feedSlug, string userId)
         {
             if (string.IsNullOrWhiteSpace(feedSlug))
-                throw new ArgumentNullException("feedSlug", "Must have a feedSlug");
+                throw new ArgumentNullException(nameof(feedSlug), $"Must have a {nameof(feedSlug)}");
             if (string.IsNullOrWhiteSpace(userId))
-                throw new ArgumentNullException("userId", "Must have an userId");
+                throw new ArgumentNullException(nameof(userId), $"Must have a {nameof(userId)}");
 
             return new StreamFeed(this, feedSlug, userId);
         }

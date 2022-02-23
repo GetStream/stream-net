@@ -2578,7 +2578,7 @@ namespace StreamNetTests
                 await _client.Files.DeleteAsync(upload.File);
             }
 
-            using (FileStream fs = File.OpenRead(@"../../../helloworld.jpg"))
+            using (var fs = File.OpenRead(@"../../../helloworld.jpg"))
             {
                 upload = await _client.Images.UploadAsync(fs, "helloworld.jpg", "image/jpeg");
                 Assert.IsNotEmpty(upload.File);
