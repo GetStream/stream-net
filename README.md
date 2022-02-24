@@ -19,6 +19,18 @@
     <a href="https://github.com/GetStream/stream-net/issues">Request Feature</a>
 </p>
 
+> ## 🚨 Breaking changes in v1.0 <
+> In v1.0.0, [we have refactored the library](https://github.com/GetStream/stream-net/pull/67) to be more maintainable in the future.
+> Most importantly, we got rid of some complex internal logic (such as tricky json serialization and deserialization, code organization improvements etc.).
+> Also, we made the library more modern such as adding `Async` postfix to async methods. All public
+> methods have documentation now and a link to the official docs now. This README file's code snippets are updated to reflect the new changes.
+>
+> ### Breaking changes:
+> - All async methods have `Async` postfix.
+> - Model classes have been moved into `Stream.Models` namespace.
+> - All client classes have interfaces now, and `Ref()` methods are not static anymore. This will make it easier to the consumers of this library to unit test them.
+
+
 ## 📝 About Stream
 
 You can sign up for a Stream account at our [Get Started](https://getstream.io/get_started/) page.
