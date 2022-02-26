@@ -35,7 +35,7 @@ namespace Stream
 
         /// <summary>Returns multiple collection objects.</summary>
         /// <remarks>https://getstream.io/activity-feeds/docs/dotnet-csharp/collections_introduction/?language=csharp</remarks>
-        Task<GetCollectionResponseWrap> SelectMany(string collectionName, IEnumerable<string> ids);
+        Task<GetCollectionResponseWrap> SelectManyAsync(string collectionName, IEnumerable<string> ids);
 
         /// <summary>Updates a specific collection object.</summary>
         /// <remarks>https://getstream.io/activity-feeds/docs/dotnet-csharp/collections_introduction/?language=csharp</remarks>

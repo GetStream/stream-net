@@ -92,7 +92,7 @@ namespace StreamNetTests
                 await Client.Collections.DeleteAsync("people", id2);
             });
 
-            var results = (await Client.Collections.SelectMany("people", new[] { id1, id2 })).Response.Data;
+            var results = (await Client.Collections.SelectManyAsync("people", new[] { id1, id2 })).Response.Data;
 
             Assert.NotNull(results);
             Assert.AreEqual(1, results.CountOrFallback());
@@ -120,7 +120,7 @@ namespace StreamNetTests
                 await Client.Collections.DeleteManyAsync("people", new[] { id1, id2 });
             });
 
-            var results = (await Client.Collections.SelectMany("people", new[] { id1, id2 })).Response.Data;
+            var results = (await Client.Collections.SelectManyAsync("people", new[] { id1, id2 })).Response.Data;
 
             Assert.NotNull(results);
             Assert.AreEqual(0, results.CountOrFallback());
@@ -163,7 +163,7 @@ namespace StreamNetTests
 
             await Client.Collections.UpsertManyAsync("people", data);
 
-            var results = (await Client.Collections.SelectMany("people", new[] { id1, id2 })).Response.Data;
+            var results = (await Client.Collections.SelectManyAsync("people", new[] { id1, id2 })).Response.Data;
 
             Assert.NotNull(results);
             Assert.AreEqual(data.Count, results.CountOrFallback());

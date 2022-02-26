@@ -31,7 +31,7 @@ namespace Stream.Models
                 // SetData<string>("stringcomplex", "{ \"test1\": 1, \"test2\": \"testing\" }");
                 // instead of
                 // SetData<string>("stringcomplex", new Dictionary<string, object> { { "test1", 1 }, { "test2", "testing" } });
-                if (val.Type == JTokenType.String && val.Value<string>().StartsWith("{"))
+                if (val.Type == JTokenType.String && val.Value<string>().StartsWith("{") && val.Value<string>().EndsWith("}"))
                 {
                     return StreamJsonConverter.DeserializeObject<T>(val.Value<string>());
                 }

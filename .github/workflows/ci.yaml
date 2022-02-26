@@ -23,7 +23,7 @@ jobs:
       - uses: wagoid/commitlint-github-action@v4
 
       - name: Setup dotnet
-        uses: actions/setup-dotnet@v1
+        uses: actions/setup-dotnet@v2
         with:
           dotnet-version: 6.0.x
 

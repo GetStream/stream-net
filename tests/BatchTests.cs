@@ -233,7 +233,7 @@ namespace StreamNetTests
 
             Assert.DoesNotThrowAsync(async () =>
             {
-                await Client.Batch.UpdateActivity(activity);
+                await Client.Batch.UpdateActivityAsync(activity);
             });
 
             var updatedActivity = (await this.UserFeed.GetActivitiesAsync(0, 1)).Results.FirstOrDefault();

@@ -45,5 +45,8 @@ namespace Stream
 
         /// <summary>Tokyo</summary>
         Tokyo,
+
+        /// <summary>Sidney</summary>
+        Sidney,
     }
 }

@@ -43,11 +43,11 @@ namespace Stream
 
         public async Task<GetCollectionResponseObject> SelectAsync(string collectionName, string id)
         {
-            var result = await SelectMany(collectionName, new[] { id });
+            var result = await SelectManyAsync(collectionName, new[] { id });
             return result.Response.Data.FirstOrDefault();
         }
 
-        public async Task<GetCollectionResponseWrap> SelectMany(string collectionName, IEnumerable<string> ids)
+        public async Task<GetCollectionResponseWrap> SelectManyAsync(string collectionName, IEnumerable<string> ids)
         {
             var request = _client.BuildAppRequest("collections/", HttpMethod.Get);
             request.AddQueryParameter("foreign_ids", string.Join(",", ids.Select(x => $"{collectionName}:{x}")));

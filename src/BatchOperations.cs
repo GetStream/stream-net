@@ -152,7 +152,7 @@ namespace Stream
             throw StreamException.FromResponse(response);
         }
 
-        public async Task<ResponseBase> UpdateActivity(Activity activity)
+        public async Task<ResponseBase> UpdateActivityAsync(Activity activity)
         {
             return await UpdateActivitiesAsync(new[] { activity });
         }

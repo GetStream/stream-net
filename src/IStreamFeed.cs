@@ -36,13 +36,13 @@ namespace Stream
         /// <remarks>https://getstream.io/activity-feeds/docs/dotnet-csharp/feeds_101/?language=csharp</remarks>
         Task<GenericGetResponse<Follower>> FollowersAsync(int offset = 0, int limit = 25, IEnumerable<string> filterBy = null);
 
-        /// <summary>Returnes the followers of the feed.</summary>
+        /// <summary>Starts to follow another feed.</summary>
         /// <remarks>https://getstream.io/activity-feeds/docs/dotnet-csharp/feeds_101/?language=csharp</remarks>
-        Task<ResponseBase> FollowFeedAsync(IStreamFeed feedToFollow, int activityCopyLimit = 300);
+        Task<ResponseBase> FollowFeedAsync(IStreamFeed feedToFollow, int activityCopyLimit = 100);
 
-        /// <summary>Returns the followers of the feed.</summary>
+        /// <summary>Starts to follow another feed.</summary>
         /// <remarks>https://getstream.io/activity-feeds/docs/dotnet-csharp/feeds_101/?language=csharp</remarks>
-        Task<ResponseBase> FollowFeedAsync(string targetFeedSlug, string targetUserId, int activityCopyLimit = 300);
+        Task<ResponseBase> FollowFeedAsync(string targetFeedSlug, string targetUserId, int activityCopyLimit = 100);
 
         /// <summary>Returns the followings of the feed.</summary>
         /// <remarks>https://getstream.io/activity-feeds/docs/dotnet-csharp/feeds_101/?language=csharp</remarks>

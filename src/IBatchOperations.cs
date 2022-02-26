@@ -20,7 +20,7 @@ namespace Stream
 
         /// <summary>Follow muiltiple feeds.</summary>
         /// <remarks>https://getstream.io/activity-feeds/docs/dotnet-csharp/add_many_activities/?language=csharp</remarks>
-        Task<ResponseBase> FollowManyAsync(IEnumerable<Follow> follows, int activityCopyLimit = 300);
+        Task<ResponseBase> FollowManyAsync(IEnumerable<Follow> follows, int activityCopyLimit = 100);
 
         /// <summary>Get multiple activities by activity ids.</summary>
         /// <remarks>https://getstream.io/activity-feeds/docs/dotnet-csharp/add_many_activities/?language=csharp</remarks>
@@ -44,7 +44,7 @@ namespace Stream
 
         /// <summary>Update a single activity.</summary>
         /// <remarks>https://getstream.io/activity-feeds/docs/dotnet-csharp/add_many_activities/?language=csharp</remarks>
-        Task<ResponseBase> UpdateActivity(Activity activity);
+        Task<ResponseBase> UpdateActivityAsync(Activity activity);
 
         /// <summary>Update multiple activities partially.</summary>
         /// <remarks>https://getstream.io/activity-feeds/docs/dotnet-csharp/add_many_activities/?language=csharp</remarks>

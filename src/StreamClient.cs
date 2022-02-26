@@ -152,6 +152,8 @@ namespace Stream
                     return "dublin";
                 case StreamApiLocation.Singapore:
                     return "singapore";
+                case StreamApiLocation.Sidney:
+                    return "sydney";
                 default:
                     return "us-east";
             }
