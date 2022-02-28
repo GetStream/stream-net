@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.0.0](https://github.com/GetStream/stream-net/compare/4.8.0...5.0.0) (2022-02-28)
+
+
+### Features
+
+- In v5.0.0, [we have refactored the library](https://github.com/GetStream/stream-net/pull/67) to be more maintainable in the future.
+Most importantly, we got rid of some complex internal logic (such as tricky json serialization and deserialization, code organization improvements etc.).
+Also, we made the library more modern such as adding `Async` postfix to async methods. All public
+methods have documentation now and a link to the official docs now. This README file's code snippets are updated to reflect the new changes.
+
+### 🚨 Breaking changes:
+- All async methods have `Async` postfix.
+- Model classes have been moved into `Stream.Models` namespace.
+- All client classes have interfaces now, and `Ref()` methods are not static anymore. This will make it easier to the consumers of this library to unit test them.
+
 ## [4.8.0](https://github.com/GetStream/stream-net/compare/4.7.0...4.8.0) (2022-02-23)
 
 

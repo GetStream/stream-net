@@ -20,7 +20,7 @@
 </p>
 
 > ## 🚨 Breaking changes in v5.0 <
-> In v1.0.0, [we have refactored the library](https://github.com/GetStream/stream-net/pull/67) to be more maintainable in the future.
+> In v5.0.0, [we have refactored the library](https://github.com/GetStream/stream-net/pull/67) to be more maintainable in the future.
 > Most importantly, we got rid of some complex internal logic (such as tricky json serialization and deserialization, code organization improvements etc.).
 > Also, we made the library more modern such as adding `Async` postfix to async methods. All public
 > methods have documentation now and a link to the official docs now. This README file's code snippets are updated to reflect the new changes.
