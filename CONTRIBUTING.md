@@ -42,7 +42,7 @@ It needs to look like this:
 
 In CLI:
 ```shell
-$ dotnet test -s .runsettings ./src/stream-net-tests
+$ dotnet test -s .runsettings
 ```
 
 Go to the next section to see how to use it in IDEs.
@@ -59,7 +59,7 @@ Recommended settings (`.vscode/settings.json`):
 ```json
 {
     "omnisharp.testRunSettings": ".runsettings",
-    "dotnet-test-explorer.testProjectPath": "./src/stream-net-tests",
+    "dotnet-test-explorer.testProjectPath": "./tests",
 }
 ```
 

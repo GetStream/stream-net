@@ -2,8 +2,8 @@
 *.suo
 *.csproj.user
 *.user
-*bin*
-*obj*
+bin
+obj
 *.mdf
 *.ldf
 *.gitattributes

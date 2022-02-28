@@ -6,7 +6,7 @@ echo "Preparing release $VERSION"
 # Update .csproj file
 # This regex switches all occurences of >0.21.0< to >0.22.0<
 # So <PackageVersion>0.21.0</PackageVersion> becomes <PackageVersion>0.22.0</PackageVersion>
-sed -i -r "s/>[0-9]+\.[0-9]+\.[0-9]+</>$VERSION</g" src/stream-net/stream-net.csproj
+sed -i -r "s/>[0-9]+\.[0-9]+\.[0-9]+</>$VERSION</g" src/stream-net.csproj
 
 # Create changelog
 # --skip.commit: We manually commit the changes
