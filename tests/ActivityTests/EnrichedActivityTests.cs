@@ -128,7 +128,7 @@ namespace StreamNetTests
             Assert.NotNull(act.Actor);
             Assert.AreEqual("actor-1", act.Actor.Id);
             Assert.AreEqual(c.Id, act.Object.Id);
-            var dataJobject = act.Object.GetData<Dictionary<string, object>>("data")["data"] as JObject;
+            var dataJobject = act.Object.GetData<Dictionary<string, object>>("data");
             Assert.AreEqual("testing_value", dataJobject["field"].ToString());
         }
 

@@ -42,7 +42,7 @@ namespace StreamNetTests
 
             Assert.ThrowsAsync<StreamException>(async () =>
             {
-                var o = await Client.Collections.AddAsync("col_test_crud", colData, collectionObject.Id);
+                await Client.Collections.AddAsync("col_test_crud", colData, collectionObject.Id);
             });
 
             // GET
@@ -163,11 +163,9 @@ namespace StreamNetTests
 
             await Client.Collections.UpsertManyAsync("people", data);
 
-            var results = (await Client.Collections.SelectManyAsync("people", new[] { id1, id2 })).Response.Data;
+            var results = await Client.Collections.SelectManyAsync("people", new[] { id1, id2 });
 
-            Assert.NotNull(results);
-            Assert.AreEqual(data.Count, results.CountOrFallback());
-            results.ForEach(r =>
+            results.Response.Data.ForEach(r =>
             {
                 var found = data.First(x => x.Id == r.Id);
                 var key = r.Id.Equals(id1) ? "hobbies" : "vacation";
@@ -176,7 +174,7 @@ namespace StreamNetTests
         }
 
         [Test]
-        public void TestCollectionsUpsert()
+        public async Task TestCollectionsUpsert()
         {
             var data = new CollectionObject(System.Guid.NewGuid().ToString());
             data.SetData("hobbies", new List<string> { "eating", "coding" });
@@ -185,10 +183,13 @@ namespace StreamNetTests
             {
                 await Client.Collections.UpsertAsync("people", data);
             });
+
+            var result = await Client.Collections.GetAsync("people", data.Id);
+            Assert.AreEqual(data.GetData<List<string>>("hobbies"), result.GetData<List<string>>("hobbies"));
         }
 
         [Test]
-        public void TestCollectionsUpsertMany()
+        public async Task TestCollectionsUpsertMany()
         {
             var data1 = new CollectionObject(System.Guid.NewGuid().ToString());
             data1.SetData("hobbies", new List<string> { "eating", "coding" });
@@ -200,6 +201,14 @@ namespace StreamNetTests
             Assert.DoesNotThrowAsync(async () =>
             {
                 await Client.Collections.UpsertManyAsync("people", data);
+            });
+
+            var result = await Client.Collections.SelectManyAsync("people", new[] { data1.Id, data2.Id });
+            result.Response.Data.ForEach(r =>
+            {
+                var found = data.First(x => x.Id == r.Id);
+                var key = r.Id.Equals(data1.Id) ? "hobbies" : "vacation";
+                Assert.AreEqual(found.GetData<List<string>>(key), r.GetData<List<string>>(key));
             });
         }
     }

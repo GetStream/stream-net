@@ -31,7 +31,7 @@ namespace Stream
 
         /// <summary>Returns a collection object.</summary>
         /// <remarks>https://getstream.io/activity-feeds/docs/dotnet-csharp/collections_introduction/?language=csharp</remarks>
-        Task<GetCollectionResponseObject> SelectAsync(string collectionName, string id);
+        Task<CollectionObject> SelectAsync(string collectionName, string id);
 
         /// <summary>Returns multiple collection objects.</summary>
         /// <remarks>https://getstream.io/activity-feeds/docs/dotnet-csharp/collections_introduction/?language=csharp</remarks>

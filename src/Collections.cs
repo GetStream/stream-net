@@ -27,7 +27,7 @@ namespace Stream
             var body = new Dictionary<string, object>
             {
                 {
-                    "data", new Dictionary<string, object> { { collectionName, data } }
+                    "data", new Dictionary<string, IEnumerable<object>> { { collectionName, data.Select(x => x.Flatten()) } }
                 },
             };
             var request = _client.BuildAppRequest("collections/", HttpMethod.Post);
@@ -41,7 +41,7 @@ namespace Stream
             throw StreamException.FromResponse(response);
         }
 
-        public async Task<GetCollectionResponseObject> SelectAsync(string collectionName, string id)
+        public async Task<CollectionObject> SelectAsync(string collectionName, string id)
         {
             var result = await SelectManyAsync(collectionName, new[] { id });
             return result.Response.Data.FirstOrDefault();
@@ -75,7 +75,7 @@ namespace Stream
         public async Task<CollectionObject> AddAsync(string collectionName, Dictionary<string, object> data, string id = null, string userId = null)
         {
             var collectionObject = new CollectionObject(id) { UserId = userId };
-            data.ForEach(x => collectionObject.Data.SetData(x.Key, x.Value));
+            data.ForEach(x => collectionObject.SetData(x.Key, x.Value));
 
             var request = _client.BuildAppRequest($"collections/{collectionName}/", HttpMethod.Post);
             request.SetJsonBody(StreamJsonConverter.SerializeObject(collectionObject));
