@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.0.0](https://github.com/GetStream/stream-net/compare/5.0.0...6.0.0) (2022-03-18)
+
+
+### Bug Fixes
+
+* send flattened data when upserting ([#72](https://github.com/GetStream/stream-net/issues/72)) ([a3b1fbc](https://github.com/GetStream/stream-net/commit/a3b1fbcac8527da23e3ceea53b69f05513e25266))
+
 ## [5.0.0](https://github.com/GetStream/stream-net/compare/4.8.0...5.0.0) (2022-02-28)
 
 
