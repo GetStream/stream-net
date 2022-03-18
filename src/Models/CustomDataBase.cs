@@ -11,6 +11,11 @@ namespace Stream.Models
         protected virtual Dictionary<string, JToken> Data { get; set; } = new Dictionary<string, JToken>();
 
         /// <summary>
+        /// Returns all custom data
+        /// </summary>
+        public Dictionary<string, JToken> GetAllData() => Data;
+
+        /// <summary>
         /// Gets a custom data value parsed into <typeparamref name="T"/>
         /// </summary>
         public T GetData<T>(string name) => GetDataInternal<T>(name);
