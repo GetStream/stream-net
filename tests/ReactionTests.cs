@@ -125,7 +125,7 @@ namespace StreamNetTests
             var r3 = await Client.Reactions.AddAsync("like", activity.Id, "bob", data);
 
             var r4 = await Client.Reactions.AddChildAsync(r3, "upvote", "tom", data);
-            var r5 = await Client.Reactions.AddChildAsync(r3, "upvote", "mary", data);
+            var r5 = await Client.Reactions.AddChildAsync(r3, Guid.NewGuid().ToString(), "upvote", "mary", data);
 
             // activity id
             var filter = ReactionFiltering.Default;
