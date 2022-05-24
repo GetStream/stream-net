@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.1.0](https://github.com/GetStream/stream-net/compare/6.0.0...6.1.0) (2022-05-24)
+
+
+### Features
+
+* **reaction:** add overload for reactionId ([#74](https://github.com/GetStream/stream-net/issues/74)) ([0696f98](https://github.com/GetStream/stream-net/commit/0696f98423f0f783a03860e48dfcf831eab0f17f))
+
 ## [6.0.0](https://github.com/GetStream/stream-net/compare/5.0.0...6.0.0) (2022-03-18)
 
 
