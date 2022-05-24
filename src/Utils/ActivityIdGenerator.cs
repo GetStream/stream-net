@@ -15,15 +15,22 @@ namespace Stream.Utils
         private static long UuidEpochDifference = 122192928000000000;
 
         /// <summary>Generates an Activity ID for the given epoch timestamp and foreign ID.</summary>
-        public static Guid GenerateId(int epoch, string foreignId)
+        public static Guid GenerateId(string foreignId, int epoch)
         {
-            return GenerateId(Epoch.AddSeconds(epoch), foreignId);
+            return GenerateId(foreignId, Epoch.AddSeconds(epoch));
         }
 
-        /// <summary>Generates an Activity ID for the given timestamp and foreign ID.</summary>
-        public static Guid GenerateId(DateTime timestamp, string foreignId)
+        /// <summary>
+        /// Generates an Activity ID for the given timestamp and foreign ID.
+        /// <paramref name="timestamp"/> must be UTC.
+        /// </summary>
+        /// <exception cref="ArgumentException">Raised if the timestamp kind if not UTC.</exception>
+        public static Guid GenerateId(string foreignId, DateTime timestamp)
         {
-            var unixNano = timestamp.Ticks - EpochTicks;
+            // The backend doesn't care about milliseconds, so we truncate the date here.
+            var truncatedDate = new DateTime(timestamp.Year, timestamp.Month, timestamp.Day, timestamp.Hour, timestamp.Minute, timestamp.Second, DateTimeKind.Utc);
+
+            var unixNano = truncatedDate.Ticks - EpochTicks;
             var t = (ulong)(UuidEpochDifference + unixNano);
 
             long signedDigest;
