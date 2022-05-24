@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [6.1.1](https://github.com/GetStream/stream-net/compare/6.1.0...6.1.1) (2022-05-24)
+
+
+### Features
+
+* **id_generator:** swap params ([#76](https://github.com/GetStream/stream-net/issues/76)) ([5d68fb8](https://github.com/GetStream/stream-net/commit/5d68fb89e9294690d0610c1a32feda3987e509a5))
+
 ## [6.1.0](https://github.com/GetStream/stream-net/compare/6.0.0...6.1.0) (2022-05-24)
 
 
