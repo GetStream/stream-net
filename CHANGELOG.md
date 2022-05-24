@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [6.1.2](https://github.com/GetStream/stream-net/compare/6.1.1...6.1.2) (2022-05-24)
+
+
+### Bug Fixes
+
+* **generator:** adjust documentation ([#78](https://github.com/GetStream/stream-net/issues/78)) ([effd27f](https://github.com/GetStream/stream-net/commit/effd27f075a62a37653675d8948e328d812a5ad4))
+
 ### [6.1.1](https://github.com/GetStream/stream-net/compare/6.1.0...6.1.1) (2022-05-24)
 
 
