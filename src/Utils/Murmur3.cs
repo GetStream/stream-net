@@ -5,6 +5,7 @@ namespace Stream.Utils
 {
     /*
     Copied from https://gist.githubusercontent.com/automatonic/3725443/raw/c2ffc51ed8e9ee3c89e8016c062672d3d52ef999/MurMurHash3.cs
+    The only change is that we set the Seed value to zero to match the backend Go implementation.
     */
     internal static class Murmur3
     {

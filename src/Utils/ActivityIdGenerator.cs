@@ -4,6 +4,7 @@ using System.Text;
 
 namespace Stream.Utils
 {
+    /// <summary>Utility class to generate a unique activity id.</summary>
     public static class ActivityIdGenerator
     {
         private static DateTime Epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
