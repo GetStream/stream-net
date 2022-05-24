@@ -1,9 +1,13 @@
 using NUnit.Framework;
+using Stream.Models;
 using Stream.Utils;
+using System;
+using System.Threading.Tasks;
 
 namespace StreamNetTests
 {
-    public class UtilsTests
+    [TestFixture]
+    public class UtilsTests : TestBase
     {
         [Test]
         public void TestIdGenerator()
@@ -35,6 +39,16 @@ namespace StreamNetTests
 
             var nineth = ActivityIdGenerator.GenerateId(1481475921, "467791-42-follow");
             Assert.AreEqual("ffa65e80-bfc3-11e6-8080-800027086507", nineth.ToString());
+        }
+
+        [Test]
+        public async Task TestActivityIdSameAsBackend()
+        {
+            var foreignId = Guid.NewGuid().ToString();
+            var inputAct = new Activity("1", "test", "1") { Time = DateTime.UtcNow, ForeignId = foreignId };
+            var activity = await this.UserFeed.AddActivityAsync(inputAct);
+
+            Assert.AreEqual(ActivityIdGenerator.GenerateId(activity.Time.Value, foreignId).ToString(), activity.Id);
         }
     }
 }
