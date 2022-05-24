@@ -14,17 +14,15 @@ namespace Stream.Utils
         // UUID epoch (October 15, 1582) and Unix epoch (January 1, 1970)
         private static long UuidEpochDifference = 122192928000000000;
 
-        /// <summary>Generates an Activity ID for the given epoch timestamp and foreign ID.</summary>
+        /// <summary>Generates an Activity ID for the given foreign ID and epoch timestamp.</summary>
         public static Guid GenerateId(string foreignId, int epoch)
         {
             return GenerateId(foreignId, Epoch.AddSeconds(epoch));
         }
 
         /// <summary>
-        /// Generates an Activity ID for the given timestamp and foreign ID.
-        /// <paramref name="timestamp"/> must be UTC.
+        /// Generates an Activity ID for the given foreign ID and timestamp.
         /// </summary>
-        /// <exception cref="ArgumentException">Raised if the timestamp kind if not UTC.</exception>
         public static Guid GenerateId(string foreignId, DateTime timestamp)
         {
             // The backend doesn't care about milliseconds, so we truncate the date here.
