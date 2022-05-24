@@ -8,7 +8,7 @@ namespace Stream.Utils
     {
         internal static void ForEach<T>(this IEnumerable<T> items, Action<T> action)
         {
-            if ((items == null) || (action == null))
+            if (items == null || action == null)
                 return;
 
             foreach (var item in items)

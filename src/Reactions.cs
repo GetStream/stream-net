@@ -21,8 +21,15 @@ namespace Stream
         public async Task<Reaction> AddAsync(string kind, string activityId, string userId,
             IDictionary<string, object> data = null, IEnumerable<string> targetFeeds = null)
         {
+            return await AddAsync(null, kind, activityId, userId, data, targetFeeds);
+        }
+
+        public async Task<Reaction> AddAsync(string reactionId, string kind, string activityId, string userId,
+            IDictionary<string, object> data = null, IEnumerable<string> targetFeeds = null)
+        {
             var r = new Reaction
             {
+                Id = reactionId,
                 Kind = kind,
                 ActivityId = activityId,
                 UserId = userId,
@@ -36,8 +43,15 @@ namespace Stream
         public async Task<Reaction> AddChildAsync(Reaction parent, string kind, string userId,
             IDictionary<string, object> data = null, IEnumerable<string> targetFeeds = null)
         {
+            return await AddChildAsync(parent, null, kind, userId, data, targetFeeds);
+        }
+
+        public async Task<Reaction> AddChildAsync(Reaction parent, string reactionId, string kind, string userId,
+            IDictionary<string, object> data = null, IEnumerable<string> targetFeeds = null)
+        {
             var r = new Reaction()
             {
+                Id = reactionId,
                 Kind = kind,
                 UserId = userId,
                 Data = data,

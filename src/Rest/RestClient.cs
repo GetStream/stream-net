@@ -66,16 +66,16 @@ namespace Stream.Rest
         private Uri BuildUri(RestRequest request)
         {
             var queryStringBuilder = new StringBuilder();
-            request.QueryParameters.ForEach((p) =>
+            request.QueryParameters.ForEach(p =>
             {
                 queryStringBuilder.Append(queryStringBuilder.Length == 0 ? "?" : "&");
-                queryStringBuilder.Append($"{p.Key}={Uri.EscapeDataString(p.Value.ToString())}");
+                queryStringBuilder.Append($"{p.Key}={Uri.EscapeDataString(p.Value)}");
             });
 
             return new Uri(_baseUrl, request.Resource + queryStringBuilder.ToString());
         }
 
-        public async Task<RestResponse> ExecuteHttpRequestAsync(RestRequest request)
+        internal async Task<RestResponse> ExecuteHttpRequestAsync(RestRequest request)
         {
             var uri = BuildUri(request);
 
