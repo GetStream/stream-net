@@ -58,7 +58,7 @@ namespace Stream
             // {"code": 6, "detail": "The following feeds are not configured: 'secret'", "duration": "4ms", "exception": "FeedConfigException", "status_code": 400}
             ExceptionResponse state = null;
 
-            if (!string.IsNullOrWhiteSpace(response.Content))
+            if (!string.IsNullOrWhiteSpace(response.Content) && response.Content.TrimStart().StartsWith("{"))
             {
                 state = StreamJsonConverter.DeserializeObject<ExceptionResponse>(response.Content);
             }
