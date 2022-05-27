@@ -131,6 +131,10 @@ namespace Stream
             IEnumerable<string> newTargets = null,
             IEnumerable<string> removed = null)
         {
+            adds?.ForEach(FeedIdValidator.ThrowIfFeedIdIsInvalid);
+            newTargets?.ForEach(FeedIdValidator.ThrowIfFeedIdIsInvalid);
+            removed?.ForEach(FeedIdValidator.ThrowIfFeedIdIsInvalid);
+
             var payload = new
             {
                 foreign_id = foreignIdTime.ForeignId,
