@@ -23,7 +23,15 @@ namespace Stream
 
         /// <summary>Adds a new child reaction.</summary>
         /// <remarks>https://getstream.io/activity-feeds/docs/dotnet-csharp/reactions_introduction/?language=csharp</remarks>
+        Task<Reaction> AddChildAsync(string parentId, string reactionId, string kind, string userId, IDictionary<string, object> data = null, IEnumerable<string> targetFeeds = null);
+
+        /// <summary>Adds a new child reaction.</summary>
+        /// <remarks>https://getstream.io/activity-feeds/docs/dotnet-csharp/reactions_introduction/?language=csharp</remarks>
         Task<Reaction> AddChildAsync(Reaction parent, string reactionId, string kind, string userId, IDictionary<string, object> data = null, IEnumerable<string> targetFeeds = null);
+
+        /// <summary>Adds a new child reaction.</summary>
+        /// <remarks>https://getstream.io/activity-feeds/docs/dotnet-csharp/reactions_introduction/?language=csharp</remarks>
+        Task<Reaction> AddChildAsync(string parentId, string kind, string userId, IDictionary<string, object> data = null, IEnumerable<string> targetFeeds = null);
 
         /// <summary>Adds a new child reaction.</summary>
         /// <remarks>https://getstream.io/activity-feeds/docs/dotnet-csharp/reactions_introduction/?language=csharp</remarks>
