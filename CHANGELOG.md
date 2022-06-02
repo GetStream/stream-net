@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.2.0](https://github.com/GetStream/stream-net/compare/6.1.2...6.2.0) (2022-06-02)
+
+
+### Features
+
+* add feedid validator ([#81](https://github.com/GetStream/stream-net/issues/81)) ([d7863ef](https://github.com/GetStream/stream-net/commit/d7863ef90502b1bc07836b4b32ebfdb9541a985c))
+* **reaction:** add id overrides for child ([#83](https://github.com/GetStream/stream-net/issues/83)) ([b8a26aa](https://github.com/GetStream/stream-net/commit/b8a26aa229a902874c0897ba2b7d3689dfb7c7ad))
+
+
+### Bug Fixes
+
+* ensure error response properly serialized ([#80](https://github.com/GetStream/stream-net/issues/80)) ([76c52ce](https://github.com/GetStream/stream-net/commit/76c52cec89da7efd690c80821a69f802bec7ce5f))
+
 ### [6.1.2](https://github.com/GetStream/stream-net/compare/6.1.1...6.1.2) (2022-05-24)
 
 
