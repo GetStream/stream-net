@@ -74,7 +74,7 @@ namespace StreamNetTests
             // Add children
             var c1 = await Client.Reactions.AddChildAsync(r, "upvote", "tommy");
             var c2 = await Client.Reactions.AddChildAsync(r, "downvote", "timmy");
-            var c3 = await Client.Reactions.AddChildAsync(r, "upvote", "jimmy");
+            var c3 = await Client.Reactions.AddChildAsync(r.Id, "upvote", "jimmy");
 
             var parent = await Client.Reactions.GetAsync(r.Id);
 
@@ -125,7 +125,7 @@ namespace StreamNetTests
             var r3 = await Client.Reactions.AddAsync("like", activity.Id, "bob", data);
 
             var r4 = await Client.Reactions.AddChildAsync(r3, "upvote", "tom", data);
-            var r5 = await Client.Reactions.AddChildAsync(r3, Guid.NewGuid().ToString(), "upvote", "mary", data);
+            var r5 = await Client.Reactions.AddChildAsync(r3.Id, Guid.NewGuid().ToString(), "upvote", "mary", data);
 
             // activity id
             var filter = ReactionFiltering.Default;

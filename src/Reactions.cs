@@ -43,10 +43,16 @@ namespace Stream
         public async Task<Reaction> AddChildAsync(Reaction parent, string kind, string userId,
             IDictionary<string, object> data = null, IEnumerable<string> targetFeeds = null)
         {
-            return await AddChildAsync(parent, null, kind, userId, data, targetFeeds);
+            return await AddChildAsync(parent.Id, null, kind, userId, data, targetFeeds);
         }
 
-        public async Task<Reaction> AddChildAsync(Reaction parent, string reactionId, string kind, string userId,
+        public async Task<Reaction> AddChildAsync(string parentId, string kind, string userId,
+            IDictionary<string, object> data = null, IEnumerable<string> targetFeeds = null)
+        {
+            return await AddChildAsync(parentId, null, kind, userId, data, targetFeeds);
+        }
+
+        public async Task<Reaction> AddChildAsync(string parentId, string reactionId, string kind, string userId,
             IDictionary<string, object> data = null, IEnumerable<string> targetFeeds = null)
         {
             var r = new Reaction()
@@ -55,11 +61,17 @@ namespace Stream
                 Kind = kind,
                 UserId = userId,
                 Data = data,
-                ParentId = parent.Id,
+                ParentId = parentId,
                 TargetFeeds = targetFeeds,
             };
 
             return await AddAsync(r);
+        }
+
+        public async Task<Reaction> AddChildAsync(Reaction parent, string reactionId, string kind, string userId,
+            IDictionary<string, object> data = null, IEnumerable<string> targetFeeds = null)
+        {
+            return await AddChildAsync(parent.Id, reactionId, kind, userId, data, targetFeeds);
         }
 
         public async Task<Reaction> GetAsync(string reactionId)
