@@ -13,6 +13,9 @@ namespace Stream.Models
         private ReactionOption _reaction = null;
         private string _ranking = null;
         private string _session = null;
+        private string _endpoint = null;
+        private string _feed_slug = null;
+        private string _user_id = null;
 
         public GetOptions WithOffset(int offset)
         {
@@ -56,6 +59,24 @@ namespace Stream.Models
             return this;
         }
 
+        public GetOptions WithEndpoint(string endpoint)
+        {
+            _endpoint = endpoint;
+            return this;
+        }
+
+        public GetOptions WithFeedSlug(string feedSlug)
+        {
+            _feed_slug = feedSlug;
+            return this;
+        }
+
+        public GetOptions WithUserId(string userId)
+        {
+            _user_id = userId;
+            return this;
+        }
+
         internal void Apply(RestRequest request)
         {
             request.AddQueryParameter("offset", _offset.ToString());
@@ -66,6 +87,15 @@ namespace Stream.Models
 
             if (!string.IsNullOrWhiteSpace(_session))
                 request.AddQueryParameter("session", _session);
+
+            if (!string.IsNullOrWhiteSpace(_endpoint))
+                request.AddQueryParameter("endpoint", _endpoint);
+
+            if (!string.IsNullOrWhiteSpace(_feed_slug))
+                request.AddQueryParameter("feed_slug", _feed_slug);
+
+            if (!string.IsNullOrWhiteSpace(_endpoint))
+                request.AddQueryParameter("user_id", _user_id);
 
             _filter?.Apply(request);
             _marker?.Apply(request);

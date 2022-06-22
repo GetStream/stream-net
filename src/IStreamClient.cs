@@ -61,6 +61,11 @@ namespace Stream
         IStreamFeed Feed(string feedSlug, string userId);
 
         /// <summary>
+        /// Reads enriched activities of a personalized feed.
+        /// </summary>
+        Task<PersonalizedGetResponse<EnrichedActivity>> GetPersonalizedFeedAsync(GetOptions options = null);
+
+        /// <summary>
         /// Allows you to retrieve open graph information from a URL which you can then use to add images and a description to activities.
         /// </summary>
         Task<Og> OgAsync(string url);

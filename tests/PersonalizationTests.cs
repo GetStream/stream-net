@@ -1,4 +1,6 @@
 using NUnit.Framework;
+using System;
+using Stream.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -24,6 +26,22 @@ namespace StreamNetTests
             Assert.AreEqual(41021, d["app_id"]);
             Assert.True(d.ContainsKey("duration"));
             Assert.True(d.ContainsKey("results"));
+        }
+
+        [Test]
+        [Ignore("Not always needed, set credentials to run when needed")]
+        public async Task ReadPersonalizedFeed()
+        {
+            var options = GetOptions.Default.
+                WithEndpoint("etoro_newsfeed").
+                WithFeedSlug("newsfeed").
+                WithRanking("etoro").
+                WithUserId(Guid.NewGuid().ToString());
+
+            var response = await Client.GetPersonalizedFeedAsync(options);
+            Assert.AreEqual(20, response.Limit);
+            Assert.AreEqual(0, response.Offset);
+            Assert.AreEqual(response.Results.Count, 0);
         }
     }
 }
