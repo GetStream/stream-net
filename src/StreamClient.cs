@@ -99,6 +99,19 @@ namespace Stream
             return new StreamFeed(this, feedSlug, userId);
         }
 
+        public async Task<PersonalizedGetResponse<EnrichedActivity>> GetPersonalizedFeedAsync(GetOptions options = null)
+        {
+            options = options ?? GetOptions.Default;
+            var request = this.BuildPersonalizedFeedRequest();
+            options.Apply(request);
+
+            var response = await this.MakeRequestAsync(request);
+            if (response.StatusCode == HttpStatusCode.OK)
+                return StreamJsonConverter.DeserializeObject<PersonalizedGetResponse<EnrichedActivity>>(response.Content);
+
+            throw StreamException.FromResponse(response);
+        }
+
         public async Task<ResponseBase> ActivityPartialUpdateAsync(string id = null, ForeignIdTime foreignIdTime = null, Dictionary<string, object> set = null, IEnumerable<string> unset = null)
         {
             if (id == null && foreignIdTime == null)
@@ -174,6 +187,9 @@ namespace Stream
 
         internal RestRequest BuildEnrichedFeedRequest(StreamFeed feed, string path, HttpMethod method)
             => BuildRestRequest(BaseUrlPath + feed.EnrichedPath + path, method);
+
+        internal RestRequest BuildPersonalizedFeedRequest()
+            => BuildRestRequest(BaseUrlPath + "enrich/personalization/feed/", HttpMethod.Get);
 
         internal RestRequest BuildActivitiesRequest()
             => BuildRestRequest(BaseUrlPath + ActivitiesUrlPath, HttpMethod.Post);

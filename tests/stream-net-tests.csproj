@@ -17,7 +17,7 @@
       <Name>stream-net</Name>
     </ProjectReference>
   </ItemGroup>
-    <PropertyGroup>
+  <PropertyGroup>
     <CodeAnalysisRuleSet>../.stylecop.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 </Project>
