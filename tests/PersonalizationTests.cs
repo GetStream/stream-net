@@ -1,6 +1,6 @@
 using NUnit.Framework;
-using System;
 using Stream.Models;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.3.0](https://github.com/GetStream/stream-net/compare/6.2.0...6.3.0) (2022-06-22)
+
+
+### Features
+
+* add enriched personalized feed read support ([#86](https://github.com/GetStream/stream-net/issues/86)) ([8258f2c](https://github.com/GetStream/stream-net/commit/8258f2c1900097c4b591902af4384f72bc442416))
+
 ## [6.2.0](https://github.com/GetStream/stream-net/compare/6.1.2...6.2.0) (2022-06-02)
 
 
