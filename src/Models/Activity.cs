@@ -11,6 +11,8 @@ namespace Stream.Models
         public DateTime? Time { get; set; }
         public List<string> To { get; set; }
         public float? Score { get; set; }
+
+        public string Ref() => $"SA:{Id}";
     }
 
     public class Activity : ActivityBase
