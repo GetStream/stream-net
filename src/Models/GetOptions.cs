@@ -94,7 +94,7 @@ namespace Stream.Models
             if (!string.IsNullOrWhiteSpace(_feed_slug))
                 request.AddQueryParameter("feed_slug", _feed_slug);
 
-            if (!string.IsNullOrWhiteSpace(_endpoint))
+            if (!string.IsNullOrWhiteSpace(_user_id))
                 request.AddQueryParameter("user_id", _user_id);
 
             _filter?.Apply(request);
