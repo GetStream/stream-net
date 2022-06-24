@@ -22,6 +22,9 @@ namespace Stream.Models
         private readonly List<OpType> _ops;
         private readonly List<string> _kindFilters;
 
+        private string _userId;
+        private string _childrenUserId;
+
         private ReactionOption()
         {
             _ops = new List<OpType>();
@@ -45,6 +48,12 @@ namespace Stream.Models
 
             if (_kindFilters.Count != 0)
                 request.AddQueryParameter("reactionKindsFilter", string.Join(",", _kindFilters));
+
+            if (!string.IsNullOrWhiteSpace(_userId))
+                request.AddQueryParameter("filter_user_id", _userId);
+
+            if (!string.IsNullOrWhiteSpace(_childrenUserId))
+                request.AddQueryParameter("children_user_id", _userId);
         }
 
         public static ReactionOption With()
@@ -85,6 +94,18 @@ namespace Stream.Models
         public ReactionOption KindFilter(string value)
         {
             _kindFilters.Add(value);
+            return this;
+        }
+
+        public ReactionOption UserFilter(string value)
+        {
+            _userId = value;
+            return this;
+        }
+
+        public ReactionOption ChildrenUserFilter(string value)
+        {
+            _childrenUserId = value;
             return this;
         }
     }
