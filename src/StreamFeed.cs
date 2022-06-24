@@ -126,6 +126,34 @@ namespace Stream
             throw StreamException.FromResponse(response);
         }
 
+        public async Task<UpdateToTargetsResponse> UpdateActivityToTargetsAsync(string id,
+            IEnumerable<string> adds = null,
+            IEnumerable<string> newTargets = null,
+            IEnumerable<string> removed = null)
+        {
+            adds?.ForEach(FeedIdValidator.ThrowIfFeedIdIsInvalid);
+            newTargets?.ForEach(FeedIdValidator.ThrowIfFeedIdIsInvalid);
+            removed?.ForEach(FeedIdValidator.ThrowIfFeedIdIsInvalid);
+
+            var payload = new
+            {
+                id = id,
+                added_targets = adds,
+                new_targets = newTargets,
+                removed_targets = removed,
+            };
+
+            var endpoint = $"feed_targets/{_feedSlug}/{_userId}/activity_to_targets/";
+            var request = _client.BuildAppRequest(endpoint, HttpMethod.Post);
+            request.SetJsonBody(StreamJsonConverter.SerializeObject(payload));
+            var response = await _client.MakeRequestAsync(request);
+
+            if (response.StatusCode == HttpStatusCode.Created)
+                return StreamJsonConverter.DeserializeObject<UpdateToTargetsResponse>(response.Content);
+
+            throw StreamException.FromResponse(response);
+        }
+
         public async Task<UpdateToTargetsResponse> UpdateActivityToTargetsAsync(ForeignIdTime foreignIdTime,
             IEnumerable<string> adds = null,
             IEnumerable<string> newTargets = null,

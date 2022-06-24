@@ -135,7 +135,7 @@ namespace StreamNetTests
 
             // remove 1
             var remove = targets[0];
-            updateResp = await this.UserFeed.UpdateActivityToTargetsAsync(fidTime, null, null, new[] { remove });
+            updateResp = await this.UserFeed.UpdateActivityToTargetsAsync(insertedAct.Id, null, null, new[] { remove });
             Assert.AreEqual(insertedAct.Id, updateResp.Activity.Id);
             Assert.AreEqual(1, updateResp.Removed.Count);
             Assert.AreEqual(remove, updateResp.Removed[0]);
