@@ -109,5 +109,15 @@ namespace Stream
             IEnumerable<string> adds = null,
             IEnumerable<string> newTargets = null,
             IEnumerable<string> removed = null);
+
+        /// <summary>
+        /// Updates the "to" targets for the provided activity, with the options passed
+        /// as argument for replacing, adding, or removing to targets.
+        /// </summary>
+        /// <remarks>https://getstream.io/activity-feeds/docs/dotnet-csharp/feeds_101/?language=csharp</remarks>
+        Task<UpdateToTargetsResponse> UpdateActivityToTargetsAsync(string id,
+            IEnumerable<string> adds = null,
+            IEnumerable<string> newTargets = null,
+            IEnumerable<string> removed = null);
     }
 }
