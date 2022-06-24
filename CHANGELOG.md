@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.4.0](https://github.com/GetStream/stream-net/compare/6.3.0...6.4.0) (2022-06-24)
+
+
+### Features
+
+* add id based to target update ([#90](https://github.com/GetStream/stream-net/issues/90)) ([6c1922c](https://github.com/GetStream/stream-net/commit/6c1922c1928c1f0602e8e84e9d2e1348e366e989))
+* add new reaction query params ([#88](https://github.com/GetStream/stream-net/issues/88)) ([b2fad8c](https://github.com/GetStream/stream-net/commit/b2fad8c8e27e276dfa871f480a2431f8f557a641))
+* add ref helpers for act/reaction ([#91](https://github.com/GetStream/stream-net/issues/91)) ([dad0785](https://github.com/GetStream/stream-net/commit/dad0785e1cbda8ca96dda5a41bd4f3116d370c9f))
+
+
+### Bug Fixes
+
+* filter query param for enrichment ([#89](https://github.com/GetStream/stream-net/issues/89)) ([e0d9c52](https://github.com/GetStream/stream-net/commit/e0d9c52f976d478a5cb515812fe08fda3a4e489b))
+
 ## [6.3.0](https://github.com/GetStream/stream-net/compare/6.2.0...6.3.0) (2022-06-22)
 
 
