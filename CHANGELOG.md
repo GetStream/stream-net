@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.5.0](https://github.com/GetStream/stream-net/compare/6.4.0...6.5.0) (2022-06-28)
+
+
+### Features
+
+* add custom request parameters ([#93](https://github.com/GetStream/stream-net/issues/93)) ([115f324](https://github.com/GetStream/stream-net/commit/115f32419ff75e26c72704a919e95f9d413f418f))
+
 ## [6.4.0](https://github.com/GetStream/stream-net/compare/6.3.0...6.4.0) (2022-06-24)
 
 
