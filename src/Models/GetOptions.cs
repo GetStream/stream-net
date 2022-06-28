@@ -1,4 +1,5 @@
 using Stream.Rest;
+using System.Collections.Generic;
 
 namespace Stream.Models
 {
@@ -16,6 +17,8 @@ namespace Stream.Models
         private string _endpoint = null;
         private string _feed_slug = null;
         private string _user_id = null;
+
+        private IDictionary<string, string> _custom = null;
 
         public GetOptions WithOffset(int offset)
         {
@@ -77,6 +80,17 @@ namespace Stream.Models
             return this;
         }
 
+        public GetOptions WithCustom(string key, string value)
+        {
+            if (_custom == null)
+            {
+                _custom = new Dictionary<string, string>();
+            }
+
+            _custom.Add(key, value);
+            return this;
+        }
+
         internal void Apply(RestRequest request)
         {
             request.AddQueryParameter("offset", _offset.ToString());
@@ -96,6 +110,12 @@ namespace Stream.Models
 
             if (!string.IsNullOrWhiteSpace(_user_id))
                 request.AddQueryParameter("user_id", _user_id);
+
+            if (_custom != null)
+            {
+                foreach (KeyValuePair<string, string> kvp in _custom)
+                    request.AddQueryParameter(kvp.Key, kvp.Value);
+            }
 
             _filter?.Apply(request);
             _marker?.Apply(request);
