@@ -7,7 +7,7 @@ namespace Stream.Utils
     {
         private static JsonSerializerSettings Settings = new JsonSerializerSettings
         {
-            DateFormatString = "yyyy-MM-dd'T'HH:mm:ss",
+            DateFormatString = "yyyy-MM-dd'T'HH:mm:ss.fff",
             ContractResolver = new DefaultContractResolver
             {
                 NamingStrategy = new SnakeCaseNamingStrategy(), // this handles ForeignId => foreign_id etc. conversion for us

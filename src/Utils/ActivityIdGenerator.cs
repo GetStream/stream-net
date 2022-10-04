@@ -25,8 +25,7 @@ namespace Stream.Utils
         /// </summary>
         public static Guid GenerateId(string foreignId, DateTime timestamp)
         {
-            // The backend doesn't care about milliseconds, so we truncate the date here.
-            var truncatedDate = new DateTime(timestamp.Year, timestamp.Month, timestamp.Day, timestamp.Hour, timestamp.Minute, timestamp.Second, DateTimeKind.Utc);
+            var truncatedDate = new DateTime(timestamp.Year, timestamp.Month, timestamp.Day, timestamp.Hour, timestamp.Minute, timestamp.Second, timestamp.Millisecond, DateTimeKind.Utc);
 
             var unixNano = truncatedDate.Ticks - EpochTicks;
             var t = (ulong)(UuidEpochDifference + unixNano);
