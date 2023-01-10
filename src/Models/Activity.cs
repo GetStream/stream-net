@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 
+using Newtonsoft.Json;
+
 namespace Stream.Models
 {
     public abstract class ActivityBase : CustomDataBase
@@ -17,14 +19,23 @@ namespace Stream.Models
 
     public class Activity : ActivityBase
     {
-        public string Actor { get; set; }
+        [JsonConverter(typeof(UserConverter))]
+        public User Actor { get; set; }
         public string Object { get; set; }
         public string Target { get; set; }
         public string Origin { get; set; }
 
-        public Activity(string actor, string verb, string @object)
+        public Activity(User actor, string verb, string @object)
         {
             Actor = actor;
+            Verb = verb;
+            Object = @object;
+        }
+
+        [JsonConstructor]
+        public Activity(string actor, string verb, string @object)
+        {
+            Actor = (User)actor;
             Verb = verb;
             Object = @object;
         }

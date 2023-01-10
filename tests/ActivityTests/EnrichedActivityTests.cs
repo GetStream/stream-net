@@ -147,7 +147,7 @@ namespace StreamNetTests
             await this.UserFeed.AddActivityAsync(a);
 
             var plain = await this.UserFeed.GetFlatActivitiesAsync();
-            Assert.AreEqual(uRef, plain.Results.First().Actor);
+            Assert.AreEqual(plain.Results.First().Actor, uRef);
 
             var enriched = await this.UserFeed.GetEnrichedFlatActivitiesAsync();
 

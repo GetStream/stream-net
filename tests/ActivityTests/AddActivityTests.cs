@@ -260,7 +260,7 @@ namespace StreamNetTests
             Assert.AreEqual(1, activities.Count());
 
             var first = activities.First();
-            Assert.AreEqual("multi1", first.Actor);
+            Assert.AreEqual(first.Actor, "multi1");
         }
     }
 }
