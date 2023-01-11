@@ -22,7 +22,8 @@ namespace Stream
     {
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            if (value.GetType() == typeof(User)) {
+            if (value.GetType() == typeof(User))
+            {
                 var user = (User)value;
                 writer.WriteValue(user.Id);
                 return;
