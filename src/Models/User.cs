@@ -18,16 +18,30 @@ namespace Stream
         public override string ToString() => Id;
     }
 
-    public class UserConverter : JsonConverter<User>
+    public class UserConverter : JsonConverter
     {
-        public override void WriteJson(JsonWriter writer, User value, JsonSerializer serializer)
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            writer.WriteValue(value.Id);
+            if (value.GetType() == typeof(User)) {
+                var user = (User)value;
+                writer.WriteValue(user.Id);
+                return;
+            }
+
+            writer.WriteValue((string)value);
         }
 
-        public override User ReadJson(JsonReader reader, Type objectType, User existingValue, bool hasExistingValue, JsonSerializer serializer)
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            return new User { Id = serializer.Deserialize<string>(reader) };
+            var id = serializer.Deserialize<string>(reader);
+            Console.WriteLine($"ReadJson id: {id}");
+
+            return new User { Id = id };
+        }
+
+        public override bool CanConvert(Type objectType)
+        {
+            return objectType == typeof(User) || objectType == typeof(string);
         }
     }
 }

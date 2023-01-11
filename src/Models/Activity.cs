@@ -35,7 +35,7 @@ namespace Stream.Models
         [JsonConstructor]
         public Activity(string actor, string verb, string @object)
         {
-            Actor = new User { Id = actor };
+            Actor = new User { Id = actor.StartsWith("SU:") ? actor.Substring(3) : actor };
             Verb = verb;
             Object = @object;
         }
