@@ -93,7 +93,7 @@ namespace StreamNetTests
             {
                 var found = addedActivities.Find(x => x.Id == a.Id);
                 Assert.NotNull(found);
-                Assert.AreEqual(found.Actor, a.Actor);
+                Assert.AreEqual(found.Actor.Id, a.Actor.Id);
                 Assert.AreEqual(found.Object, a.Object);
                 Assert.AreEqual(found.Verb, a.Verb);
             });
@@ -138,7 +138,7 @@ namespace StreamNetTests
             {
                 var found = addedActivities.Find(x => x.Id == a.Id);
                 Assert.NotNull(found);
-                Assert.AreEqual(found.Actor, a.Actor);
+                Assert.AreEqual(found.Actor.Id, a.Actor.Id);
                 Assert.AreEqual(found.Object, a.Object);
                 Assert.AreEqual(found.Verb, a.Verb);
                 Assert.AreEqual(found.ForeignId, a.ForeignId);

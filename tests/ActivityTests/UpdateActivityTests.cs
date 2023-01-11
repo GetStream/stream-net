@@ -40,7 +40,7 @@ namespace StreamNetTests
 
             for (int i = 0; i < activities.Length; i++)
             {
-                activities[i].Actor = "editedActor" + activities[i].Actor;
+                activities[i].Actor = new Stream.User { Id = "editedActor" + activities[i].Actor };
                 activities[i].Object = "editedObject" + activities[i].Object;
                 activities[i].Verb = "editedVerb" + activities[i].Verb;
             }
@@ -54,7 +54,7 @@ namespace StreamNetTests
             for (int i = 0; i < activities.Length; i++)
             {
                 Assert.AreEqual(activities[i].Id, editedActivities[i].Id);
-                Assert.AreEqual(activities[i].Actor, editedActivities[i].Actor);
+                Assert.AreEqual(activities[i].Actor.Id, editedActivities[i].Actor.Id);
                 Assert.AreEqual(activities[i].Object, editedActivities[i].Object);
                 Assert.AreEqual(activities[i].Verb, editedActivities[i].Verb);
             }
@@ -79,7 +79,7 @@ namespace StreamNetTests
             var first = activities.First();
             Assert.AreEqual(response.Id, first.Id);
 
-            first.Actor = "editedActor1";
+            first.Actor = new Stream.User { Id = "editedActor1" };
             first.Object = "editedOject1";
             first.Verb = "editedVerbTest";
             first.SetData<string>("myData", "editedMyData1");
@@ -93,7 +93,7 @@ namespace StreamNetTests
             var editedFirst = activities.First();
             Assert.AreEqual(first.Id, editedFirst.Id);
             Assert.AreEqual(first.GetData<string>("myData"), editedFirst.GetData<string>("myData"));
-            Assert.AreEqual(first.Actor, editedFirst.Actor);
+            Assert.AreEqual(first.Actor.Id, editedFirst.Actor.Id);
             Assert.AreEqual(first.Object, editedFirst.Object);
             Assert.AreEqual(first.Verb, editedFirst.Verb);
         }

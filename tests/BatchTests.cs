@@ -55,7 +55,7 @@ namespace StreamNetTests
             Assert.AreEqual(1, activities.Count());
 
             var first = activities.First();
-            Assert.AreEqual(newActivity.Actor, first.Actor);
+            Assert.AreEqual(newActivity.Actor.Id, first.Actor.Id);
             Assert.AreEqual(newActivity.Object, first.Object);
             Assert.AreEqual(newActivity.Verb, first.Verb);
 
@@ -64,7 +64,7 @@ namespace StreamNetTests
             Assert.AreEqual(1, activities.Count());
 
             first = activities.First();
-            Assert.AreEqual(newActivity.Actor, first.Actor);
+            Assert.AreEqual(newActivity.Actor.Id, first.Actor.Id);
             Assert.AreEqual(newActivity.Object, first.Object);
             Assert.AreEqual(newActivity.Verb, first.Verb);
         }
@@ -266,7 +266,7 @@ namespace StreamNetTests
             activity.SetData("custom", "data");
             activity.Target = null;
             activity2.SetData("new-stuff", new int[] { 3, 2, 1 });
-            activity2.Actor = "user:3";
+            activity2.Actor = new Stream.User { Id = "user:3" };
 
             Assert.DoesNotThrowAsync(async () =>
             {
@@ -282,7 +282,7 @@ namespace StreamNetTests
             var updatedActivity2 = (await this.FlatFeed.GetActivitiesAsync(0, 1)).Results.FirstOrDefault();
             Assert.NotNull(updatedActivity2);
             Assert.AreEqual(insertedActivity2.Id, updatedActivity2.Id);
-            Assert.AreEqual(activity2.Actor, updatedActivity2.Actor);
+            Assert.AreEqual(activity2.Actor.Id, updatedActivity2.Actor.Id);
             Assert.AreEqual(activity2.GetData<int[]>("custom"), updatedActivity2.GetData<int[]>("custom"));
         }
     }

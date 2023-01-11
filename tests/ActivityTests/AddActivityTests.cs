@@ -47,7 +47,7 @@ namespace StreamNetTests
 
             var first = activities.First();
             Assert.AreEqual(response.Id, first.Id);
-            Assert.AreEqual(response.Actor, first.Actor);
+            Assert.AreEqual(response.Actor.Id, first.Actor.Id);
             Assert.AreEqual(response.Object, first.Object);
             Assert.AreEqual(response.Verb, first.Verb);
         }
@@ -260,7 +260,7 @@ namespace StreamNetTests
             Assert.AreEqual(1, activities.Count());
 
             var first = activities.First();
-            Assert.AreEqual(first.Actor, "multi1");
+            Assert.AreEqual(first.Actor.Id, "multi1");
         }
     }
 }
