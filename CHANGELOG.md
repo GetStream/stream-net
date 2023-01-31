@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [6.5.2](https://github.com/GetStream/stream-net/compare/6.5.1...6.5.2) (2023-01-31)
+
 ### [6.5.1](https://github.com/GetStream/stream-net/compare/6.5.0...6.5.1) (2022-10-04)
 
 ## [6.5.0](https://github.com/GetStream/stream-net/compare/6.4.0...6.5.0) (2022-06-28)
