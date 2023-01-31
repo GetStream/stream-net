@@ -15,6 +15,7 @@ namespace Stream.Utils
             NullValueHandling = NullValueHandling.Ignore,
         };
 
+        public static JsonSerializer Serializer { get; } = JsonSerializer.Create(Settings);
         public static string SerializeObject(object obj) => JsonConvert.SerializeObject(obj, Settings);
         public static T DeserializeObject<T>(string json) => JsonConvert.DeserializeObject<T>(json, Settings);
     }

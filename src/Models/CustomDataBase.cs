@@ -18,7 +18,13 @@ namespace Stream.Models
         /// <summary>
         /// Gets a custom data value parsed into <typeparamref name="T"/>
         /// </summary>
-        public T GetData<T>(string name) => GetDataInternal<T>(name);
+        public T GetData<T>(string name) => GetData<T>(name, null);
+
+        /// <summary>
+        /// Gets a custom data value parsed into <typeparamref name="T"/>
+        /// If <paramref name="serializer"/> is not null, it will be used to de-serialize the value.
+        /// </summary>
+        public T GetData<T>(string name, JsonSerializer serializer) => GetDataInternal<T>(name, serializer);
 
         /// <summary>
         /// Gets a custom data value parsed into <typeparamref name="T"/>.
@@ -26,7 +32,7 @@ namespace Stream.Models
         /// </summary>
         public T GetDataOrDefault<T>(string name, T @default) => Data.TryGetValue(name, out var val) ? val.ToObject<T>() : @default;
 
-        private T GetDataInternal<T>(string name)
+        private T GetDataInternal<T>(string name, JsonSerializer serializer)
         {
             if (Data.TryGetValue(name, out var val))
             {
@@ -39,6 +45,11 @@ namespace Stream.Models
                 if (val.Type == JTokenType.String && val.Value<string>().StartsWith("{") && val.Value<string>().EndsWith("}"))
                 {
                     return StreamJsonConverter.DeserializeObject<T>(val.Value<string>());
+                }
+
+                if (serializer != null)
+                {
+                    return val.ToObject<T>(serializer);
                 }
 
                 return val.ToObject<T>();
