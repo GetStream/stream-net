@@ -1,0 +1,25 @@
+# This workflow skips all heavy stuff for release branches
+name: Skip Tests
+
+on:
+  push:
+    branches:
+      - 'release-**'
+    tags-ignore:
+      - '**'
+
+concurrency:
+  group: ${{ github.ref }}-${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  reviewdog:
+    runs-on: ubuntu-latest
+    steps:
+      - run: 'echo "Not required"'
+
+  basic:
+    name: Run tests
+    runs-on: ubuntu-latest
+    steps:
+      - run: 'echo "Not required"'
