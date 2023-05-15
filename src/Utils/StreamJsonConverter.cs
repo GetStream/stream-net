@@ -13,6 +13,25 @@ namespace Stream.Utils
                 NamingStrategy = new SnakeCaseNamingStrategy(), // this handles ForeignId => foreign_id etc. conversion for us
             },
             NullValueHandling = NullValueHandling.Ignore,
+            DateTimeZoneHandling = DateTimeZoneHandling.Utc // always convert time to UTC
+        };
+
+        public static JsonSerializer Serializer { get; } = JsonSerializer.Create(Settings);
+        public static string SerializeObject(object obj) => JsonConvert.SerializeObject(obj, Settings);
+        public static T DeserializeObject<T>(string json) => JsonConvert.DeserializeObject<T>(json, Settings);
+    }
+
+    public static class StreamJsonConverterUTC
+    {
+        private static JsonSerializerSettings Settings = new JsonSerializerSettings
+        {
+            DateFormatString = "yyyy-MM-dd'T'HH:mm:ssZ",
+            ContractResolver = new DefaultContractResolver
+            {
+                NamingStrategy = new SnakeCaseNamingStrategy(), // this handles ForeignId => foreign_id etc. conversion for us
+            },
+            NullValueHandling = NullValueHandling.Ignore,
+            DateTimeZoneHandling = DateTimeZoneHandling.Utc  // always convert time to UTC
         };
 
         public static JsonSerializer Serializer { get; } = JsonSerializer.Create(Settings);
