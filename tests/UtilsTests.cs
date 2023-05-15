@@ -51,5 +51,15 @@ namespace StreamNetTests
 
             Assert.AreEqual(ActivityIdGenerator.GenerateId(activity.ForeignId, time).ToString(), activity.Id);
         }
+
+        [Test]
+        public async Task TestStreamJsonConverterUTC()
+        {
+            var date0 = new DateTime(2023, 5, 10, 12, 30, 15, DateTimeKind.Utc);
+            var date0AsJsonNewtonsoft = Newtonsoft.Json.JsonConvert.SerializeObject(date0);
+            var date0AsJson = Stream.Utils.StreamJsonConverterUTC.SerializeObject(date0);
+
+            Assert.AreEqual(date0AsJsonNewtonsoft, date0AsJson);
+        }
     }
 }
