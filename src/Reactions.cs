@@ -149,9 +149,10 @@ namespace Stream
             throw StreamException.FromResponse(response);
         }
 
-        public async Task DeleteAsync(string reactionId)
+        public async Task DeleteAsync(string reactionId, bool soft = false)
         {
-            var request = _client.BuildAppRequest($"reaction/{reactionId}/", HttpMethod.Delete);
+            var path = soft ? $"reaction/{reactionId}/?soft=true" : $"reaction/{reactionId}/";
+            var request = _client.BuildAppRequest(path, HttpMethod.Delete);
 
             var response = await _client.MakeRequestAsync(request);
 
