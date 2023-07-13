@@ -38,10 +38,7 @@ namespace StreamNetTests
 
             // get reaction
             Reaction r2 = null;
-            Assert.DoesNotThrowAsync(async () =>
-            {
-                r2 = await Client.Reactions.GetAsync(r.Id);
-            });
+            Assert.DoesNotThrowAsync(async () => r2 = await Client.Reactions.GetAsync(r.Id));
 
             Assert.NotNull(r2);
             Assert.AreEqual(r2.ActivityId, r.ActivityId);
@@ -56,14 +53,10 @@ namespace StreamNetTests
             data.Remove("field");
 
             var beforeTime = r.UpdatedAt.Value;
-            Assert.DoesNotThrowAsync(async () =>
-            {
-                r2 = await Client.Reactions.UpdateAsync(r.Id, data);
-            });
+            Assert.DoesNotThrowAsync(async () => r2 = await Client.Reactions.UpdateAsync(r.Id, data));
             Assert.NotNull(r2);
             Assert.False(r2.Data.ContainsKey("field"));
-            object n;
-            Assert.True(r2.Data.TryGetValue("number", out n));
+            Assert.True(r2.Data.TryGetValue("number", out object n));
             Assert.AreEqual((long)n, 321);
             Assert.True(r2.Data.ContainsKey("new"));
 
@@ -81,20 +74,11 @@ namespace StreamNetTests
             Assert.IsTrue(parent.LatestChildren["upvote"].Select(x => x.Id).Contains(c3.Id));
             Assert.IsTrue(parent.LatestChildren["downvote"].Select(x => x.Id).Contains(c2.Id));
 
-            Assert.DoesNotThrowAsync(async () =>
-            {
-                await Client.Reactions.DeleteAsync(r.Id);
-            });
+            Assert.DoesNotThrowAsync(async () => await Client.Reactions.DeleteAsync(r.Id));
 
-            Assert.DoesNotThrowAsync(async () =>
-            {
-                await Client.Reactions.DeleteAsync(r2.Id, true);
-            });
+            Assert.DoesNotThrowAsync(async () => await Client.Reactions.DeleteAsync(r2.Id, true));
 
-            Assert.DoesNotThrowAsync(async () =>
-            {
-                await Client.Reactions.RestoreSoftDeletedAsync(r2.Id);
-            });
+            Assert.DoesNotThrowAsync(async () => await Client.Reactions.RestoreSoftDeletedAsync(r2.Id));
 
             Assert.ThrowsAsync<StreamException>(async () =>
             {
