@@ -80,6 +80,11 @@ namespace StreamNetTests
 
             Assert.DoesNotThrowAsync(async () => await Client.Reactions.RestoreSoftDeletedAsync(r2.Id));
 
+            Assert.DoesNotThrowAsync(async () =>
+            {
+                await Client.Reactions.RestoreSoftDeletedAsync(r2.Id);
+            });
+
             Assert.ThrowsAsync<StreamException>(async () =>
             {
                 var r3 = await Client.Reactions.GetAsync(r.Id);
