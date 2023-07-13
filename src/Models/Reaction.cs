@@ -27,6 +27,8 @@ namespace Stream.Models
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "children_counts")]
         public Dictionary<string, int> ChildrenCounters { get; set; }
 
+        public DateTime? DeletedAt { get; set; }
+
         public string Ref() => $"SR:{Id}";
     }
 
