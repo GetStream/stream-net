@@ -160,6 +160,16 @@ namespace Stream
                 throw StreamException.FromResponse(response);
         }
 
+        public async Task RestoreSoftDeletedAsync(string reactionId)
+        {
+            var request = _client.BuildAppRequest($"reaction/{reactionId}/restore/", HttpMethod.Put);
+
+            var response = await _client.MakeRequestAsync(request);
+
+            if (response.StatusCode != HttpStatusCode.OK)
+                throw StreamException.FromResponse(response);
+        }
+
         private async Task<Reaction> AddAsync(Reaction r)
         {
             var request = _client.BuildAppRequest("reaction/", HttpMethod.Post);
