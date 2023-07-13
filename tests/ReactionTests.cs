@@ -23,11 +23,7 @@ namespace StreamNetTests
 
             var activity = await this.UserFeed.AddActivityAsync(a);
 
-            var data = new Dictionary<string, object>()
-            {
-                { "field", "value" },
-                { "number", 2 },
-            };
+            var data = new Dictionary<string, object>() { { "field", "value" }, { "number", 2 }, };
 
             var r = await Client.Reactions.AddAsync("like", activity.Id, "bobby", data);
 
@@ -90,6 +86,11 @@ namespace StreamNetTests
                 await Client.Reactions.DeleteAsync(r.Id);
             });
 
+            Assert.DoesNotThrowAsync(async () =>
+            {
+                await Client.Reactions.DeleteAsync(r2.Id, true);
+            });
+
             Assert.ThrowsAsync<StreamException>(async () =>
             {
                 var r3 = await Client.Reactions.GetAsync(r.Id);
@@ -112,11 +113,7 @@ namespace StreamNetTests
             a.ForeignId = "cake:123";
             var activity2 = await this.UserFeed.AddActivityAsync(a);
 
-            var data = new Dictionary<string, object>()
-            {
-                { "field", "value" },
-                { "number", 2 },
-            };
+            var data = new Dictionary<string, object>() { { "field", "value" }, { "number", 2 }, };
 
             var userId = Guid.NewGuid().ToString();
 
@@ -125,7 +122,13 @@ namespace StreamNetTests
             var r3 = await Client.Reactions.AddAsync("like", activity.Id, "bob", data);
 
             var r4 = await Client.Reactions.AddChildAsync(r3, "upvote", "tom", data);
-            var r5 = await Client.Reactions.AddChildAsync(r3.Id, Guid.NewGuid().ToString(), "upvote", "mary", data);
+            var r5 = await Client.Reactions.AddChildAsync(
+                r3.Id,
+                Guid.NewGuid().ToString(),
+                "upvote",
+                "mary",
+                data
+            );
 
             // activity id
             var filter = ReactionFiltering.Default;
@@ -150,11 +153,17 @@ namespace StreamNetTests
             Assert.AreEqual(r3.ActivityId, actual.ActivityId);
 
             // with limit
-            reactionsByActivity = await Client.Reactions.FilterAsync(filter.WithLimit(1), pagination);
+            reactionsByActivity = await Client.Reactions.FilterAsync(
+                filter.WithLimit(1),
+                pagination
+            );
             Assert.AreEqual(1, reactionsByActivity.Count());
 
             // with data
-            var reactionsByActivityWithData = await Client.Reactions.FilterWithActivityAsync(filter.WithLimit(1), pagination);
+            var reactionsByActivityWithData = await Client.Reactions.FilterWithActivityAsync(
+                filter.WithLimit(1),
+                pagination
+            );
             Assert.AreEqual(1, reactionsByActivity.Count());
             Assert.AreEqual(data, reactionsByActivity.FirstOrDefault().Data);
 
