@@ -39,7 +39,11 @@ namespace Stream
 
         /// <summary>Deletes a reactions.</summary>
         /// <remarks>https://getstream.io/activity-feeds/docs/dotnet-csharp/reactions_introduction/?language=csharp</remarks>
-        Task DeleteAsync(string reactionId);
+        Task DeleteAsync(string reactionId, bool soft = false);
+
+        /// <summary>Restores a soft deleted reaction.</summary>
+        /// <remarks>https://getstream.io/activity-feeds/docs/dotnet-csharp/reactions_introduction/?language=csharp</remarks>
+        Task RestoreSoftDeletedAsync(string reactionId);
 
         /// <summary>Retrieves reactions.</summary>
         /// <remarks>https://getstream.io/activity-feeds/docs/dotnet-csharp/reactions_introduction/?language=csharp</remarks>
