@@ -153,7 +153,6 @@ namespace Stream
         {
             var path = soft ? $"reaction/{reactionId}/?soft=true" : $"reaction/{reactionId}/";
             var request = _client.BuildAppRequest(path, HttpMethod.Delete);
-
             var response = await _client.MakeRequestAsync(request);
 
             if (response.StatusCode != HttpStatusCode.OK)
@@ -163,7 +162,6 @@ namespace Stream
         public async Task RestoreSoftDeletedAsync(string reactionId)
         {
             var request = _client.BuildAppRequest($"reaction/{reactionId}/restore/", HttpMethod.Put);
-
             var response = await _client.MakeRequestAsync(request);
 
             if (response.StatusCode != HttpStatusCode.OK)
