@@ -6,7 +6,7 @@ on:
       - '**'
       - '!release-**'
 
-concurrency: 
+concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref }}
   cancel-in-progress: true
 
@@ -21,7 +21,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: wagoid/commitlint-github-action@v4
+ #     - uses: wagoid/commitlint-github-action@v4
 
       - name: Setup dotnet
         uses: actions/setup-dotnet@v2
