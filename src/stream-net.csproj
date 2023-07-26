@@ -8,7 +8,7 @@
   <PropertyGroup>
     <PackageId>stream-net</PackageId>
     <Title>.NET Client for Stream Feeds</Title>
-    <Version>6.5.3</Version>
+    <Version>6.6.0-prerelease</Version>
     <Company>Stream.io</Company>
     <Authors>GetStream.io</Authors>
     <Copyright>© $([System.DateTime]::UtcNow.ToString(yyyy)) Stream.io</Copyright>
