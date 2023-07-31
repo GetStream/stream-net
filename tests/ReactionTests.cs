@@ -23,11 +23,7 @@ namespace StreamNetTests
 
             var activity = await this.UserFeed.AddActivityAsync(a);
 
-            var data = new Dictionary<string, object>()
-            {
-                { "field", "value" },
-                { "number", 2 },
-            };
+            var data = new Dictionary<string, object>() { { "field", "value" }, { "number", 2 }, };
 
             var r = await Client.Reactions.AddAsync("like", activity.Id, "bobby", data);
 
@@ -42,10 +38,7 @@ namespace StreamNetTests
 
             // get reaction
             Reaction r2 = null;
-            Assert.DoesNotThrowAsync(async () =>
-            {
-                r2 = await Client.Reactions.GetAsync(r.Id);
-            });
+            Assert.DoesNotThrowAsync(async () => r2 = await Client.Reactions.GetAsync(r.Id));
 
             Assert.NotNull(r2);
             Assert.AreEqual(r2.ActivityId, r.ActivityId);
@@ -60,14 +53,10 @@ namespace StreamNetTests
             data.Remove("field");
 
             var beforeTime = r.UpdatedAt.Value;
-            Assert.DoesNotThrowAsync(async () =>
-            {
-                r2 = await Client.Reactions.UpdateAsync(r.Id, data);
-            });
+            Assert.DoesNotThrowAsync(async () => r2 = await Client.Reactions.UpdateAsync(r.Id, data));
             Assert.NotNull(r2);
             Assert.False(r2.Data.ContainsKey("field"));
-            object n;
-            Assert.True(r2.Data.TryGetValue("number", out n));
+            Assert.True(r2.Data.TryGetValue("number", out object n));
             Assert.AreEqual((long)n, 321);
             Assert.True(r2.Data.ContainsKey("new"));
 
@@ -85,15 +74,12 @@ namespace StreamNetTests
             Assert.IsTrue(parent.LatestChildren["upvote"].Select(x => x.Id).Contains(c3.Id));
             Assert.IsTrue(parent.LatestChildren["downvote"].Select(x => x.Id).Contains(c2.Id));
 
-            Assert.DoesNotThrowAsync(async () =>
-            {
-                await Client.Reactions.DeleteAsync(r.Id);
-            });
+            // restore tests once there is support on server
+            // Assert.DoesNotThrowAsync(async () => await Client.Reactions.DeleteAsync(r.Id, true));
+            // Assert.DoesNotThrowAsync(async () => await Client.Reactions.RestoreSoftDeletedAsync(r.Id));
+            Assert.DoesNotThrowAsync(async () => await Client.Reactions.DeleteAsync(r.Id));
 
-            Assert.ThrowsAsync<StreamException>(async () =>
-            {
-                var r3 = await Client.Reactions.GetAsync(r.Id);
-            });
+            Assert.ThrowsAsync<StreamException>(async () => await Client.Reactions.GetAsync(r.Id));
         }
 
         [Test]
@@ -112,11 +98,7 @@ namespace StreamNetTests
             a.ForeignId = "cake:123";
             var activity2 = await this.UserFeed.AddActivityAsync(a);
 
-            var data = new Dictionary<string, object>()
-            {
-                { "field", "value" },
-                { "number", 2 },
-            };
+            var data = new Dictionary<string, object>() { { "field", "value" }, { "number", 2 }, };
 
             var userId = Guid.NewGuid().ToString();
 
@@ -125,7 +107,13 @@ namespace StreamNetTests
             var r3 = await Client.Reactions.AddAsync("like", activity.Id, "bob", data);
 
             var r4 = await Client.Reactions.AddChildAsync(r3, "upvote", "tom", data);
-            var r5 = await Client.Reactions.AddChildAsync(r3.Id, Guid.NewGuid().ToString(), "upvote", "mary", data);
+            var r5 = await Client.Reactions.AddChildAsync(
+                r3.Id,
+                Guid.NewGuid().ToString(),
+                "upvote",
+                "mary",
+                data
+            );
 
             // activity id
             var filter = ReactionFiltering.Default;
@@ -150,11 +138,17 @@ namespace StreamNetTests
             Assert.AreEqual(r3.ActivityId, actual.ActivityId);
 
             // with limit
-            reactionsByActivity = await Client.Reactions.FilterAsync(filter.WithLimit(1), pagination);
+            reactionsByActivity = await Client.Reactions.FilterAsync(
+                filter.WithLimit(1),
+                pagination
+            );
             Assert.AreEqual(1, reactionsByActivity.Count());
 
             // with data
-            var reactionsByActivityWithData = await Client.Reactions.FilterWithActivityAsync(filter.WithLimit(1), pagination);
+            var reactionsByActivityWithData = await Client.Reactions.FilterWithActivityAsync(
+                filter.WithLimit(1),
+                pagination
+            );
             Assert.AreEqual(1, reactionsByActivity.Count());
             Assert.AreEqual(data, reactionsByActivity.FirstOrDefault().Data);
 

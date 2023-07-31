@@ -149,13 +149,27 @@ namespace Stream
             throw StreamException.FromResponse(response);
         }
 
-        public async Task DeleteAsync(string reactionId)
+        public async Task DeleteAsync(string reactionId, bool soft = false)
         {
-            var request = _client.BuildAppRequest($"reaction/{reactionId}/", HttpMethod.Delete);
+            var path = $"reaction/{reactionId}/";
+            var request = _client.BuildAppRequest(path, HttpMethod.Delete);
+            if (soft)
+            {
+                request.AddQueryParameter("soft", "true");
+            }
 
             var response = await _client.MakeRequestAsync(request);
 
             if (response.StatusCode != HttpStatusCode.OK)
+                throw StreamException.FromResponse(response);
+        }
+
+        public async Task RestoreSoftDeletedAsync(string reactionId)
+        {
+            var request = _client.BuildAppRequest($"reaction/{reactionId}/restore/", HttpMethod.Put);
+            var response = await _client.MakeRequestAsync(request);
+
+            if (response.StatusCode != HttpStatusCode.Created && response.StatusCode != HttpStatusCode.OK)
                 throw StreamException.FromResponse(response);
         }
 
