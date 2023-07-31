@@ -58,7 +58,12 @@ namespace Stream
             _apiKey = apiKey;
             _streamClientToken = TokenFactory.For(apiSecretOrToken);
             _options = options ?? StreamClientOptions.Default;
-            var url = new Uri(string.Format(BaseUrlFormat, GetRegion(_options.Location)), UriKind.Absolute);
+            var stream_url = Environment.GetEnvironmentVariable("STREAM_URL");
+            var url = new Uri(
+                stream_url == null || stream_url.Length == 0 ?
+                string.Format(BaseUrlFormat, GetRegion(_options.Location)) :
+                stream_url, UriKind.Absolute);
+
             _client = new RestClient(url, TimeSpan.FromMilliseconds(_options.Timeout));
             var assemblyVersion = typeof(StreamClient).GetTypeInfo().Assembly.GetName().Version;
             Version = assemblyVersion.ToString(3);
@@ -150,7 +155,11 @@ namespace Stream
 
         private Uri GetBasePersonalizationUrl()
         {
-            return new Uri(string.Format(BasePersonalizationUrlFormat, GetRegion(_options.PersonalizationLocation)), UriKind.Absolute);
+            var stream_url = Environment.GetEnvironmentVariable("STREAM_URL");
+            return new Uri(
+                stream_url == null || stream_url.Length == 0 ?
+                string.Format(BasePersonalizationUrlFormat, GetRegion(_options.PersonalizationLocation)) :
+                stream_url, UriKind.Absolute);
         }
 
         private static string GetRegion(StreamApiLocation location)
