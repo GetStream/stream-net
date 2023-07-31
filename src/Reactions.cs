@@ -151,8 +151,13 @@ namespace Stream
 
         public async Task DeleteAsync(string reactionId, bool soft = false)
         {
-            var path = soft ? $"reaction/{reactionId}/?soft=true" : $"reaction/{reactionId}/";
+            var path = $"reaction/{reactionId}/";
             var request = _client.BuildAppRequest(path, HttpMethod.Delete);
+            if (soft)
+            {
+                request.AddQueryParameter("soft", "true");
+            }
+
             var response = await _client.MakeRequestAsync(request);
 
             if (response.StatusCode != HttpStatusCode.OK)
@@ -164,7 +169,7 @@ namespace Stream
             var request = _client.BuildAppRequest($"reaction/{reactionId}/restore/", HttpMethod.Put);
             var response = await _client.MakeRequestAsync(request);
 
-            if (response.StatusCode != HttpStatusCode.OK)
+            if (response.StatusCode != HttpStatusCode.Created && response.StatusCode != HttpStatusCode.OK)
                 throw StreamException.FromResponse(response);
         }
 
