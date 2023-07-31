@@ -74,11 +74,9 @@ namespace StreamNetTests
             Assert.IsTrue(parent.LatestChildren["upvote"].Select(x => x.Id).Contains(c3.Id));
             Assert.IsTrue(parent.LatestChildren["downvote"].Select(x => x.Id).Contains(c2.Id));
 
+            Assert.DoesNotThrowAsync(async () => await Client.Reactions.DeleteAsync(r.Id, true));
+            Assert.DoesNotThrowAsync(async () => await Client.Reactions.RestoreSoftDeletedAsync(r.Id));
             Assert.DoesNotThrowAsync(async () => await Client.Reactions.DeleteAsync(r.Id));
-
-            Assert.DoesNotThrowAsync(async () => await Client.Reactions.DeleteAsync(r2.Id, true));
-
-            Assert.DoesNotThrowAsync(async () => await Client.Reactions.RestoreSoftDeletedAsync(r2.Id));
 
             Assert.ThrowsAsync<StreamException>(async () => await Client.Reactions.GetAsync(r.Id));
         }
