@@ -53,7 +53,7 @@ namespace StreamNetTests
         }
 
         [Test]
-        public async Task TestStreamJsonConverterUTC()
+        public void TestStreamJsonConverterUTC()
         {
             var date0 = new DateTime(2023, 5, 10, 12, 30, 15, DateTimeKind.Utc);
             var date0AsJsonNewtonsoft = Newtonsoft.Json.JsonConvert.SerializeObject(date0);
