@@ -75,7 +75,7 @@ namespace Stream
             {
                 request.AddQueryParameter("foreign_ids", string.Join(",", foreignIdTimes.Select(f => f.ForeignId)));
                 request.AddQueryParameter("timestamps", string.Join(",", foreignIdTimes.Select(f =>
-                        f.Time.ToString("s", System.Globalization.CultureInfo.InvariantCulture))));
+                        f.Time.ToString("yyyy-MM-dd'T'HH:mm:ss.fff", System.Globalization.CultureInfo.InvariantCulture))));
             }
 
             var response = await _client.MakeRequestAsync(request);
@@ -115,7 +115,7 @@ namespace Stream
             {
                 request.AddQueryParameter("foreign_ids", string.Join(",", foreignIdTimes.Select(f => f.ForeignId)));
                 request.AddQueryParameter("timestamps", string.Join(",", foreignIdTimes.Select(f =>
-                        f.Time.ToString("s", System.Globalization.CultureInfo.InvariantCulture))));
+                        f.Time.ToString("yyyy-MM-dd'T'HH:mm:ss.fff", System.Globalization.CultureInfo.InvariantCulture))));
             }
 
             options?.Apply(request);
