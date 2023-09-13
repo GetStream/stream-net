@@ -112,8 +112,7 @@ namespace StreamNetTests
                 Guid.NewGuid().ToString(),
                 "upvote",
                 "mary",
-                data
-            );
+                data);
 
             // activity id
             var filter = ReactionFiltering.Default;
@@ -140,15 +139,13 @@ namespace StreamNetTests
             // with limit
             reactionsByActivity = await Client.Reactions.FilterAsync(
                 filter.WithLimit(1),
-                pagination
-            );
+                pagination);
             Assert.AreEqual(1, reactionsByActivity.Count());
 
             // with data
             var reactionsByActivityWithData = await Client.Reactions.FilterWithActivityAsync(
                 filter.WithLimit(1),
-                pagination
-            );
+                pagination);
             Assert.AreEqual(1, reactionsByActivity.Count());
             Assert.AreEqual(data, reactionsByActivity.FirstOrDefault().Data);
 
