@@ -285,5 +285,25 @@ namespace StreamNetTests
             Assert.AreEqual(activity2.Actor, updatedActivity2.Actor);
             Assert.AreEqual(activity2.GetData<int[]>("custom"), updatedActivity2.GetData<int[]>("custom"));
         }
+
+        [Test]
+        public async Task TestBatchActivityForeignIdTime()
+        {
+            var activity = new Activity("user:1", "like", "cake")
+            {
+                ForeignId = "cake:1",
+                Time = DateTime.UtcNow,
+                Target = "johnny",
+            };
+
+            var insertedActivity = await this.UserFeed.AddActivityAsync(activity);
+
+            var foreignIdTime = new ForeignIdTime(insertedActivity.ForeignId, insertedActivity.Time.Value);
+            IEnumerable<ForeignIdTime> foreignIdTimes = new ForeignIdTime[] { foreignIdTime };
+
+            GenericGetResponse<Activity> result = await Client.Batch.GetActivitiesByForeignIdAsync(foreignIdTimes);
+
+            Assert.AreEqual(1, result.Results.Count);
+        }
     }
 }
