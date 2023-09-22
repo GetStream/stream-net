@@ -16,7 +16,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-  
+
       - uses: actions/github-script@v6
         with:
           script: |
@@ -27,7 +27,7 @@ jobs:
             // Source branch looks like this: release-1.0.0
             const version = context.payload.pull_request.head.ref.split('-')[1]
             core.exportVariable('VERSION', version)
-  
+
       - name: Setup dotnet
         uses: actions/setup-dotnet@v2
         with:
@@ -37,7 +37,7 @@ jobs:
         run: dotnet pack --configuration Release ./src
 
       - name: Publish the package
-        run: dotnet nuget push "./src/bin/Release/*.nupkg" -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }}
+        run: dotnet nuget push "./src/bin/Release/*.nupkg" -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }} --skip-duplicate
 
       - name: Create release on GitHub
         uses: ncipollo/release-action@v1
