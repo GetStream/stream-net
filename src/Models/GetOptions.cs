@@ -1,4 +1,5 @@
 using Stream.Rest;
+using Stream.Utils;
 using System.Collections.Generic;
 
 namespace Stream.Models
@@ -57,9 +58,9 @@ namespace Stream.Models
             return this;
         }
 
-        public GetOptions WithRankingVars(string rankingVars)
+        public GetOptions WithRankingVars(IDictionary<string, object> rankingVars)
         {
-            _ranking_vars = rankingVars;
+            _ranking_vars = StreamJsonConverter.SerializeObject(rankingVars);
             return this;
         }
 
