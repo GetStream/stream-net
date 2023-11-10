@@ -17,6 +17,7 @@ namespace Stream.Models
         private string _endpoint = null;
         private string _feed_slug = null;
         private string _user_id = null;
+        private string _ranking_vars = null;
 
         private IDictionary<string, string> _custom = null;
 
@@ -53,6 +54,12 @@ namespace Stream.Models
         public GetOptions WithRanking(string rankingSlug)
         {
             _ranking = rankingSlug;
+            return this;
+        }
+
+        public GetOptions WithRankingVars(string rankingVars)
+        {
+            _ranking_vars = rankingVars;
             return this;
         }
 
@@ -110,6 +117,9 @@ namespace Stream.Models
 
             if (!string.IsNullOrWhiteSpace(_user_id))
                 request.AddQueryParameter("user_id", _user_id);
+
+            if (!string.IsNullOrWhiteSpace(_ranking_vars))
+                request.AddQueryParameter("ranking_vars", _ranking_vars);
 
             if (_custom != null)
             {
