@@ -108,7 +108,7 @@ namespace StreamNetTests
                 Time = DateTime.Parse("2000-08-16T16:32:32"),
             };
 
-            newActivity1.SetData("popular", 123);
+            newActivity1.SetData("popularity", 123);
 
             var response = await this.UserFeed.AddActivityAsync(newActivity1);
 
