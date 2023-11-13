@@ -108,9 +108,9 @@ namespace StreamNetTests
                 Time = DateTime.Parse("2000-08-16T16:32:32"),
             };
 
-            newActivity1.SetData("popularity", 123);
+            newActivity1.SetData("popular", 123);
 
-            var response = await this.FlatFeed.AddActivityAsync(newActivity1);
+            var response = await this.UserFeed.AddActivityAsync(newActivity1);
 
             var newActivity2 = new Activity("1", "test", "2")
             {
@@ -118,10 +118,10 @@ namespace StreamNetTests
                 Time = DateTime.Parse("2000-08-17T16:32:32"),
             };
 
-            response = await this.FlatFeed.AddActivityAsync(newActivity2);
+            response = await this.UserFeed.AddActivityAsync(newActivity2);
 
             var ranking_vars = new Dictionary<string, object> { { "popularity", 666 } };
-            var r2 = await this.FlatFeed.GetFlatActivitiesAsync(GetOptions.Default.WithLimit(2).WithRanking("popularity").WithRankingVars(ranking_vars));
+            var r2 = await this.UserFeed.GetFlatActivitiesAsync(GetOptions.Default.WithLimit(2).WithRanking("popular").WithRankingVars(ranking_vars));
             Assert.NotNull(r2);
             Assert.AreEqual(2, r2.Results.Count);
             Assert.AreEqual(r2.Results[0].Score, 11.090528);
