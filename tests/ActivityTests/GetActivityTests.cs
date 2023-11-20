@@ -130,6 +130,7 @@ namespace StreamNetTests
         }
 
         [Test]
+        [Ignore("Test database has no ranked method at the moment")]
         public async Task TestScoreVars()
         {
             var feed = this.RankedFeed;
