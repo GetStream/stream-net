@@ -43,7 +43,8 @@ namespace Stream
         public async Task<Activity> AddActivityAsync(Activity activity)
         {
             var request = _client.BuildFeedRequest(this, "/", HttpMethod.Post);
-            request.SetJsonBody(StreamJsonConverter.SerializeObject(activity));
+            var body = StreamJsonConverter.SerializeObject(activity);
+            request.SetJsonBody(body);
 
             var response = await _client.MakeRequestAsync(request);
 

@@ -130,7 +130,7 @@ namespace Stream.Models
                 request.AddQueryParameter("ranking_vars", _ranking_vars);
 
             if (_score_vars)
-                request.AddQueryParameter("score_vars", "true");
+                request.AddQueryParameter("withScoreVars", "true");
 
             if (_custom != null)
             {
