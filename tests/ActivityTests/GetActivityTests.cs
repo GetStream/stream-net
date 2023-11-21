@@ -100,6 +100,58 @@ namespace StreamNetTests
         }
 
         [Test]
+        [Ignore("Test database has no ranked method at the moment")]
+        public async Task TestRankingVars()
+        {
+            var newActivity1 = new Activity("1", "test", "1")
+            {
+                ForeignId = "r-test-1",
+                Time = DateTime.Parse("2000-08-16T16:32:32"),
+            };
+
+            newActivity1.SetData("popularity", 123);
+
+            var response = await this.UserFeed.AddActivityAsync(newActivity1);
+
+            var newActivity2 = new Activity("1", "test", "2")
+            {
+                ForeignId = "r-test-2",
+                Time = DateTime.Parse("2000-08-17T16:32:32"),
+            };
+
+            response = await this.UserFeed.AddActivityAsync(newActivity2);
+
+            var ranking_vars = new Dictionary<string, object> { { "popularity", 666 } };
+            var r2 = await this.UserFeed.GetFlatActivitiesAsync(GetOptions.Default.WithLimit(2).WithRanking("popular").WithRankingVars(ranking_vars));
+            Assert.NotNull(r2);
+            Assert.AreEqual(2, r2.Results.Count);
+            Assert.AreEqual(r2.Results[0].Score, 11.090528);
+            Assert.AreEqual(r2.Results[1].Score, 0.99999917);
+        }
+
+        [Test]
+        [Ignore("Test database has no ranked method at the moment")]
+        public async Task TestScoreVars()
+        {
+            var feed = this.RankedFeed;
+
+            var newActivity1 = new Activity("1", "test", "1")
+            {
+                ForeignId = "r-test-1",
+                Time = DateTime.Parse("2000-08-16T16:32:32"),
+            };
+
+            newActivity1.SetData("popularity", 123);
+            var r1 = await feed.AddActivityAsync(newActivity1);
+
+            var r2 = await feed.GetFlatActivitiesAsync(GetOptions.Default.WithLimit(1).WithRanking("popularity").WithScoreVars());
+            Assert.IsNotNull(r2.Results[0].ScoreVars);
+
+            r2 = await feed.GetFlatActivitiesAsync(GetOptions.Default.WithLimit(1).WithRanking("popularity"));
+            Assert.IsNull(r2.Results[0].ScoreVars);
+        }
+
+        [Test]
         public async Task TestGetActivitiesByForeignIDAndTime()
         {
             var newActivity1 = new Activity("1", "test", "1")

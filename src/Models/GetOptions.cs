@@ -1,4 +1,5 @@
 using Stream.Rest;
+using Stream.Utils;
 using System.Collections.Generic;
 
 namespace Stream.Models
@@ -17,6 +18,8 @@ namespace Stream.Models
         private string _endpoint = null;
         private string _feed_slug = null;
         private string _user_id = null;
+        private string _ranking_vars = null;
+        private bool _score_vars = false;
 
         private IDictionary<string, string> _custom = null;
 
@@ -53,6 +56,18 @@ namespace Stream.Models
         public GetOptions WithRanking(string rankingSlug)
         {
             _ranking = rankingSlug;
+            return this;
+        }
+
+        public GetOptions WithScoreVars()
+        {
+            _score_vars = true;
+            return this;
+        }
+
+        public GetOptions WithRankingVars(IDictionary<string, object> rankingVars)
+        {
+            _ranking_vars = StreamJsonConverter.SerializeObject(rankingVars);
             return this;
         }
 
@@ -110,6 +125,12 @@ namespace Stream.Models
 
             if (!string.IsNullOrWhiteSpace(_user_id))
                 request.AddQueryParameter("user_id", _user_id);
+
+            if (!string.IsNullOrWhiteSpace(_ranking_vars))
+                request.AddQueryParameter("ranking_vars", _ranking_vars);
+
+            if (_score_vars)
+                request.AddQueryParameter("withScoreVars", "true");
 
             if (_custom != null)
             {

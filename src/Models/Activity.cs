@@ -21,6 +21,7 @@ namespace Stream.Models
         public string Object { get; set; }
         public string Target { get; set; }
         public string Origin { get; set; }
+        public Dictionary<string, object> ScoreVars { get; set; }
 
         public Activity(string actor, string verb, string @object)
         {
