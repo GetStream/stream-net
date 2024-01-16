@@ -24,6 +24,7 @@ namespace Stream.Models
 
         private string _userId;
         private string _childrenUserId;
+        private string _ranking;
 
         private ReactionOption()
         {
@@ -54,6 +55,9 @@ namespace Stream.Models
 
             if (!string.IsNullOrWhiteSpace(_childrenUserId))
                 request.AddQueryParameter("children_user_id", _userId);
+
+            if (!string.IsNullOrWhiteSpace(_ranking))
+                request.AddQueryParameter("ranking", _userId);
         }
 
         public static ReactionOption With()
@@ -106,6 +110,12 @@ namespace Stream.Models
         public ReactionOption ChildrenUserFilter(string value)
         {
             _childrenUserId = value;
+            return this;
+        }
+
+        public ReactionOption RankingFilter(string ranking)
+        {
+            _ranking = ranking;
             return this;
         }
     }
