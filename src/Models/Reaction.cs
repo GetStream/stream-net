@@ -46,6 +46,7 @@ namespace Stream.Models
         private const int DefaultLimit = 10;
         private int _limit = DefaultLimit;
         private ReactionFilter _filter = null;
+        private string _ranking = null;
 
         public ReactionFiltering WithLimit(int limit)
         {
@@ -67,8 +68,18 @@ namespace Stream.Models
 
         internal void Apply(RestRequest request)
         {
+            if (!string.IsNullOrEmpty(_ranking)) {
+                request.AddQueryParameter("ranking", _ranking);
+            }
+
             request.AddQueryParameter("limit", _limit.ToString());
             _filter?.Apply(request);
+        }
+
+        public ReactionFiltering WithRanking(string ranking)
+        {
+            _ranking = ranking;
+            return this;
         }
 
         internal bool IncludesActivityData => _filter.IncludesActivityData;
