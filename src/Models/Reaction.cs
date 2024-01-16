@@ -68,7 +68,8 @@ namespace Stream.Models
 
         internal void Apply(RestRequest request)
         {
-            if (!string.IsNullOrEmpty(_ranking)) {
+            if (!string.IsNullOrEmpty(_ranking))
+            {
                 request.AddQueryParameter("ranking", _ranking);
             }
 
