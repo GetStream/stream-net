@@ -176,18 +176,12 @@ namespace Stream
                     return "mumbai";
                 case StreamApiLocation.Singapore:
                     return "singapore";
-                case StreamApiLocation.Canada:
-                    return "canada";
                 case StreamApiLocation.Sidney:
                     return "sydney";
                 case StreamApiLocation.Oregon:
                     return "oregon";
-                case StreamApiLocation.Frankfurt:
-                    return "Frankfurt";
                 case StreamApiLocation.Ohio:
                     return "Ohio";
-                case StreamApiLocation.Jakarta:
-                    return "Jakarta";
                 default:
                     return "us-east";
             }
