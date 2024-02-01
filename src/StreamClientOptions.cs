@@ -36,24 +36,34 @@ namespace Stream
     {
         /// <summary>United States, east coast</summary>
         USEast,
+
         /// <summary>Dublin</summary>
         Dublin,
+
         /// <summary>Tokyo</summary>
         Tokyo,
+
         /// <summary>Mumbai</summary>
         Mumbai,
+
         /// <summary>Singapore</summary>
         Singapore,
+
         /// <summary>Canada</summary>
         Canada,
+
         /// <summary>Sidney</summary>
         Sidney,
+
         /// <summary>Oregon</summary>
         Oregon,
+
         /// <summary>Frankfurt</summary>
         Frankfurt,
+
         /// <summary>Ohio</summary>
         Ohio,
+
         /// <summary>Jakarta</summary>
         Jakarta,
     }
