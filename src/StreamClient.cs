@@ -181,7 +181,7 @@ namespace Stream
                 case StreamApiLocation.Oregon:
                     return "oregon";
                 case StreamApiLocation.Ohio:
-                    return "Ohio";
+                    return "ohio";
                 default:
                     return "us-east";
             }
