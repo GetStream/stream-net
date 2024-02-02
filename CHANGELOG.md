@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### [6.8.1](https://github.com/GetStream/stream-net/compare/6.8.0...6.8.1) (2024-02-02)
 
+### Features
+
+* additional connection regions
+
 ## [6.8.0](https://github.com/GetStream/stream-net/compare/6.7.0...6.8.0) (2023-11-21)
 
 ## [6.7.0](https://github.com/GetStream/stream-net/compare/6.6.0...6.7.0) (2023-09-20)
