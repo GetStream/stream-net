@@ -40,13 +40,22 @@ namespace Stream
         /// <summary>Dublin</summary>
         Dublin,
 
-        /// <summary>Singapore</summary>
-        Singapore,
-
         /// <summary>Tokyo</summary>
         Tokyo,
 
+        /// <summary>Mumbai</summary>
+        Mumbai,
+
+        /// <summary>Singapore</summary>
+        Singapore,
+
         /// <summary>Sidney</summary>
         Sidney,
+
+        /// <summary>Oregon</summary>
+        Oregon,
+
+        /// <summary>Ohio</summary>
+        Ohio,
     }
 }

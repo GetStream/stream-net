@@ -168,14 +168,20 @@ namespace Stream
             {
                 case StreamApiLocation.USEast:
                     return "us-east";
-                case StreamApiLocation.Tokyo:
-                    return "tokyo";
                 case StreamApiLocation.Dublin:
                     return "dublin";
+                case StreamApiLocation.Tokyo:
+                    return "tokyo";
+                case StreamApiLocation.Mumbai:
+                    return "mumbai";
                 case StreamApiLocation.Singapore:
                     return "singapore";
                 case StreamApiLocation.Sidney:
                     return "sydney";
+                case StreamApiLocation.Oregon:
+                    return "oregon";
+                case StreamApiLocation.Ohio:
+                    return "ohio";
                 default:
                     return "us-east";
             }
