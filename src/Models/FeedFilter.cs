@@ -15,7 +15,7 @@ namespace Stream.Models
             id_lt,
             with_activity_data,
             discard_actors,
-            discard_actors_sep
+            discard_actors_sep,
         }
 #pragma warning restore SA1300
 
@@ -70,6 +70,7 @@ namespace Stream.Models
             {
                 _ops.Add(new OpEntry(OpType.discard_actors_sep, separator));
             }
+
             _ops.Add(new OpEntry(OpType.discard_actors, string.Join(separator, actors)));
             return this;
         }
