@@ -66,7 +66,7 @@ namespace Stream.Models
 
         public FeedFilter DiscardActors(string[] actors, string separator = ",")
         {
-            if separator != ",")
+            if (separator != ",")
             {
                 _ops.Add(new OpEntry(OpType.discard_actors_sep, separator));
             }
