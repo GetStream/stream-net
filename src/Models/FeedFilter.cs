@@ -74,6 +74,7 @@ namespace Stream.Models
             _ops.Add(new OpEntry(OpType.discard_actors, string.Join(separator, actors)));
             return this;
         }
+
         internal void Apply(RestRequest request)
         {
             _ops.ForEach(op =>
