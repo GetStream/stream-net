@@ -130,6 +130,7 @@ namespace StreamNetTests
         }
 
         [Test]
+        [Ignore("Test server doesn't support this feature at the moment")]
         public async Task TestActorFilter()
         {
             var feed = this.UserFeed;
