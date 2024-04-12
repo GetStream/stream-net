@@ -14,6 +14,8 @@ namespace Stream.Models
             id_lte,
             id_lt,
             with_activity_data,
+            discard_actors,
+            discard_actors_sep
         }
 #pragma warning restore SA1300
 
@@ -59,6 +61,16 @@ namespace Stream.Models
         public FeedFilter IdLessThanEqual(string id)
         {
             _ops.Add(new OpEntry(OpType.id_lte, id));
+            return this;
+        }
+
+        public FeedFilter DiscardActors(string[] actors, string separator = ",")
+        {
+            if separator != ",")
+            {
+                _ops.Add(new OpEntry(OpType.discard_actors_sep, separator));
+            }
+            _ops.Add(new OpEntry(OpType.discard_actors, string.Join(separator, actors)));
             return this;
         }
 
