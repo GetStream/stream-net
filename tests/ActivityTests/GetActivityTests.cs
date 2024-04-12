@@ -141,12 +141,12 @@ namespace StreamNetTests
             var r2 = await feed.AddActivityAsync(newActivity2);
 
             var r3 = await feed.GetFlatActivitiesAsync(GetOptions.Default.DiscardActors(new List<string> { "1" }, ";"));
-            Assert.IsNotNull(r);
-            Assert.AreEqual(1, r.Results.Count);
+            Assert.IsNotNull(r3);
+            Assert.AreEqual(1, r3.Results.Count);
 
             var r4 = await feed.GetFlatActivitiesAsync(GetOptions.Default.DiscardActors(new List<string> { "1", "2" }, ";"));
-            Assert.IsNotNull(r);
-            Assert.AreEqual(0, r.Results.Count);
+            Assert.IsNotNull(r4);
+            Assert.AreEqual(0, r4.Results.Count);
         }
 
         [Test]
