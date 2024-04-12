@@ -130,6 +130,15 @@ namespace StreamNetTests
         }
 
         [Test]
+        public async Task TestActorFilter()
+        {
+            var feed = this.UserFeed;
+
+            var r = await feed.GetFlatActivitiesAsync(GetOptions.Default.DiscardActors(["1"], ";"));
+            Assert.IsNotNull(r);
+        }
+
+        [Test]
         [Ignore("Test database has no ranked method at the moment")]
         public async Task TestScoreVars()
         {
