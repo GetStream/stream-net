@@ -20,6 +20,8 @@ namespace Stream.Models
         private string _user_id = null;
         private string _ranking_vars = null;
         private bool _score_vars = false;
+        private string _discard_actors = null;
+        private string _discard_actors_sep = null;
 
         private IDictionary<string, string> _custom = null;
 
@@ -106,6 +108,17 @@ namespace Stream.Models
             return this;
         }
 
+        public GetOptions DiscardActors(List<string> actors, string separator = ",")
+        {
+            if (separator != ",")
+            {
+                _discard_actors_sep = separator;
+            }
+
+            _discard_actors = string.Join(separator, actors);
+            return this;
+        }
+
         internal void Apply(RestRequest request)
         {
             request.AddQueryParameter("offset", _offset.ToString());
@@ -131,6 +144,12 @@ namespace Stream.Models
 
             if (_score_vars)
                 request.AddQueryParameter("withScoreVars", "true");
+
+            if (!string.IsNullOrWhiteSpace(_discard_actors_sep))
+                request.AddQueryParameter("discard_actors_sep", _discard_actors_sep);
+
+            if (!string.IsNullOrWhiteSpace(_discard_actors))
+                request.AddQueryParameter("discard_actors", _discard_actors);
 
             if (_custom != null)
             {

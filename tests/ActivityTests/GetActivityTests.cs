@@ -134,7 +134,7 @@ namespace StreamNetTests
         {
             var feed = this.UserFeed;
 
-            var r = await feed.GetFlatActivitiesAsync(GetOptions.Default.DiscardActors(["1"], ";"));
+            var r = await feed.GetFlatActivitiesAsync(GetOptions.Default.DiscardActors(new List<string> { "1" }, ";"));
             Assert.IsNotNull(r);
         }
 
