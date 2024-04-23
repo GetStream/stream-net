@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [6.8.3](https://github.com/GetStream/stream-net/compare/6.8.2...6.8.3) (2024-04-23)
+
 ### [6.8.2-prerelease](https://github.com/GetStream/stream-net/compare/6.8.1...6.8.2-prerelease) (2024-04-12)
 
 ### [6.8.1](https://github.com/GetStream/stream-net/compare/6.8.0...6.8.1) (2024-02-27)
