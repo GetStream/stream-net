@@ -5,7 +5,7 @@ echo "Preparing release $VERSION"
 
 # Update .csproj file
 # This regex to update Version tag in .csproj file
-sed -i -r "s/\(<Version>\).*\(<\/Version>\)/\1$VERSION\2/" src/stream-net.csproj
+sed -i -r "s/>[0-9]+\.[0-9]+\.[0-9]+(?:\-\w+)?</>$VERSION</g" src/stream-net.csproj
 
 # Create changelog
 # --skip.commit: We manually commit the changes
