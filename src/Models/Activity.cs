@@ -52,6 +52,7 @@ namespace Stream.Models
         public IEnumerable<string> Unset { get; set; }
         public DateTime? Time { get; set; }
     }
+    
     public class ModerationContent {
         public string ConfigKey { get; set; }
         public List<string> Texts { get; set; }
