@@ -22,6 +22,7 @@ namespace Stream.Models
         private bool _score_vars = false;
         private string _discard_actors = null;
         private string _discard_actors_sep = null;
+        private string _moderation_template = null;
 
         private IDictionary<string, string> _custom = null;
 
@@ -70,6 +71,12 @@ namespace Stream.Models
         public GetOptions WithRankingVars(IDictionary<string, object> rankingVars)
         {
             _ranking_vars = StreamJsonConverter.SerializeObject(rankingVars);
+            return this;
+        }
+
+        public GetOptions WithModerationTemplate(String template)
+        {
+            _moderation_template = template;
             return this;
         }
 
@@ -141,6 +148,9 @@ namespace Stream.Models
 
             if (!string.IsNullOrWhiteSpace(_ranking_vars))
                 request.AddQueryParameter("ranking_vars", _ranking_vars);
+
+            if (!string.IsNullOrWhiteSpace(_moderation_template))
+                request.AddQueryParameter("moderation_template", _moderation_template);
 
             if (_score_vars)
                 request.AddQueryParameter("withScoreVars", "true");

@@ -130,6 +130,37 @@ namespace StreamNetTests
         }
 
         [Test]
+        [Ignore("Test database has no moderation template at the moment")]
+        public async Task TestRankingVars()
+        {
+            var newActivity1 = new Activity("1", "test", "1")
+            {
+                ForeignId = "r-test-1",
+                Time = DateTime.Parse("2000-08-16T16:32:32"),
+            };
+
+            newActivity1.SetData("popularity", 123);
+
+            var response = await this.UserFeed.AddActivityAsync(newActivity1);
+
+            var newActivity2 = new Activity("1", "test", "2")
+            {
+                ForeignId = "r-test-2",
+                Time = DateTime.Parse("2000-08-17T16:32:32"),
+            };
+
+            response = await this.UserFeed.AddActivityAsync(newActivity2);
+
+            var mod_template = "moderation_template_1";
+            var r2 = await this.UserFeed.GetFlatActivitiesAsync(GetOptions.Default.WithLimit(2).WithModerationTemplate(mod_template);
+            Assert.NotNull(r2);
+            Assert.AreEqual(2, r2.Results.Count);
+
+            Assert.AreEqual(r2.Results[0].ModerationContent.Texts[0], "text");
+            Assert.AreEqual(r2.Results[0].ModerationContent.Images[0], "image");
+        }
+
+        [Test]
         [Ignore("Test server doesn't support this feature at the moment")]
         public async Task TestActorFilter()
         {

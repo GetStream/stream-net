@@ -23,6 +23,9 @@ namespace Stream.Models
         public string Origin { get; set; }
         public Dictionary<string, object> ScoreVars { get; set; }
 
+        public string ModerationTemplate { get; set; }
+        public ModerationContent Moderation { get; }
+
         public Activity(string actor, string verb, string @object)
         {
             Actor = actor;
@@ -48,5 +51,10 @@ namespace Stream.Models
         public Dictionary<string, object> Set { get; set; }
         public IEnumerable<string> Unset { get; set; }
         public DateTime? Time { get; set; }
+    }
+    public class ModerationContent {
+        public string ConfigKey { get; set; }
+        public List<string> Texts { get; set; }
+        public List<string> Images { get; set; }
     }
 }
