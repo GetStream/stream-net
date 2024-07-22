@@ -147,7 +147,7 @@ namespace StreamNetTests
 
             newActivity2.SetData("attachment", attachments);
 
-            response = await this.UserFeed.AddActivityAsync(newActivity2);
+            var response = await this.UserFeed.AddActivityAsync(newActivity2);
 
             var modResponse = response.GetData<ModerationResponse>("moderation");
             Console.WriteLine(modResponse.Status);
