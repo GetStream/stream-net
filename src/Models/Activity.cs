@@ -24,7 +24,6 @@ namespace Stream.Models
         public Dictionary<string, object> ScoreVars { get; set; }
 
         public string ModerationTemplate { get; set; }
-        public ModerationContent Moderation { get; }
 
         public Activity(string actor, string verb, string @object)
         {
@@ -44,6 +43,19 @@ namespace Stream.Models
         public List<Activity> Activities { get; set; }
     }
 
+    public class ModerationResponse
+    {
+        public string Status { get; set; }
+        public string RecommendedAction { get; set; }
+        public APIError APIError { get; set; }
+    }
+
+    public class APIError
+    {
+        public string Code { get; set; }
+        public string Message { get; set; }
+    }
+
     public class ActivityPartialUpdateRequestObject
     {
         public string Id { get; set; }
@@ -51,12 +63,5 @@ namespace Stream.Models
         public Dictionary<string, object> Set { get; set; }
         public IEnumerable<string> Unset { get; set; }
         public DateTime? Time { get; set; }
-    }
-
-    public class ModerationContent
-    {
-        public string ConfigKey { get; set; }
-        public List<string> Texts { get; set; }
-        public List<string> Images { get; set; }
     }
 }

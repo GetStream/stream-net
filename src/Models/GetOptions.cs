@@ -74,12 +74,6 @@ namespace Stream.Models
             return this;
         }
 
-        public GetOptions WithModerationTemplate(string template)
-        {
-            _moderation_template = template;
-            return this;
-        }
-
         public GetOptions WithSession(string session)
         {
             _session = session;

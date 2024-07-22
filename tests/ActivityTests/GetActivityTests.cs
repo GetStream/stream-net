@@ -132,31 +132,28 @@ namespace StreamNetTests
         [Test]
         public async Task TestModerationTemplate()
         {
-            var newActivity1 = new Activity("1", "test", "1")
-            {
-                ForeignId = "r-test-1",
-                Time = DateTime.Parse("2000-08-16T16:32:32"),
-            };
-
-            newActivity1.SetData("popularity", 123);
-
-            var response = await this.UserFeed.AddActivityAsync(newActivity1);
-
             var newActivity2 = new Activity("1", "test", "2")
             {
                 ForeignId = "r-test-2",
                 Time = DateTime.Parse("2000-08-17T16:32:32"),
             };
+            newActivity2.SetData("moderation_template", "moderation_template_test_images");
+
+            newActivity2.SetData("a", "pissoar");
+
+            var attachments = new Dictionary<string, object>();
+            string[] images = new string[] { "image1", "image2" };
+            attachments["images"] = images;
+
+            newActivity2.SetData("attachment", attachments);
 
             response = await this.UserFeed.AddActivityAsync(newActivity2);
 
-            var mod_template = "moderation_template_1";
-            var r2 = await this.UserFeed.GetFlatActivitiesAsync(GetOptions.Default.WithLimit(2).WithModerationTemplate(mod_template));
-            Assert.NotNull(r2);
-            Assert.AreEqual(2, r2.Results.Count);
+            var modResponse = response.GetData<ModerationResponse>("moderation");
+            Console.WriteLine(modResponse.Status);
 
-            Assert.AreEqual(r2.Results[0].Moderation.Texts[0], "text");
-            Assert.AreEqual(r2.Results[0].Moderation.Images[0], "image");
+            Assert.AreEqual(modResponse.Status, "complete");
+            Assert.AreEqual(modResponse.RecommendedAction, "remove");
         }
 
         [Test]
