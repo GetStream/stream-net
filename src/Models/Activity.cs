@@ -24,7 +24,7 @@ namespace Stream.Models
         public Dictionary<string, object> ScoreVars { get; set; }
 
         public string ModerationTemplate { get; set; }
-        public ModerationContent ModerationContent { get; }
+        public ModerationContent Moderation { get; }
 
         public Activity(string actor, string verb, string @object)
         {
