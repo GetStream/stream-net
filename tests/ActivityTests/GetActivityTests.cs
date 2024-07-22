@@ -130,7 +130,6 @@ namespace StreamNetTests
         }
 
         [Test]
-        [Ignore("Test database has no moderation template at the moment")]
         public async Task TestModerationTemplate()
         {
             var newActivity1 = new Activity("1", "test", "1")
