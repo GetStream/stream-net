@@ -131,7 +131,7 @@ namespace StreamNetTests
 
         [Test]
         [Ignore("Test database has no moderation template at the moment")]
-        public async Task TestRankingVars()
+        public async Task TestModerationTemplate()
         {
             var newActivity1 = new Activity("1", "test", "1")
             {
@@ -152,12 +152,12 @@ namespace StreamNetTests
             response = await this.UserFeed.AddActivityAsync(newActivity2);
 
             var mod_template = "moderation_template_1";
-            var r2 = await this.UserFeed.GetFlatActivitiesAsync(GetOptions.Default.WithLimit(2).WithModerationTemplate(mod_template);
+            var r2 = await this.UserFeed.GetFlatActivitiesAsync(GetOptions.Default.WithLimit(2).WithModerationTemplate(mod_template));
             Assert.NotNull(r2);
             Assert.AreEqual(2, r2.Results.Count);
 
-            Assert.AreEqual(r2.Results[0].ModerationContent.Texts[0], "text");
-            Assert.AreEqual(r2.Results[0].ModerationContent.Images[0], "image");
+            Assert.AreEqual(r2.Results[0].Moderation.Texts[0], "text");
+            Assert.AreEqual(r2.Results[0].Moderation.Images[0], "image");
         }
 
         [Test]
