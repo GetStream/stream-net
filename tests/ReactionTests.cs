@@ -1,11 +1,12 @@
+using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using Stream;
 using Stream.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
-
 namespace StreamNetTests
 {
     [TestFixture]
@@ -78,6 +79,38 @@ namespace StreamNetTests
             // Assert.DoesNotThrowAsync(async () => await Client.Reactions.DeleteAsync(r.Id, true));
             // Assert.DoesNotThrowAsync(async () => await Client.Reactions.RestoreSoftDeletedAsync(r.Id));
             Assert.DoesNotThrowAsync(async () => await Client.Reactions.DeleteAsync(r.Id));
+
+            Assert.ThrowsAsync<StreamException>(async () => await Client.Reactions.GetAsync(r.Id));
+        }
+
+        [Test]
+        public async Task TestReactionModeration()
+        {
+            var a = new Activity("user:1", "like", "cake")
+            {
+                ForeignId = "cake:1",
+                Time = DateTime.UtcNow,
+                Target = "johnny",
+            };
+
+            var activity = await this.UserFeed.AddActivityAsync(a);
+
+            var data = new Dictionary<string, object>() { { "field", "value" }, { "number", 2 }, { "text", "pissoar" }, };
+
+            var r = await Client.Reactions.AddAsync("like", activity.Id, "bobby", data, null, "moderation_config_1_reaction");
+
+            Assert.NotNull(r);
+            Assert.AreEqual(r.ActivityId, activity.Id);
+            Assert.AreEqual(r.Kind, "like");
+            Assert.AreEqual(r.UserId, "bobby");
+            Assert.AreEqual(r.Data, data);
+
+            var response = ((JObject)r.Moderation["response"]).ToObject<ModerationResponse>();
+            var key = (string)r.Moderation["key"];
+
+            Assert.AreEqual("moderation_config_1_reaction",key);
+            Assert.AreEqual("complete", response.Status);
+            Assert.AreEqual("remove", response.RecommendedAction);
 
             Assert.ThrowsAsync<StreamException>(async () => await Client.Reactions.GetAsync(r.Id));
         }

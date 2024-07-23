@@ -14,6 +14,7 @@ namespace Stream.Models
         public DateTime? UpdatedAt { get; set; }
         public string ActivityId { get; set; }
         public string UserId { get; set; }
+        public string ModerationTemplate { get; set; }
         public GenericData User { get; set; }
 
         public IDictionary<string, object> Data { get; set; }
@@ -30,6 +31,8 @@ namespace Stream.Models
         public DateTime? DeletedAt { get; set; }
 
         public string Ref() => $"SR:{Id}";
+
+        public Dictionary<string, object> Moderation { get; set; }
     }
 
     public class ReactionsWithActivity : GenericGetResponse<Reaction>
