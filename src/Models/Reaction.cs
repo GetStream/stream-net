@@ -1,9 +1,9 @@
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Stream.Rest;
 using System;
 using System.Collections.Generic;
 using ReactionFilter = Stream.Models.FeedFilter;
-using Newtonsoft.Json.Linq;
 
 namespace Stream.Models
 {
@@ -36,15 +36,15 @@ namespace Stream.Models
         public Dictionary<string, object> Moderation { get; set; }
         public ModerationResponse GetModerationResponse()
         {
-              var key = "response";
-              if (Moderation != null && Moderation.ContainsKey(key))
-              {
-                  return ((JObject)Moderation[key]).ToObject<ModerationResponse>();
-              }
-              else
-              {
-                  throw new KeyNotFoundException($"Key '{key}' not found in moderation dictionary.");
-              }
+            var key = "response";
+            if (Moderation != null && Moderation.ContainsKey(key))
+            {
+                return ((JObject)Moderation[key]).ToObject<ModerationResponse>();
+            }
+            else
+            {
+                throw new KeyNotFoundException($"Key '{key}' not found in moderation dictionary.");
+            }
         }
     }
 
