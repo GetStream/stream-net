@@ -3,6 +3,7 @@ using Stream.Rest;
 using System;
 using System.Collections.Generic;
 using ReactionFilter = Stream.Models.FeedFilter;
+using Newtonsoft.Json.Linq;
 
 namespace Stream.Models
 {
@@ -33,6 +34,40 @@ namespace Stream.Models
         public string Ref() => $"SR:{Id}";
 
         public Dictionary<string, object> Moderation { get; set; }
+        public ModerationResponse GetModerationResponse()
+                {
+                var key = "response";
+                if (Moderation != null && Moderation.ContainsKey(key)){
+                 return ((JObject)Moderation[key]).ToObject<ModerationResponse>();
+                 }
+
+                    else
+                    {
+                        // Handle the case where the key does not exist
+                        throw new KeyNotFoundException($"Key '{key}' not found in moderation dictionary.");
+                    }
+                }
+        public T GetModerationValue<T>(string key)
+        {
+            if (Moderation != null && Moderation.ContainsKey(key))
+            {
+                try
+                {
+//                ((JObject)r.Moderation["response"]).ToObject<ModerationResponse>();
+                    return (T)Convert.ChangeType(Moderation[key], typeof(T));
+                }
+                catch (InvalidCastException)
+                {
+                    // Handle the casting error
+                    throw new InvalidCastException($"Unable to cast moderation value to type {typeof(T).Name}.");
+                }
+            }
+            else
+            {
+                // Handle the case where the key does not exist
+                throw new KeyNotFoundException($"Key '{key}' not found in moderation dictionary.");
+            }
+        }
     }
 
     public class ReactionsWithActivity : GenericGetResponse<Reaction>

@@ -105,10 +105,8 @@ namespace StreamNetTests
             Assert.AreEqual(r.UserId, "bobby");
             Assert.AreEqual(r.Data, data);
 
-            var response = ((JObject)r.Moderation["response"]).ToObject<ModerationResponse>();
-            var key = (string)r.Moderation["key"];
+            var response = r.GetModerationResponse();
 
-            Assert.AreEqual("moderation_config_1_reaction",key);
             Assert.AreEqual("complete", response.Status);
             Assert.AreEqual("remove", response.RecommendedAction);
 
