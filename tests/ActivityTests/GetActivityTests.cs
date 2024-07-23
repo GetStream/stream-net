@@ -150,7 +150,6 @@ namespace StreamNetTests
             var response = await this.UserFeed.AddActivityAsync(newActivity2);
 
             var modResponse = response.GetData<ModerationResponse>("moderation");
-            Console.WriteLine(modResponse.Status);
 
             Assert.AreEqual(modResponse.Status, "complete");
             Assert.AreEqual(modResponse.RecommendedAction, "remove");
