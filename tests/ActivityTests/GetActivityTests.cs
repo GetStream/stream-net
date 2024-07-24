@@ -130,32 +130,6 @@ namespace StreamNetTests
         }
 
         [Test]
-        public async Task TestModerationTemplate()
-        {
-            var newActivity2 = new Activity("1", "test", "2")
-            {
-                ForeignId = "r-test-2",
-                Time = DateTime.Parse("2000-08-17T16:32:32"),
-            };
-            newActivity2.SetData("moderation_template", "moderation_template_test_images");
-
-            newActivity2.SetData("a", "pissoar");
-
-            var attachments = new Dictionary<string, object>();
-            string[] images = new string[] { "image1", "image2" };
-            attachments["images"] = images;
-
-            newActivity2.SetData("attachment", attachments);
-
-            var response = await this.UserFeed.AddActivityAsync(newActivity2);
-
-            var modResponse = response.GetData<ModerationResponse>("moderation");
-
-            Assert.AreEqual(modResponse.Status, "complete");
-            Assert.AreEqual(modResponse.RecommendedAction, "remove");
-        }
-
-        [Test]
         [Ignore("Test server doesn't support this feature at the moment")]
         public async Task TestActorFilter()
         {

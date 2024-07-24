@@ -12,6 +12,34 @@ namespace StreamNetTests
     public class ModerationTests : TestBase
     {
         [Test]
+        [Ignore("The api is not deployed yet")]
+        public async Task TestModerationTemplate()
+        {
+            var newActivity2 = new Activity("1", "test", "2")
+            {
+                ForeignId = "r-test-2",
+                Time = DateTime.Parse("2000-08-17T16:32:32"),
+            };
+            newActivity2.SetData("moderation_template", "moderation_template_test_images");
+
+            newActivity2.SetData("a", "pissoar");
+
+            var attachments = new Dictionary<string, object>();
+            string[] images = new string[] { "image1", "image2" };
+            attachments["images"] = images;
+
+            newActivity2.SetData("attachment", attachments);
+
+            var response = await this.UserFeed.AddActivityAsync(newActivity2);
+
+            var modResponse = response.GetData<ModerationResponse>("moderation");
+
+            Assert.AreEqual(modResponse.Status, "complete");
+            Assert.AreEqual(modResponse.RecommendedAction, "remove");
+        }
+
+        [Test]
+        [Ignore("The api is not deployed yet")]
         public async Task TestFlagUser()
         {
             var userId = Guid.NewGuid().ToString();
@@ -32,6 +60,7 @@ namespace StreamNetTests
         }
 
         [Test]
+        [Ignore("The api is not deployed yet")]
         public async Task TestFlagActivity()
         {
             var newActivity = new Activity("vishal", "test", "1");
@@ -48,6 +77,7 @@ namespace StreamNetTests
         }
 
         [Test]
+        [Ignore("The api is not deployed yet")]
         public async Task TestFlagReaction()
         {
             var a = new Activity("user:1", "like", "cake")
