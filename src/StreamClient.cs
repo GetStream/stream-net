@@ -65,6 +65,7 @@ namespace Stream
                 stream_url, UriKind.Absolute);
 
             _client = new RestClient(url, TimeSpan.FromMilliseconds(_options.Timeout));
+
             var assemblyVersion = typeof(StreamClient).GetTypeInfo().Assembly.GetName().Version;
             Version = assemblyVersion.ToString(3);
 
@@ -72,6 +73,7 @@ namespace Stream
             Collections = new Collections(this);
             Reactions = new Reactions(this);
             Users = new Users(this);
+            Moderation = new Moderation(this);
             var personalization = new RestClient(GetBasePersonalizationUrl(), TimeSpan.FromMilliseconds(_options.PersonalizationTimeout));
             Personalization = new Personalization(new StreamClient(_apiKey, _streamClientToken, personalization, _options));
             Files = new Files(this);
@@ -93,6 +95,7 @@ namespace Stream
         public IPersonalization Personalization { get; }
         public IFiles Files { get; }
         public IImages Images { get; }
+        public IModeration Moderation { get; }
 
         public IStreamFeed Feed(string feedSlug, string userId)
         {

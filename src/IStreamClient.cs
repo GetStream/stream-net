@@ -26,6 +26,8 @@ namespace Stream
         /// </summary>
         IReactions Reactions { get; }
 
+        IModeration Moderation { get; }
+
         /// <summary>
         /// Returns an <see cref="IUsers"/> instance that let's you interact with users.
         /// You can used the returned instance as a singleton in your application.
