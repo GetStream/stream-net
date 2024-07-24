@@ -40,6 +40,37 @@ namespace StreamNetTests
 
         [Test]
         [Ignore("The api is not deployed yet")]
+        public async Task TestReactionModeration()
+        {
+            var a = new Activity("user:1", "like", "cake")
+            {
+                ForeignId = "cake:1",
+                Time = DateTime.UtcNow,
+                Target = "johnny",
+            };
+
+            var activity = await this.UserFeed.AddActivityAsync(a);
+
+            var data = new Dictionary<string, object>() { { "field", "value" }, { "number", 2 }, { "text", "pissoar" }, };
+
+            var r = await Client.Reactions.AddAsync("like", activity.Id, "bobby", data, null, "moderation_config_1_reaction");
+
+            Assert.NotNull(r);
+            Assert.AreEqual(r.ActivityId, activity.Id);
+            Assert.AreEqual(r.Kind, "like");
+            Assert.AreEqual(r.UserId, "bobby");
+            Assert.AreEqual(r.Data, data);
+
+            var response = r.GetModerationResponse();
+
+            Assert.AreEqual("complete", response.Status);
+            Assert.AreEqual("remove", response.RecommendedAction);
+
+            Assert.ThrowsAsync<StreamException>(async () => await Client.Reactions.GetAsync(r.Id));
+        }
+
+        [Test]
+        [Ignore("The api is not deployed yet")]
         public async Task TestFlagUser()
         {
             var userId = Guid.NewGuid().ToString();
