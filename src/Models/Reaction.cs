@@ -1,4 +1,5 @@
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Stream.Rest;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,7 @@ namespace Stream.Models
         public DateTime? UpdatedAt { get; set; }
         public string ActivityId { get; set; }
         public string UserId { get; set; }
+        public string ModerationTemplate { get; set; }
         public GenericData User { get; set; }
 
         public IDictionary<string, object> Data { get; set; }
@@ -30,6 +32,20 @@ namespace Stream.Models
         public DateTime? DeletedAt { get; set; }
 
         public string Ref() => $"SR:{Id}";
+
+        public Dictionary<string, object> Moderation { get; set; }
+        public ModerationResponse GetModerationResponse()
+        {
+            var key = "response";
+            if (Moderation != null && Moderation.ContainsKey(key))
+            {
+                return ((JObject)Moderation[key]).ToObject<ModerationResponse>();
+            }
+            else
+            {
+                throw new KeyNotFoundException($"Key '{key}' not found in moderation dictionary.");
+            }
+        }
     }
 
     public class ReactionsWithActivity : GenericGetResponse<Reaction>

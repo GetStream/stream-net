@@ -19,13 +19,13 @@ namespace Stream
         }
 
         public async Task<Reaction> AddAsync(string kind, string activityId, string userId,
-            IDictionary<string, object> data = null, IEnumerable<string> targetFeeds = null)
+            IDictionary<string, object> data = null, IEnumerable<string> targetFeeds = null, string moderationTemplate = null)
         {
-            return await AddAsync(null, kind, activityId, userId, data, targetFeeds);
+            return await AddAsync(null, kind, activityId, userId, data, targetFeeds, moderationTemplate);
         }
 
         public async Task<Reaction> AddAsync(string reactionId, string kind, string activityId, string userId,
-            IDictionary<string, object> data = null, IEnumerable<string> targetFeeds = null)
+            IDictionary<string, object> data = null, IEnumerable<string> targetFeeds = null, string moderationTemplate = null)
         {
             var r = new Reaction
             {
@@ -35,6 +35,7 @@ namespace Stream
                 UserId = userId,
                 Data = data,
                 TargetFeeds = targetFeeds,
+                ModerationTemplate = moderationTemplate,
             };
 
             return await AddAsync(r);

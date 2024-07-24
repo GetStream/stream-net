@@ -1,11 +1,12 @@
+using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using Stream;
 using Stream.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
-
 namespace StreamNetTests
 {
     [TestFixture]

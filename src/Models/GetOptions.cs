@@ -22,6 +22,7 @@ namespace Stream.Models
         private bool _score_vars = false;
         private string _discard_actors = null;
         private string _discard_actors_sep = null;
+        private string _moderation_template = null;
 
         private IDictionary<string, string> _custom = null;
 
@@ -141,6 +142,9 @@ namespace Stream.Models
 
             if (!string.IsNullOrWhiteSpace(_ranking_vars))
                 request.AddQueryParameter("ranking_vars", _ranking_vars);
+
+            if (!string.IsNullOrWhiteSpace(_moderation_template))
+                request.AddQueryParameter("moderation_template", _moderation_template);
 
             if (_score_vars)
                 request.AddQueryParameter("withScoreVars", "true");
