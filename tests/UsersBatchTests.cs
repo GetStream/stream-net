@@ -32,20 +32,6 @@ namespace StreamNetTests
             Assert.AreEqual(userIds.Count, usersReturned.Count());
         }
 
-        // [Test]
-        //        public async Task TestUpdateUsersAsync()
-        //        {
-        //            var users = new List<User>
-        //            {
-        //                new User { Id = Guid.NewGuid().ToString(), Data = new Dictionary<string, object> { { "field", "newvalue1" } } },
-        //                new User { Id = Guid.NewGuid().ToString(), Data = new Dictionary<string, object> { { "field", "newvalue2" } } },
-        //            };
-        //
-        //            var response = await Client.UsersBatch.UpdateUsersAsync(users);
-        //
-        //            Assert.NotNull(response);
-        //            Assert.AreEqual(users.Count, response.Count());
-        //        }
         [Test]
         public async Task TestDeleteUsersAsync()
         {
