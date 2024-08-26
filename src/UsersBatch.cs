@@ -30,7 +30,10 @@ namespace Stream
             var response = await _client.MakeRequestAsync(request);
 
             if (response.StatusCode == HttpStatusCode.Created)
-                return StreamJsonConverter.DeserializeObject<IEnumerable<User>>(response.Content);
+            {
+                var addUserBatchResponse = StreamJsonConverter.DeserializeObject<AddUserBatchResponse>(response.Content);
+                return addUserBatchResponse.CreatedUsers;
+            }
 
             throw StreamException.FromResponse(response);
         }
@@ -43,7 +46,10 @@ namespace Stream
             var response = await _client.MakeRequestAsync(request);
 
             if (response.StatusCode == HttpStatusCode.OK)
-                return StreamJsonConverter.DeserializeObject<IEnumerable<User>>(response.Content);
+            {
+                var getUserBatchResponse = StreamJsonConverter.DeserializeObject<GetUserBatchResponse>(response.Content);
+                return getUserBatchResponse.Users;
+            }
 
             throw StreamException.FromResponse(response);
         }
@@ -56,7 +62,10 @@ namespace Stream
             var response = await _client.MakeRequestAsync(request);
 
             if (response.StatusCode == HttpStatusCode.OK)
-                return StreamJsonConverter.DeserializeObject<IEnumerable<string>>(response.Content);
+            {
+                var deleteUserBatchResponse = StreamJsonConverter.DeserializeObject<DeleteUsersBatchResponse>(response.Content);
+                return deleteUserBatchResponse.DeletedUserIds;
+            }
 
             throw StreamException.FromResponse(response);
         }

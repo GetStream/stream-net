@@ -11,29 +11,25 @@ namespace StreamNetTests
     public class UsersBatchTests : TestBase
     {
         [Test]
-        public async Task TestAddUsersAsync()
+        public async Task TestAddGetUsersAsync()
         {
+            var userIds = new List<string> { Guid.NewGuid().ToString(), Guid.NewGuid().ToString() };
+
             var users = new List<User>
             {
-                new User { Id = Guid.NewGuid().ToString(), Data = new Dictionary<string, object> { { "field", "value1" } } },
-                new User { Id = Guid.NewGuid().ToString(), Data = new Dictionary<string, object> { { "field", "value2" } } },
+                new User { Id = userIds[0], Data = new Dictionary<string, object> { { "field", "value1" } } },
+                new User { Id = userIds[1], Data = new Dictionary<string, object> { { "field", "value2" } } },
             };
 
             var response = await Client.UsersBatch.UpsertUsersAsync(users);
 
             Assert.NotNull(response);
             Assert.AreEqual(users.Count, response.Count());
-        }
 
-        [Test]
-        public async Task TestGetUsersAsync()
-        {
-            var userIds = new List<string> { Guid.NewGuid().ToString(), Guid.NewGuid().ToString() };
+            var usersReturned = await Client.UsersBatch.GetUsersAsync(userIds);
 
-            var users = await Client.UsersBatch.GetUsersAsync(userIds);
-
-            Assert.NotNull(users);
-            Assert.AreEqual(userIds.Count, users.Count());
+            Assert.NotNull(usersReturned);
+            Assert.AreEqual(userIds.Count, usersReturned.Count());
         }
 
         // [Test]
@@ -65,11 +61,13 @@ namespace StreamNetTests
         [Test]
         public async Task AddGetDeleteGetUsersAsync()
         {
+            var userIds = new List<string> { Guid.NewGuid().ToString(), Guid.NewGuid().ToString() };
+
             // Add users
             var users = new List<User>
             {
-                new User { Id = Guid.NewGuid().ToString(), Data = new Dictionary<string, object> { { "field", "value1" } } },
-                new User { Id = Guid.NewGuid().ToString(), Data = new Dictionary<string, object> { { "field", "value2" } } },
+                new User { Id = userIds[0], Data = new Dictionary<string, object> { { "field", "value1" } } },
+                new User { Id = userIds[1], Data = new Dictionary<string, object> { { "field", "value2" } } },
             };
 
             var addResponse = await Client.UsersBatch.UpsertUsersAsync(users);
@@ -77,7 +75,6 @@ namespace StreamNetTests
             Assert.AreEqual(users.Count, addResponse.Count());
 
             // Get users to confirm they were added
-            var userIds = users.Select(u => u.Id);
             var getUsersResponse = await Client.UsersBatch.GetUsersAsync(userIds);
             Assert.NotNull(getUsersResponse);
             Assert.AreEqual(users.Count, getUsersResponse.Count());
