@@ -21,6 +21,12 @@ namespace Stream
         ICollections Collections { get; }
 
         /// <summary>
+        /// Returns an <see cref="IUsersBatch"/> instance that let's you interact with UsersBatch.
+        /// You can used the returned instance as a singleton in your application.
+        /// </summary>
+        IUsersBatch UsersBatch { get; }
+
+        /// <summary>
         /// Returns an <see cref="IReactions"/> instance that let's you interact with reactions.
         /// You can used the returned instance as a singleton in your application.
         /// </summary>
