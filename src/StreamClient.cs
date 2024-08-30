@@ -71,6 +71,7 @@ namespace Stream
 
             Batch = new BatchOperations(this);
             Collections = new Collections(this);
+            UsersBatch = new UsersBatch(this);
             Reactions = new Reactions(this);
             Users = new Users(this);
             Moderation = new Moderation(this);
@@ -90,6 +91,7 @@ namespace Stream
 
         public IBatchOperations Batch { get; }
         public ICollections Collections { get; }
+        public IUsersBatch UsersBatch { get; }
         public IReactions Reactions { get; }
         public IUsers Users { get; }
         public IPersonalization Personalization { get; }
