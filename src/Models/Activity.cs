@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 
@@ -46,6 +47,7 @@ namespace Stream.Models
     public class ModerationResponse
     {
         public string Status { get; set; }
+        [JsonProperty("recommended_action")]
         public string RecommendedAction { get; set; }
         public APIError APIError { get; set; }
     }
