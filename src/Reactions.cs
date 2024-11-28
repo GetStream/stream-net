@@ -176,7 +176,7 @@ namespace Stream
 
         private async Task<Reaction> AddAsync(Reaction r)
         {
-            var request = _client.BuildAppRequest("reaction/", HttpMethod.Post);
+            var request = _client.BuildReactionRequest(HttpMethod.Post, r.ModerationTemplate);
             request.SetJsonBody(StreamJsonConverter.SerializeObject(r));
 
             var response = await _client.MakeRequestAsync(request);

@@ -42,7 +42,7 @@ namespace Stream
         /// <returns>An activity with ID and Date supplied</returns>
         public async Task<Activity> AddActivityAsync(Activity activity)
         {
-            var request = _client.BuildFeedRequest(this, "/", HttpMethod.Post);
+            var request = _client.BuildActivityRequest(this, "/", HttpMethod.Post, activity.GetData<string>("moderation_template") ?? null);
             var body = StreamJsonConverter.SerializeObject(activity);
             request.SetJsonBody(body);
 

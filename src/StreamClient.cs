@@ -21,6 +21,7 @@ namespace Stream
         private const string BasePersonalizationUrlFormat = "https://{0}-personalization.stream-io-api.com";
         private const string BasePersonalizationUrlPath = "/personalization/v1.0/";
         private const string ActivitiesUrlPath = "activities/";
+        private const string ReactionUrlPath = "reaction/";
         private const string ImagesUrlPath = "images/";
         private const string FilesUrlPath = "files/";
         internal const int ActivityCopyLimitDefault = 300;
@@ -192,10 +193,10 @@ namespace Stream
             }
         }
 
-        private RestRequest BuildRestRequest(string fullPath, HttpMethod method, string userId = null)
+        private RestRequest BuildRestRequest(string fullPath, HttpMethod method, string userId = null, string modTemplate = null)
         {
             var request = new RestRequest(fullPath, method);
-            request.AddHeader("Authorization", JWToken("*", userId));
+            request.AddHeader("Authorization", JWToken("*", userId, modTemplate));
             request.AddHeader("Stream-Auth-Type", "jwt");
             request.AddHeader("X-Stream-Client", "stream-net-" + Version);
             request.AddQueryParameter("api_key", _apiKey);
@@ -204,6 +205,8 @@ namespace Stream
 
         internal RestRequest BuildFeedRequest(StreamFeed feed, string path, HttpMethod method)
             => BuildRestRequest(BaseUrlPath + feed.UrlPath + path, method);
+        internal RestRequest BuildActivityRequest(StreamFeed feed, string path, HttpMethod method, string modTemplate = null)
+            => BuildRestRequest(BaseUrlPath + feed.UrlPath + path, method, null, modTemplate);
 
         internal RestRequest BuildEnrichedFeedRequest(StreamFeed feed, string path, HttpMethod method)
             => BuildRestRequest(BaseUrlPath + feed.EnrichedPath + path, method);
@@ -222,14 +225,15 @@ namespace Stream
 
         internal RestRequest BuildAppRequest(string path, HttpMethod method)
             => BuildRestRequest(BaseUrlPath + path, method);
-
+        internal RestRequest BuildReactionRequest(HttpMethod method, string modTemplate = null)
+            => BuildRestRequest(BaseUrlPath + ReactionUrlPath, method, modTemplate);
         internal RestRequest BuildPersonalizationRequest(string path, HttpMethod method)
             => BuildRestRequest(BasePersonalizationUrlPath + path, method, "*");
 
         internal async Task<RestResponse> MakeRequestAsync(RestRequest request)
             => await _client.ExecuteHttpRequestAsync(request);
 
-        internal string JWToken(string feedId, string userId = null)
+        internal string JWToken(string feedId, string userId = null, string modTemplate = null)
         {
             var payload = new Dictionary<string, string>
             {
@@ -238,6 +242,10 @@ namespace Stream
                 { "feed_id", feedId },
             };
 
+            if (!string.IsNullOrEmpty(modTemplate))
+            {
+                payload["required_moderation_template"] = modTemplate;
+            }
             if (userId != null)
             {
                 payload["user_id"] = userId;
