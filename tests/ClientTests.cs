@@ -115,7 +115,24 @@ namespace StreamNetTests
             Assert.AreEqual(true, (bool)result["testing"]);
             Assert.False(result.ContainsKey("missing"));
         }
+        
+        [Test]
+        public void TestModerationToken()
+        {
+            var result = DecodeJwt(Client.CreateUserToken("user"));
+            Assert.AreEqual("user", (string)result["user_id"]);
 
+            var extra = new Dictionary<string, object>()
+            {
+                { "client", "dotnet" },
+                { "required_moderation_template", "mod_template_1" },
+            };
+            result = DecodeJwt(Client.CreateUserToken("user2", extra));
+
+            Assert.AreEqual("mod_template_1", (string)result["required_moderation_template"]);
+            Assert.False(result.ContainsKey("missing"));
+        }
+        
         private Dictionary<string, object> DecodeJwt(string token)
         {
             var segment = token.Split('.')[1];
