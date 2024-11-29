@@ -165,6 +165,96 @@ namespace StreamNetTests
         }
 
         [Test]
+        public async Task TestBatchUpdateToTargets()
+        {
+            var fidTime = new ForeignIdTime(Guid.NewGuid().ToString(), DateTime.UtcNow);
+
+            var targets = new List<string>()
+            {
+                "flat:" + Guid.NewGuid().ToString(),
+                "user:" + Guid.NewGuid().ToString(),
+            };
+
+            var act = new Activity("upd", "test", "1")
+            {
+                ForeignId = fidTime.ForeignId,
+                Time = fidTime.Time,
+                To = targets,
+            };
+
+            var insertedAct = await this.UserFeed.AddActivityAsync(act);
+            Assert.AreEqual(2, insertedAct.To.Count);
+
+            // add 1
+            var add = "user:" + Guid.NewGuid().ToString();
+            var updateReqs = new List<UpdateToTargetsRequest>
+            {
+                new UpdateToTargetsRequest
+                {
+                    Id = insertedAct.Id,
+                    Adds = new List<string> { add }
+                }
+            };
+            var updateResp = await this.UserFeed.BatchUpdateActivityToTargetsAsync(updateReqs);
+            Assert.AreEqual(insertedAct.Id, updateResp.Activity.Id);
+            Assert.AreEqual(1, updateResp.Added.Count);
+            Assert.AreEqual(add, updateResp.Added[0]);
+            Assert.AreEqual(3, updateResp.Activity.To.Count);
+            Assert.IsNotNull(updateResp.Activity.To.ToList().Find(t => t == add));
+
+            var updatedAct = (await this.UserFeed.GetActivitiesAsync(0, 1, FeedFilter.Where().IdLessThanEqual(insertedAct.Id))).Results.FirstOrDefault();
+            Assert.NotNull(updatedAct);
+            Assert.AreEqual(3, updatedAct.To.Count);
+            Assert.IsNotNull(updatedAct.To.ToList().Find(t => t == add));
+
+            // remove 1
+            var remove = targets[0];
+            updateReqs = new List<UpdateToTargetsRequest>
+            {
+                new UpdateToTargetsRequest
+                {
+                    Id = insertedAct.Id,
+                    RemovedTargets = new List<string> { remove }
+                }
+            };
+            updateResp = await this.UserFeed.BatchUpdateActivityToTargetsAsync(updateReqs);
+            Assert.AreEqual(insertedAct.Id, updateResp.Activity.Id);
+            Assert.AreEqual(1, updateResp.Removed.Count);
+            Assert.AreEqual(remove, updateResp.Removed[0]);
+            Assert.AreEqual(2, updateResp.Activity.To.Count);
+            Assert.IsNull(updateResp.Activity.To.ToList().Find(t => t == remove));
+
+            updatedAct = (await this.UserFeed.GetActivitiesAsync(0, 1, FeedFilter.Where().IdLessThanEqual(insertedAct.Id))).Results.FirstOrDefault();
+            Assert.NotNull(updatedAct);
+            Assert.AreEqual(2, updatedAct.To.Count);
+            Assert.IsNull(updatedAct.To.ToList().Find(t => t == remove));
+
+            // new ones
+            var newOnes = new List<string>()
+            {
+                "flat:" + Guid.NewGuid().ToString(),
+                "user:" + Guid.NewGuid().ToString(),
+            };
+            updateReqs = new List<UpdateToTargetsRequest>
+            {
+                new UpdateToTargetsRequest
+                {
+                    Id = insertedAct.Id,
+                    NewTargets = newOnes
+                }
+            };
+            updateResp = await this.UserFeed.BatchUpdateActivityToTargetsAsync(updateReqs);
+            Assert.AreEqual(insertedAct.Id, updateResp.Activity.Id);
+            Assert.AreEqual(2, updateResp.Activity.To.Count);
+            Assert.AreEqual(2, updateResp.Added.Count);
+            Assert.AreEqual(2, updateResp.Added.ToList().FindAll(t => newOnes.Contains(t)).Count);
+            updatedAct = (await this.UserFeed.GetActivitiesAsync(0, 1, FeedFilter.Where().IdLessThanEqual(insertedAct.Id))).Results.FirstOrDefault();
+            Assert.NotNull(updatedAct);
+            Assert.AreEqual(2, updatedAct.To.Count);
+            Assert.AreEqual(2, updatedAct.To.ToList().FindAll(t => newOnes.Contains(t)).Count);
+        }
+
+        [Test]
         public async Task TestActivityPartialUpdateByForeignIDTime()
         {
             var fidTime = new ForeignIdTime(System.Guid.NewGuid().ToString(), DateTime.UtcNow);

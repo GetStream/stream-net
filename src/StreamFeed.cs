@@ -127,6 +127,24 @@ namespace Stream
             throw StreamException.FromResponse(response);
         }
 
+        public async Task<UpdateToTargetsResponse> BatchUpdateActivityToTargetsAsync(List<UpdateToTargetsRequest> reqs)
+        {
+            var endpoint = $"feed_targets/{_feedSlug}/{_userId}/activity_to_targets/";
+
+            var request = _client.BuildAppRequest(endpoint, HttpMethod.Post);
+            request.SetJsonBody(StreamJsonConverter.SerializeObject(reqs));
+            var response = await _client.MakeRequestAsync(request);
+            if (response.StatusCode != HttpStatusCode.Created)
+            {
+                throw new HttpRequestException($"Request failed with status code {response.StatusCode}");
+            }
+
+            if (response.StatusCode == HttpStatusCode.Created)
+                return StreamJsonConverter.DeserializeObject<UpdateToTargetsResponse>(response.Content);
+
+            throw StreamException.FromResponse(response);
+        }
+
         public async Task<UpdateToTargetsResponse> UpdateActivityToTargetsAsync(string id,
             IEnumerable<string> adds = null,
             IEnumerable<string> newTargets = null,
@@ -135,6 +153,8 @@ namespace Stream
             adds?.ForEach(FeedIdValidator.ThrowIfFeedIdIsInvalid);
             newTargets?.ForEach(FeedIdValidator.ThrowIfFeedIdIsInvalid);
             removed?.ForEach(FeedIdValidator.ThrowIfFeedIdIsInvalid);
+
+
 
             var payload = new
             {

@@ -28,6 +28,8 @@ namespace Stream
         /// <remarks>https://getstream.io/activity-feeds/docs/dotnet-csharp/feeds_101/?language=csharp</remarks>
         Task<AddActivitiesResponse> AddActivitiesAsync(IEnumerable<Activity> activities);
 
+        Task<UpdateToTargetsResponse> BatchUpdateActivityToTargetsAsync(List<UpdateToTargetsRequest> reqs);
+
         /// <summary>Add a new activity to the feed.</summary>
         /// <remarks>https://getstream.io/activity-feeds/docs/dotnet-csharp/feeds_101/?language=csharp</remarks>
         Task<Activity> AddActivityAsync(Activity activity);
