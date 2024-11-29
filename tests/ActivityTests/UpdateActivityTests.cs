@@ -192,7 +192,7 @@ namespace StreamNetTests
                 new UpdateToTargetsRequest
                 {
                     Id = insertedAct.Id,
-                    Adds = new List<string> { add }
+                    Adds = new List<string> { add },
                 }
             };
             var updateResp = await this.UserFeed.BatchUpdateActivityToTargetsAsync(updateReqs);
@@ -214,7 +214,7 @@ namespace StreamNetTests
                 new UpdateToTargetsRequest
                 {
                     Id = insertedAct.Id,
-                    RemovedTargets = new List<string> { remove }
+                    RemovedTargets = new List<string> { remove },
                 }
             };
             updateResp = await this.UserFeed.BatchUpdateActivityToTargetsAsync(updateReqs);
@@ -240,7 +240,7 @@ namespace StreamNetTests
                 new UpdateToTargetsRequest
                 {
                     Id = insertedAct.Id,
-                    NewTargets = newOnes
+                    NewTargets = newOnes,
                 }
             };
             updateResp = await this.UserFeed.BatchUpdateActivityToTargetsAsync(updateReqs);
