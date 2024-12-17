@@ -22,7 +22,7 @@ namespace Stream
             var body = new Dictionary<string, object>
             {
                 { "users", users },
-                { "override", overrideExisting },
+                { "override_existing", overrideExisting },
             };
             var request = _client.BuildAppRequest("users/", HttpMethod.Post);
             request.SetJsonBody(StreamJsonConverter.SerializeObject(body));
