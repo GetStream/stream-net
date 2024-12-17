@@ -12,7 +12,6 @@ namespace StreamNetTests
     public class ModerationTests : TestBase
     {
         [Test]
-        [Ignore("The api is not deployed yet")]
         public async Task TestModerationTemplate()
         {
             var newActivity2 = new Activity("1", "test", "2")
@@ -39,7 +38,6 @@ namespace StreamNetTests
         }
 
         [Test]
-        [Ignore("The api is not deployed yet")]
         public async Task TestReactionModeration()
         {
             var a = new Activity("user:1", "like", "cake")
@@ -70,7 +68,6 @@ namespace StreamNetTests
         }
 
         [Test]
-        [Ignore("The api is not deployed yet")]
         public async Task TestFlagUser()
         {
             var userId = Guid.NewGuid().ToString();
@@ -91,7 +88,6 @@ namespace StreamNetTests
         }
 
         [Test]
-        [Ignore("The api is not deployed yet")]
         public async Task TestFlagActivity()
         {
             var newActivity = new Activity("vishal", "test", "1");
@@ -108,7 +104,6 @@ namespace StreamNetTests
         }
 
         [Test]
-        [Ignore("The api is not deployed yet")]
         public async Task TestFlagReaction()
         {
             var a = new Activity("user:1", "like", "cake")
