@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.12.0](https://github.com/GetStream/stream-net/compare/6.11.0...6.12.0) (2024-12-20)
+
+
+### Bug Fixes
+
+* rename override -> override_existing ([#151](https://github.com/GetStream/stream-net/issues/151)) ([ca8ad49](https://github.com/GetStream/stream-net/commit/ca8ad497a6321a8cebc1c8685d2d69a0020580e9))
+
 ## [6.11.0](https://github.com/GetStream/stream-net/compare/6.10.1...6.11.0) (2024-11-29)
 
 ### [6.10.1](https://github.com/GetStream/stream-net/compare/6.10.0...6.10.1) (2024-10-15)
