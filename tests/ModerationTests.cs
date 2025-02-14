@@ -70,7 +70,6 @@ namespace StreamNetTests
         }
 
         [Test]
-        [Ignore("The api is not deployed yet")]
         public async Task TestFlagUser()
         {
             var userId = Guid.NewGuid().ToString();
@@ -91,7 +90,6 @@ namespace StreamNetTests
         }
 
         [Test]
-        [Ignore("The api is not deployed yet")]
         public async Task TestFlagActivity()
         {
             var newActivity = new Activity("vishal", "test", "1");
@@ -108,7 +106,6 @@ namespace StreamNetTests
         }
 
         [Test]
-        [Ignore("The api is not deployed yet")]
         public async Task TestFlagReaction()
         {
             var a = new Activity("user:1", "like", "cake")
