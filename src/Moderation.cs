@@ -37,7 +37,7 @@ namespace Stream
         public async Task<ResponseBase> FlagAsync(string entityType, string entityId, string entityCreatorID,
             string reason, IDictionary<string, object> options = null)
         {
-            var request = _client.BuildAppRequest("/moderation/flag", HttpMethod.Post);
+            var request = _client.BuildAppRequest("moderation/flag", HttpMethod.Post);
             request.SetJsonBody(StreamJsonConverter.SerializeObject(new
             {
                 user_id = entityCreatorID, entity_type = entityType, entity_id = entityId, reason,
