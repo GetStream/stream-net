@@ -68,7 +68,26 @@ namespace StreamNetTests
         [Test]
         public async Task TestFlagUser()
         {
-            var userId = "flagginguser";
+            var userId = "flagginguser1";
+
+
+             var newActivity2 = new Activity(userId, "test", "2")
+            {
+                ForeignId = "r-test-2",
+                Time = DateTime.Parse("2000-08-17T16:32:32"),
+            };
+            newActivity2.SetData("moderation_template", "moderation_template_test_images");
+
+            newActivity2.SetData("text", "pissoar");
+
+            var attachments = new Dictionary<string, object>();
+            string[] images = new string[] { "image1", "image2" };
+            attachments["images"] = images;
+
+            newActivity2.SetData("attachment", attachments);
+
+            var response = await this.UserFeed.AddActivityAsync(newActivity2);
+
             var userData = new Dictionary<string, object>
             {
                 { "field", "value" },
@@ -81,14 +100,14 @@ namespace StreamNetTests
             Assert.NotNull(u.CreatedAt);
             Assert.NotNull(u.UpdatedAt);
 
-            var response = await Client.Moderation.FlagUserAsync(userId, "flagged-user", "blood");
-            Assert.NotNull(response);
+            var response1 = await Client.Moderation.FlagUserAsync(userId, "flagged-user1", "blood");
+            Assert.NotNull(response1);
         }
 
         [Test]
         public async Task TestFlagUserError()
         {
-            Assert.ThrowsAsync<StreamException>(async () => await Client.Moderation.FlagUserAsync("", string.Empty, "blood"));
+            Assert.ThrowsAsync<StreamException>(async () => await Client.Moderation.FlagUserAsync(Guid.NewGuid().ToString(), string.Empty, "blood"));
         }
 
         [Test]

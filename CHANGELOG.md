@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## [7.0.0](https://github.com/GetStream/stream-net/compare/6.14.0...7.0.0) (2025-03-05)
 
+## [7.0.0](https://github.com/GetStream/stream-net/compare/6.14.0...7.0.0) (2025-03-05)
+
 ## [6.14.0](https://github.com/GetStream/stream-net/compare/6.13.0...6.14.0) (2025-02-14)
 
 ## [6.13.0](https://github.com/GetStream/stream-net/compare/6.12.1...6.13.0) (2025-02-14)
