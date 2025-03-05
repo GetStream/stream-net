@@ -63,7 +63,6 @@ namespace StreamNetTests
 
             Assert.AreEqual("complete", response.Status);
             Assert.AreEqual("remove", response.RecommendedAction);
-
         }
 
         [Test]
@@ -84,6 +83,12 @@ namespace StreamNetTests
 
             var response = await Client.Moderation.FlagUserAsync(userId, "blood");
             Assert.NotNull(response);
+        }
+
+        [Test]
+        public async Task TestFlagUserError()
+        {
+            Assert.ThrowsAsync<StreamException>(async () => await Client.Moderation.FlagUserAsync(string.Empty, "blood"));
         }
 
         [Test]

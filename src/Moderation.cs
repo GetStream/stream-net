@@ -45,7 +45,10 @@ namespace Stream
 
             var response = await _client.MakeRequestAsync(request);
 
-            return StreamJsonConverter.DeserializeObject<ResponseBase>(response.Content);
+            if (response.StatusCode > HttpStatusCode.Accepted)
+                return StreamJsonConverter.DeserializeObject<ResponseBase>(response.Content);
+
+            throw StreamException.FromResponse(response);
         }
     }
 }
