@@ -19,9 +19,9 @@ namespace Stream
             _client = client;
         }
 
-        public async Task<ResponseBase> FlagUserAsync(string flaggedUserID, string reason, IDictionary<string, object> options = null)
+        public async Task<ResponseBase> FlagUserAsync(string flaggingUserID, string flaggedUserID, string reason, IDictionary<string, object> options = null)
         {
-            return await FlagAsync("stream:user", flaggedUserID, string.Empty, reason, options);
+            return await FlagAsync("stream:user", flaggedUserID, flaggingUserID, reason, options);
         }
 
         public async Task<ResponseBase> FlagActivityAsync(string entityId, string entityCreatorID, string reason, IDictionary<string, object> options = null)
@@ -45,7 +45,10 @@ namespace Stream
 
             var response = await _client.MakeRequestAsync(request);
 
-            return StreamJsonConverter.DeserializeObject<ResponseBase>(response.Content);
+            if (response.StatusCode == HttpStatusCode.Created)
+                return StreamJsonConverter.DeserializeObject<ResponseBase>(response.Content);
+
+            throw StreamException.FromResponse(response);
         }
     }
 }
