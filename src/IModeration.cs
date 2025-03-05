@@ -6,7 +6,7 @@ namespace Stream
 {
     public interface IModeration
     {
-        Task<ResponseBase> FlagUserAsync(string flaggedUserId, string reason, IDictionary<string, object> options = null);
+        Task<ResponseBase> FlagUserAsync(string flaggingUserID, string flaggedUserId, string reason, IDictionary<string, object> options = null);
 
         Task<ResponseBase> FlagActivityAsync(string entityId, string entityCreatorId, string reason,
             IDictionary<string, object> options = null);

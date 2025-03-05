@@ -68,27 +68,27 @@ namespace StreamNetTests
         [Test]
         public async Task TestFlagUser()
         {
-            var userId = Guid.NewGuid().ToString();
+            var userId = "flagginguser";
             var userData = new Dictionary<string, object>
             {
                 { "field", "value" },
                 { "is_admin", true },
             };
 
-            var u = await Client.Users.AddAsync(userId, userData);
+            var u = await Client.Users.AddAsync(userId, userData, true);
 
             Assert.NotNull(u);
             Assert.NotNull(u.CreatedAt);
             Assert.NotNull(u.UpdatedAt);
 
-            var response = await Client.Moderation.FlagUserAsync(userId, "blood");
+            var response = await Client.Moderation.FlagUserAsync(userId, "flagged-user", "blood");
             Assert.NotNull(response);
         }
 
         [Test]
         public async Task TestFlagUserError()
         {
-            Assert.ThrowsAsync<StreamException>(async () => await Client.Moderation.FlagUserAsync(string.Empty, "blood"));
+            Assert.ThrowsAsync<StreamException>(async () => await Client.Moderation.FlagUserAsync("", string.Empty, "blood"));
         }
 
         [Test]
