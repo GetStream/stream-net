@@ -49,7 +49,7 @@ namespace StreamNetTests
 
             await this.UserFeed.RemoveActivityAsync(fid, true);
 
-            activities = (await this.UserFeed.GetActivitiesAsync(0, 1)).Results;
+            activities = (await Client.Batch.GetActivitiesByIdAsync([response.Id])).Results;
             Assert.AreEqual(0, activities.Count());
         }
     }
