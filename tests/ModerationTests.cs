@@ -98,6 +98,13 @@ namespace StreamNetTests
             newActivity.SetData<string>("stringint", "42");
             newActivity.SetData<string>("stringdouble", "42.2");
             newActivity.SetData<string>("stringcomplex", "{ \"test1\": 1, \"test2\": \"testing\" }");
+            
+            // Set moderation data with origin_feed
+            var moderationData = new Dictionary<string, object>
+            {
+                { "origin_feed", this.UserFeed.FeedId }
+            };
+            newActivity.SetData("moderation", moderationData);
 
             var response = await this.UserFeed.AddActivityAsync(newActivity);
             Assert.IsNotNull(response);
