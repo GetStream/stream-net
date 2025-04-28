@@ -56,6 +56,21 @@ namespace Stream
             throw StreamException.FromResponse(response);
         }
 
+        public async Task<ResponseBase> UnfollowManyAsync(IEnumerable<Follow> follows, bool keepHistory = false)
+        {
+            var request = _client.BuildAppRequest("unfollow_many/", HttpMethod.Post);
+            
+            request.AddQueryParameter("keep_history", keepHistory.ToString().ToLower());
+            request.SetJsonBody(StreamJsonConverter.SerializeObject(follows));
+
+            var response = await _client.MakeRequestAsync(request);
+
+            if (response.StatusCode == HttpStatusCode.Created || response.StatusCode == HttpStatusCode.OK)
+                return StreamJsonConverter.DeserializeObject<ResponseBase>(response.Content);
+
+            throw StreamException.FromResponse(response);
+        }
+
         public async Task<GenericGetResponse<Activity>> GetActivitiesByIdAsync(IEnumerable<string> ids)
             => await GetActivitiesAsync(ids, null);
 
