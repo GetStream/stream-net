@@ -56,6 +56,28 @@ namespace Stream
             throw StreamException.FromResponse(response);
         }
 
+        public async Task<ResponseBase> UnfollowManyAsync(IEnumerable<UnfollowRelation> unfollows)
+        {
+            var request = _client.BuildAppRequest("unfollow_many/", HttpMethod.Post);
+            
+            // Create a new anonymous object array with the properties expected by the API
+            var unfollowRequests = unfollows.Select(f => new 
+            {
+                source = f.Source,
+                target = f.Target,
+                keep_history = f.KeepHistory
+            });
+            
+            request.SetJsonBody(StreamJsonConverter.SerializeObject(unfollowRequests));
+
+            var response = await _client.MakeRequestAsync(request);
+
+            if (response.StatusCode == HttpStatusCode.Created || response.StatusCode == HttpStatusCode.OK)
+                return StreamJsonConverter.DeserializeObject<ResponseBase>(response.Content);
+
+            throw StreamException.FromResponse(response);
+        }
+
         public async Task<GenericGetResponse<Activity>> GetActivitiesByIdAsync(IEnumerable<string> ids)
             => await GetActivitiesAsync(ids, null);
 

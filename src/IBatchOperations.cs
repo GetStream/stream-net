@@ -21,6 +21,10 @@ namespace Stream
         /// <summary>Follow muiltiple feeds.</summary>
         /// <remarks>https://getstream.io/activity-feeds/docs/dotnet-csharp/add_many_activities/?language=csharp</remarks>
         Task<ResponseBase> FollowManyAsync(IEnumerable<Follow> follows, int activityCopyLimit = 100);
+        
+        /// <summary>Unfollow multiple feeds in a single request using UnfollowRelation objects.</summary>
+        /// <remarks>https://getstream.io/activity-feeds/docs/dotnet-csharp/add_many_activities/?language=csharp</remarks>
+        Task<ResponseBase> UnfollowManyAsync(IEnumerable<UnfollowRelation> unfollows);
 
         /// <summary>Get multiple activities by activity ids.</summary>
         /// <remarks>https://getstream.io/activity-feeds/docs/dotnet-csharp/add_many_activities/?language=csharp</remarks>

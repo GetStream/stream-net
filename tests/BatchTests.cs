@@ -11,6 +11,28 @@ namespace StreamNetTests
     public class BatchTests : TestBase
     {
         [Test]
+        public void TestUnfollowManyArgumentValidation()
+        {
+            // Should work with empty array
+            Assert.DoesNotThrowAsync(async () =>
+            {
+                await Client.Batch.UnfollowManyAsync(new UnfollowRelation[] { });
+            });
+            
+            // Should work with valid unfollow relation objects
+            Assert.DoesNotThrowAsync(async () =>
+            {
+                await Client.Batch.UnfollowManyAsync(new[] { new UnfollowRelation("user:1", "user:2", false) });
+            });
+
+            // Should work with keepHistory true
+            Assert.DoesNotThrowAsync(async () =>
+            {
+                await Client.Batch.UnfollowManyAsync(new[] { new UnfollowRelation("user:1", "user:2", true) });
+            });
+        }
+
+        [Test]
         public void TestGetEnrichedActivitiesArgumentValidation()
         {
             Assert.ThrowsAsync<ArgumentException>(async () =>
@@ -304,6 +326,94 @@ namespace StreamNetTests
             GenericGetResponse<Activity> result = await Client.Batch.GetActivitiesByForeignIdAsync(foreignIdTimes);
 
             Assert.AreEqual(1, result.Results.Count);
+        }
+
+        [Test]
+        public async Task TestBatchUnfollowManyKeepHistoryFalse()
+        {
+            // First set up follows and add activities
+            await Client.Batch.FollowManyAsync(new[]
+            {
+                new Follow(UserFeed, FlatFeed),
+                new Follow(UserFeed2, FlatFeed),
+            });
+
+            var newActivity = new Activity("1", "test", "1");
+            var response = await this.FlatFeed.AddActivityAsync(newActivity);
+
+            // Verify follows are working
+            var activities1 = (await this.UserFeed.GetActivitiesAsync(0, 1)).Results;
+            var activities2 = (await this.UserFeed2.GetActivitiesAsync(0, 1)).Results;
+            
+            Assert.IsNotNull(activities1);
+            Assert.AreEqual(1, activities1.Count());
+            Assert.AreEqual(response.Id, activities1.First().Id);
+            
+            Assert.IsNotNull(activities2);
+            Assert.AreEqual(1, activities2.Count());
+            Assert.AreEqual(response.Id, activities2.First().Id);
+
+            // Use UnfollowMany with keepHistory=false
+            await Client.Batch.UnfollowManyAsync(new[]
+            {
+                new UnfollowRelation(UserFeed, FlatFeed, false),
+                new UnfollowRelation(UserFeed2, FlatFeed, false),
+            });
+
+            // Verify activities are removed
+            activities1 = (await this.UserFeed.GetActivitiesAsync(0, 1)).Results;
+            activities2 = (await this.UserFeed2.GetActivitiesAsync(0, 1)).Results;
+            
+            Assert.IsNotNull(activities1);
+            Assert.AreEqual(0, activities1.Count());
+            
+            Assert.IsNotNull(activities2);
+            Assert.AreEqual(0, activities2.Count());
+        }
+
+        [Test]
+        public async Task TestBatchUnfollowManyKeepHistoryTrue()
+        {
+            // First set up follows and add activities
+            await Client.Batch.FollowManyAsync(new[]
+            {
+                new Follow(UserFeed, FlatFeed),
+                new Follow(UserFeed2, FlatFeed),
+            });
+
+            var newActivity = new Activity("1", "test", "1");
+            var response = await this.FlatFeed.AddActivityAsync(newActivity);
+
+            // Verify follows are working
+            var activities1 = (await this.UserFeed.GetActivitiesAsync(0, 1)).Results;
+            var activities2 = (await this.UserFeed2.GetActivitiesAsync(0, 1)).Results;
+            
+            Assert.IsNotNull(activities1);
+            Assert.AreEqual(1, activities1.Count());
+            Assert.AreEqual(response.Id, activities1.First().Id);
+            
+            Assert.IsNotNull(activities2);
+            Assert.AreEqual(1, activities2.Count());
+            Assert.AreEqual(response.Id, activities2.First().Id);
+
+            // Use UnfollowMany with keepHistory=true
+            await Client.Batch.UnfollowManyAsync(new[]
+            {
+                new UnfollowRelation(UserFeed, FlatFeed, true),
+                new UnfollowRelation(UserFeed2, FlatFeed, true),
+            });
+
+            // Verify activities are retained
+            activities1 = (await this.UserFeed.GetActivitiesAsync(0, 1)).Results;
+            activities2 = (await this.UserFeed2.GetActivitiesAsync(0, 1)).Results;
+            
+            Assert.IsNotNull(activities1);
+            Assert.AreEqual(1, activities1.Count());
+            Assert.AreEqual(response.Id, activities1.First().Id);
+            
+            Assert.IsNotNull(activities2);
+            Assert.AreEqual(1, activities2.Count());
+            Assert.AreEqual(response.Id, activities2.First().Id);
         }
     }
 }
