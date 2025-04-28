@@ -16,19 +16,19 @@ namespace StreamNetTests
             // Should work with empty array
             Assert.DoesNotThrowAsync(async () =>
             {
-                await Client.Batch.UnfollowManyAsync(new Follow[] { });
+                await Client.Batch.UnfollowManyAsync(new UnfollowRelation[] { });
             });
-
-            // Should work with valid follow
+            
+            // Should work with valid unfollow relation objects
             Assert.DoesNotThrowAsync(async () =>
             {
-                await Client.Batch.UnfollowManyAsync(new[] { new Follow("user:1", "user:2") }, false);
+                await Client.Batch.UnfollowManyAsync(new[] { new UnfollowRelation("user:1", "user:2", false) });
             });
 
             // Should work with keepHistory true
             Assert.DoesNotThrowAsync(async () =>
             {
-                await Client.Batch.UnfollowManyAsync(new[] { new Follow("user:1", "user:2") }, true);
+                await Client.Batch.UnfollowManyAsync(new[] { new UnfollowRelation("user:1", "user:2", true) });
             });
         }
 
@@ -356,9 +356,9 @@ namespace StreamNetTests
             // Use UnfollowMany with keepHistory=false
             await Client.Batch.UnfollowManyAsync(new[]
             {
-                new Follow(UserFeed, FlatFeed),
-                new Follow(UserFeed2, FlatFeed),
-            }, keepHistory: false);
+                new UnfollowRelation(UserFeed, FlatFeed, false),
+                new UnfollowRelation(UserFeed2, FlatFeed, false),
+            });
 
             // Verify activities are removed
             activities1 = (await this.UserFeed.GetActivitiesAsync(0, 1)).Results;
@@ -399,9 +399,9 @@ namespace StreamNetTests
             // Use UnfollowMany with keepHistory=true
             await Client.Batch.UnfollowManyAsync(new[]
             {
-                new Follow(UserFeed, FlatFeed),
-                new Follow(UserFeed2, FlatFeed),
-            }, keepHistory: true);
+                new UnfollowRelation(UserFeed, FlatFeed, true),
+                new UnfollowRelation(UserFeed2, FlatFeed, true),
+            });
 
             // Verify activities are retained
             activities1 = (await this.UserFeed.GetActivitiesAsync(0, 1)).Results;

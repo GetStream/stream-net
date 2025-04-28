@@ -56,16 +56,16 @@ namespace Stream
             throw StreamException.FromResponse(response);
         }
 
-        public async Task<ResponseBase> UnfollowManyAsync(IEnumerable<Follow> follows, bool keepHistory = false)
+        public async Task<ResponseBase> UnfollowManyAsync(IEnumerable<UnfollowRelation> unfollows)
         {
             var request = _client.BuildAppRequest("unfollow_many/", HttpMethod.Post);
             
             // Create a new anonymous object array with the properties expected by the API
-            var unfollowRequests = follows.Select(f => new 
+            var unfollowRequests = unfollows.Select(f => new 
             {
                 source = f.Source,
                 target = f.Target,
-                keep_history = keepHistory
+                keep_history = f.KeepHistory
             });
             
             request.SetJsonBody(StreamJsonConverter.SerializeObject(unfollowRequests));
