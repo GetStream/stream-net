@@ -60,8 +60,15 @@ namespace Stream
         {
             var request = _client.BuildAppRequest("unfollow_many/", HttpMethod.Post);
             
-            request.AddQueryParameter("keep_history", keepHistory.ToString().ToLower());
-            request.SetJsonBody(StreamJsonConverter.SerializeObject(follows));
+            // Create a new anonymous object array with the properties expected by the API
+            var unfollowRequests = follows.Select(f => new 
+            {
+                source = f.Source,
+                target = f.Target,
+                keep_history = keepHistory
+            });
+            
+            request.SetJsonBody(StreamJsonConverter.SerializeObject(unfollowRequests));
 
             var response = await _client.MakeRequestAsync(request);
 
