@@ -130,13 +130,14 @@ namespace Stream
             return response;
         }
 
-        public async Task<Reaction> UpdateAsync(string reactionId, IDictionary<string, object> data = null, IEnumerable<string> targetFeeds = null)
+        public async Task<Reaction> UpdateAsync(string reactionId, IDictionary<string, object> data = null, IEnumerable<string> targetFeeds = null, string moderationTemplate = null)
         {
             var r = new Reaction
             {
                 Id = reactionId,
                 Data = data,
                 TargetFeeds = targetFeeds,
+                ModerationTemplate = moderationTemplate,
             };
 
             var request = _client.BuildAppRequest($"reaction/{reactionId}/", HttpMethod.Put);
