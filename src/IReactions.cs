@@ -59,6 +59,6 @@ namespace Stream
 
         /// <summary>Updates a reaction.</summary>
         /// <remarks>https://getstream.io/activity-feeds/docs/dotnet-csharp/reactions_introduction/?language=csharp</remarks>
-        Task<Reaction> UpdateAsync(string reactionId, IDictionary<string, object> data = null, IEnumerable<string> targetFeeds = null);
+        Task<Reaction> UpdateAsync(string reactionId, IDictionary<string, object> data = null, IEnumerable<string> targetFeeds = null, string moderationTemplate = null);
     }
 }
