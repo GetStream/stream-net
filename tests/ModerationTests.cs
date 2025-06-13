@@ -75,6 +75,18 @@ namespace StreamNetTests
             var updatedResponse = updatedReaction.GetModerationResponse();
             Assert.AreEqual("complete", updatedResponse.Status);
             Assert.AreEqual("remove", updatedResponse.RecommendedAction);
+
+            var updatedData2 = new Dictionary<string, object>() { { "field", "updated" }, { "number", 3 }, { "text", "hello" }, };
+            var updatedReaction2 = await Client.Reactions.UpdateAsync(r.Id, updatedData2, null, "moderation_config_1_reaction");
+
+            Assert.NotNull(updatedReaction2);
+            Assert.AreEqual(updatedReaction2.Id, r.Id);
+            Assert.AreEqual(updatedReaction2.Data["field"], "updated");
+            Assert.AreEqual(updatedReaction2.Data["number"], 3);
+
+            var updatedResponse2 = updatedReaction2.GetModerationResponse();
+            Assert.AreEqual("complete", updatedResponse2.Status);
+            Assert.AreEqual("keep", updatedResponse2.RecommendedAction);
         }
 
         [Test]
