@@ -63,6 +63,30 @@ namespace StreamNetTests
 
             Assert.AreEqual("complete", response.Status);
             Assert.AreEqual("remove", response.RecommendedAction);
+
+            var updatedData = new Dictionary<string, object>() { { "field", "updated" }, { "number", 3 }, { "text", "pissoar" }, };
+            var updatedReaction = await Client.Reactions.UpdateAsync(r.Id, updatedData, null, "moderation_config_1_reaction");
+
+            Assert.NotNull(updatedReaction);
+            Assert.AreEqual(updatedReaction.Id, r.Id);
+            Assert.AreEqual(updatedReaction.Data["field"], "updated");
+            Assert.AreEqual(updatedReaction.Data["number"], 3);
+
+            var updatedResponse = updatedReaction.GetModerationResponse();
+            Assert.AreEqual("complete", updatedResponse.Status);
+            Assert.AreEqual("remove", updatedResponse.RecommendedAction);
+
+            var updatedData2 = new Dictionary<string, object>() { { "field", "updated" }, { "number", 3 }, { "text", "hello" }, };
+            var updatedReaction2 = await Client.Reactions.UpdateAsync(r.Id, updatedData2, null, "moderation_config_1_reaction");
+
+            Assert.NotNull(updatedReaction2);
+            Assert.AreEqual(updatedReaction2.Id, r.Id);
+            Assert.AreEqual(updatedReaction2.Data["field"], "updated");
+            Assert.AreEqual(updatedReaction2.Data["number"], 3);
+
+            var updatedResponse2 = updatedReaction2.GetModerationResponse();
+            Assert.AreEqual("complete", updatedResponse2.Status);
+            Assert.AreEqual("remove", updatedResponse2.RecommendedAction);
         }
 
         [Test]
