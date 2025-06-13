@@ -86,7 +86,7 @@ namespace StreamNetTests
 
             var updatedResponse2 = updatedReaction2.GetModerationResponse();
             Assert.AreEqual("complete", updatedResponse2.Status);
-            Assert.AreEqual("keep", updatedResponse2.RecommendedAction);
+            Assert.AreEqual("remove", updatedResponse2.RecommendedAction);
         }
 
         [Test]
