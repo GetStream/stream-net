@@ -87,6 +87,12 @@ namespace StreamNetTests
             var updatedResponse2 = updatedReaction2.GetModerationResponse();
             Assert.AreEqual("complete", updatedResponse2.Status);
             Assert.AreEqual("remove", updatedResponse2.RecommendedAction);
+
+            var c1 = await Client.Reactions.AddChildAsync(r.Id, "upvote", "tommy", updatedData, null, "moderation_config_1_reaction");
+            Assert.NotNull(c1);
+            var updatedResponse3 = c1.GetModerationResponse();
+            Assert.AreEqual("complete", updatedResponse3.Status);
+            Assert.AreEqual("remove", updatedResponse3.RecommendedAction);
         }
 
         [Test]
