@@ -92,8 +92,8 @@ namespace StreamNetTests
             Assert.NotNull(c1);
 
             var updatedResponse2 = c1.GetModerationResponse();
-            Assert.AreEqual("complete", c1.Status);
-            Assert.AreEqual("remove", c1.RecommendedAction);
+            Assert.AreEqual("complete", updatedResponse2.Status);
+            Assert.AreEqual("remove", updatedResponse2.RecommendedAction);
         }
 
         [Test]
