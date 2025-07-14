@@ -42,19 +42,19 @@ namespace Stream
         }
 
         public async Task<Reaction> AddChildAsync(Reaction parent, string kind, string userId,
-            IDictionary<string, object> data = null, IEnumerable<string> targetFeeds = null)
+            IDictionary<string, object> data = null, IEnumerable<string> targetFeeds = null, string moderationTemplate = null)
         {
-            return await AddChildAsync(parent.Id, null, kind, userId, data, targetFeeds);
+            return await AddChildAsync(parent.Id, null, kind, userId, data, targetFeeds, moderationTemplate);
         }
 
         public async Task<Reaction> AddChildAsync(string parentId, string kind, string userId,
-            IDictionary<string, object> data = null, IEnumerable<string> targetFeeds = null)
+            IDictionary<string, object> data = null, IEnumerable<string> targetFeeds = null, string moderationTemplate = null)
         {
-            return await AddChildAsync(parentId, null, kind, userId, data, targetFeeds);
+            return await AddChildAsync(parentId, null, kind, userId, data, targetFeeds, moderationTemplate);
         }
 
         public async Task<Reaction> AddChildAsync(string parentId, string reactionId, string kind, string userId,
-            IDictionary<string, object> data = null, IEnumerable<string> targetFeeds = null)
+            IDictionary<string, object> data = null, IEnumerable<string> targetFeeds = null, string moderationTemplate = null)
         {
             var r = new Reaction()
             {
@@ -64,15 +64,16 @@ namespace Stream
                 Data = data,
                 ParentId = parentId,
                 TargetFeeds = targetFeeds,
+                ModerationTemplate = moderationTemplate,
             };
 
             return await AddAsync(r);
         }
 
         public async Task<Reaction> AddChildAsync(Reaction parent, string reactionId, string kind, string userId,
-            IDictionary<string, object> data = null, IEnumerable<string> targetFeeds = null)
+            IDictionary<string, object> data = null, IEnumerable<string> targetFeeds = null, string moderationTemplate = null)
         {
-            return await AddChildAsync(parent.Id, reactionId, kind, userId, data, targetFeeds);
+            return await AddChildAsync(parent.Id, reactionId, kind, userId, data, targetFeeds, moderationTemplate);
         }
 
         public async Task<Reaction> GetAsync(string reactionId)
