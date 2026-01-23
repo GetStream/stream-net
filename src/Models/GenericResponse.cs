@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using System.Collections.Generic;
 
 namespace Stream.Models
@@ -7,6 +8,10 @@ namespace Stream.Models
     {
         /// <summary>Container for <typeparamref name="T"/> objects.</summary>
         public List<T> Results { get; set; }
+
+        /// <summary>The ranking expression used for scoring activities.</summary>
+        [JsonProperty("ranking_expr")]
+        public string RankingExpression { get; set; }
     }
 
     /// <summary>Base class for personalized read responses of <typeparamref name="T"/>.</summary>

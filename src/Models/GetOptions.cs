@@ -20,6 +20,7 @@ namespace Stream.Models
         private string _user_id = null;
         private string _ranking_vars = null;
         private bool _score_vars = false;
+        private bool _ranking_expr = false;
         private string _discard_actors = null;
         private string _discard_actors_sep = null;
         private string _moderation_template = null;
@@ -65,6 +66,12 @@ namespace Stream.Models
         public GetOptions WithScoreVars()
         {
             _score_vars = true;
+            return this;
+        }
+
+        public GetOptions WithRankingExpr()
+        {
+            _ranking_expr = true;
             return this;
         }
 
@@ -148,6 +155,9 @@ namespace Stream.Models
 
             if (_score_vars)
                 request.AddQueryParameter("withScoreVars", "true");
+
+            if (_ranking_expr)
+                request.AddQueryParameter("with_ranking_expr", "true");
 
             if (!string.IsNullOrWhiteSpace(_discard_actors_sep))
                 request.AddQueryParameter("discard_actors_sep", _discard_actors_sep);
