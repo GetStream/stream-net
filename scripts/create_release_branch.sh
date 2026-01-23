@@ -5,7 +5,14 @@ echo "Preparing release $VERSION"
 
 # Update .csproj file
 # This regex to update Version tag in .csproj file
-sed -i '' 's|<Version>\(.*\)</Version>|<Version>'"${VERSION}"'</Version>|g' src/stream-net.csproj
+# Detect OS and use appropriate sed syntax
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  # macOS/BSD sed
+  sed -i '' 's|<Version>\(.*\)</Version>|<Version>'"${VERSION}"'</Version>|g' src/stream-net.csproj
+else
+  # Linux/GNU sed
+  sed -i 's|<Version>\(.*\)</Version>|<Version>'"${VERSION}"'</Version>|g' src/stream-net.csproj
+fi
 
 
 # Create changelog
