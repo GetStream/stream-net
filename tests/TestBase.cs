@@ -22,7 +22,7 @@ namespace StreamNetTests
             FlatFeed = Client.Feed("flat", System.Guid.NewGuid().ToString());
             AggregateFeed = Client.Feed("aggregate", System.Guid.NewGuid().ToString());
             NotificationFeed = Client.Feed("notification", System.Guid.NewGuid().ToString());
-            RankedFeed = Client.Feed("ranked", System.Guid.NewGuid().ToString());
+            RankedFeed = Client.Feed("user", System.Guid.NewGuid().ToString());
         }
     }
 }

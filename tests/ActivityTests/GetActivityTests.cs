@@ -173,6 +173,36 @@ namespace StreamNetTests
         }
 
         [Test]
+        public async Task TestRankingExpression()
+        {
+            var feed = this.RankedFeed;
+
+            var newActivity1 = new Activity("1", "test", "1")
+            {
+                ForeignId = "r-test-1",
+                Time = DateTime.Parse("2000-08-16T16:32:32"),
+            };
+
+            newActivity1.SetData("popularity", 123);
+            var r1 = await feed.AddActivityAsync(newActivity1);
+
+            // Test with ranking expression flag
+            var r2 = await feed.GetFlatActivitiesAsync(GetOptions.Default.WithLimit(1).WithRanking("popularity").WithRankingExpr());
+            Assert.IsNotNull(r2.RankingExpression);
+            Assert.IsNotEmpty(r2.RankingExpression);
+
+            // Test without ranking expression flag
+            r2 = await feed.GetFlatActivitiesAsync(GetOptions.Default.WithLimit(1).WithRanking("popularity"));
+            Assert.IsNull(r2.RankingExpression);
+
+            // Test with both score vars and ranking expression
+            r2 = await feed.GetFlatActivitiesAsync(GetOptions.Default.WithLimit(1).WithRanking("popularity").WithScoreVars().WithRankingExpr());
+            Assert.IsNotNull(r2.RankingExpression);
+            Assert.IsNotEmpty(r2.RankingExpression);
+            Assert.IsNotNull(r2.Results[0].ScoreVars);
+        }
+
+        [Test]
         public async Task TestGetActivitiesByForeignIDAndTime()
         {
             var newActivity1 = new Activity("1", "test", "1")
