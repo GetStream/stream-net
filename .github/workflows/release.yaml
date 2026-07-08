@@ -6,6 +6,10 @@ on:
     branches:
       - master
 
+permissions:
+  contents: read
+  pull-requests: read
+
 jobs:
   Release:
     if: github.event.pull_request.merged && startsWith(github.head_ref, 'release-')
