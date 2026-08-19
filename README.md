@@ -210,6 +210,16 @@ var imageupload = await client.Images.UploadAsync(stream, name, contentType);
 var og = await client.OgAsync("https://google.com");
 ```
 
+### Custom HTTP handlers
+
+Add your own [`DelegatingHandler`](https://learn.microsoft.com/dotnet/api/system.net.http.delegatinghandler) to observe or decorate every request the client makes: log calls, add tracing, or read response headers the SDK does not surface, such as the [rate limit headers](https://getstream.io/docs/platform/rate-limits/). The first handler in the list is the outermost one, so it sees the request first and the response last.
+
+```c#
+var options = new StreamClientOptions();
+options.HttpHandlers.Add(new MyLoggingHandler()); // your DelegatingHandler subclass
+var client = new StreamClient("YOUR_API_KEY", "API_KEY_SECRET", options);
+```
+
 ## ✍️ Contributing
 
 We welcome code changes that improve this library or fix a problem, please make sure to follow all best practices and add tests if applicable before submitting a Pull Request on Github. We are very happy to merge your code in the official repository. Make sure to sign our [Contributor License Agreement (CLA)](https://docs.google.com/forms/d/e/1FAIpQLScFKsKkAJI7mhCr7K9rEIOpqIDThrWxuvxnwUq2XkHyG154vQ/viewform) first. See our [license file](./LICENSE) for more details.
