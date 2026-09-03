@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using System.Net.Http;
+
 namespace Stream
 {
     /// <summary>Customization options for the internal HTTP client.</summary>
@@ -29,6 +32,20 @@ namespace Stream
         /// </summary>
         /// <remarks>Default is US East.</remarks>
         public StreamApiLocation PersonalizationLocation { get; set; } = StreamApiLocation.USEast;
+
+        /// <summary>
+        /// Middleware that wraps every HTTP request the client makes, letting you observe or
+        /// decorate requests and responses. The first handler in the list is the outermost one:
+        /// it sees the request first and the response last.
+        /// </summary>
+        /// <remarks>
+        /// A handler receives the raw <see cref="HttpResponseMessage"/>, so it can read response
+        /// headers the SDK does not surface itself, such as the rate limit headers described at
+        /// https://getstream.io/docs/platform/rate-limits/.
+        /// <para>Handler instances are bound to the client they are passed to, so give every
+        /// <see cref="StreamClient"/> its own handler instances.</para>
+        /// </remarks>
+        public IList<DelegatingHandler> HttpHandlers { get; } = new List<DelegatingHandler>();
     }
 
     /// <summary>Physical location of the backend.</summary>
