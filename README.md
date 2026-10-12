@@ -1,3 +1,8 @@
+> **`stream-net` is a Feeds v2 client and is now in maintenance mode.** It will continue to
+> receive critical fixes, so it is safe to keep using with a v2 app. New projects should start
+> with Feeds v3 and [`getstream-net`](https://github.com/GetStream/getstream-net) (NuGet `getstream-net`).
+> Migration guide: https://getstream.io/activity-feeds/docs/dotnet-csharp/v2-to-v3-migration/
+
 # Official .NET SDK for [Stream](https://getstream.io/activity-feeds/)
 
 
