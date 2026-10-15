@@ -64,7 +64,8 @@ namespace Stream
                 string.Format(BaseUrlFormat, GetRegion(_options.Location)) :
                 stream_url, UriKind.Absolute);
 
-            _client = new RestClient(url, TimeSpan.FromMilliseconds(_options.Timeout));
+            var httpClient = _options.HttpHandlers.Count > 0 ? RestClient.CreateClient(_options.HttpHandlers) : null;
+            _client = new RestClient(url, TimeSpan.FromMilliseconds(_options.Timeout), httpClient);
 
             var assemblyVersion = typeof(StreamClient).GetTypeInfo().Assembly.GetName().Version;
             Version = assemblyVersion.ToString(3);
@@ -75,7 +76,7 @@ namespace Stream
             Reactions = new Reactions(this);
             Users = new Users(this);
             Moderation = new Moderation(this);
-            var personalization = new RestClient(GetBasePersonalizationUrl(), TimeSpan.FromMilliseconds(_options.PersonalizationTimeout));
+            var personalization = new RestClient(GetBasePersonalizationUrl(), TimeSpan.FromMilliseconds(_options.PersonalizationTimeout), httpClient);
             Personalization = new Personalization(new StreamClient(_apiKey, _streamClientToken, personalization, _options));
             Files = new Files(this);
             Images = new Images(this);

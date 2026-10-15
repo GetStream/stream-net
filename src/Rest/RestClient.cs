@@ -1,5 +1,7 @@
 ﻿using Stream.Utils;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -12,17 +14,32 @@ namespace Stream.Rest
     internal class RestClient
     {
         private static readonly MediaTypeWithQualityHeaderValue _jsonAcceptHeader = new MediaTypeWithQualityHeaderValue("application/json");
-        private static readonly HttpClient _client = new HttpClient();
+        private static readonly HttpClient _defaultClient = new HttpClient();
+        private readonly HttpClient _client;
         private readonly Uri _baseUrl;
         private readonly TimeSpan _timeout;
 
-        internal RestClient(Uri baseUrl, TimeSpan timeout)
+        internal RestClient(Uri baseUrl, TimeSpan timeout, HttpClient client = null)
         {
 #if OLD_TLS_HANDLING
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
 #endif
             _baseUrl = baseUrl;
             _timeout = timeout;
+            _client = client ?? _defaultClient;
+        }
+
+        internal static HttpClient CreateClient(IEnumerable<DelegatingHandler> handlers)
+        {
+            HttpMessageHandler pipeline = new HttpClientHandler();
+
+            foreach (var handler in handlers.Reverse())
+            {
+                handler.InnerHandler = pipeline;
+                pipeline = handler;
+            }
+
+            return new HttpClient(pipeline);
         }
 
         private HttpRequestMessage BuildRequestMessage(HttpMethod method, Uri url, RestRequest request)
